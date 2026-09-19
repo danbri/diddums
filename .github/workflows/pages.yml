@@ -1,0 +1,52 @@
+name: Deploy Diddums to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Fetch pinned Lean Factoidal Wasm
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="public/vendor/factoidal-lean-0.8.0/l4factoidal.wasm"
+          mkdir -p "$(dirname "$target")"
+          curl --fail --location --silent --show-error \
+            "https://raw.githubusercontent.com/danbri/factoidal/30154c0467ee529b7a056bb9c2ac61f144578619/npm/factoidal/l4-assets/l4factoidal.wasm" \
+            --output "$target"
+          echo "6201b6c477e81b9996df1cd75d9a90630118eb02cf48f5dbb94d40af330172b4  $target" | sha256sum --check --strict
+
+      - name: Prepare static site
+        shell: bash
+        run: touch public/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

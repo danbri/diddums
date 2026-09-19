@@ -1,0 +1,489 @@
+{
+  "schema": "jigdaw-project-export/1",
+  "project_id": "proj_lc2wvinjxetn",
+  "slug": "audio-circuit-wasm",
+  "deployment_version": 75,
+  "deployed_at": "2026-09-18T12:11:13+00:00",
+  "files": [
+    {
+      "path": "public/index.html",
+      "sha256": "f6cb24a94163c1f9b5effc6db2862dbe80ec38a76b10fa75ce282a66e0987360",
+      "size": 14154
+    },
+    {
+      "path": "public/app.js",
+      "sha256": "874288514fed0d3f36a360b08f5905454611a516e7c7844ea40421eb2948f9f8",
+      "size": 46723
+    },
+    {
+      "path": "public/worklet.js",
+      "sha256": "859832eeb2a8c5ed80ef99220f82a9d3df61924016fc417f42caec6f4260e092",
+      "size": 21376
+    },
+    {
+      "path": "public/leandsp.js",
+      "sha256": "2d49ae56434e46be3d9d43ac7a912bc66e18a6a946218e9d0cb6fc86a0a39019",
+      "size": 40769
+    },
+    {
+      "path": "public/tr909.js",
+      "sha256": "7fa0304fed562c2ad1b463dc8600ea7782c2670ad87f5e58dca0afda799ad6b7",
+      "size": 13149
+    },
+    {
+      "path": "public/internalgraph.js",
+      "sha256": "ffd8f934663719add01e35def0290f924617e6b724a373c63db123b6d707bd8b",
+      "size": 18281
+    },
+    {
+      "path": "public/foreignplugins.js",
+      "sha256": "ea12c57e1f6adcc334717115546286a621c5530515ea667886a01cbe60c82f77",
+      "size": 8569
+    },
+    {
+      "path": "public/plugin-universe/plugin-universe-dumps.tar",
+      "sha256": "6573f602eb6e6b3617f2c889e70c1142813c3d350ec101f6e3eb13d3df02a643",
+      "size": 4774912
+    },
+    {
+      "path": "public/plugin-universe/README.md",
+      "sha256": "b6d94a27445ad04d64183a1833427d5c4810b0850eef2d1fdffe2ccc408e689a",
+      "size": 1093
+    },
+    {
+      "path": "public/research/native-to-leandsp.md",
+      "sha256": "eaccd0533810eeb72fb4f72c3b3fb7359c6da585b1b6a07a6c18ba1be7d43e7d",
+      "size": 28746
+    },
+    {
+      "path": "public/research/native-to-leandsp-survey.json",
+      "sha256": "4a54e6511b1279e5c15f3634829f642a4bb2253a032b7330b2b62f044e7f166b",
+      "size": 9623
+    },
+    {
+      "path": "public/leandsystem.js",
+      "sha256": "d51d006fc39019ea363e4dda1cb796331c0ddd04c22e89f6b6ac36a5f39fee27",
+      "size": 7789
+    },
+    {
+      "path": "public/lab-v26.html",
+      "sha256": "1fc3326a87dbee7cc7eb2ac0fa049afa1f0143b2cffefb3920a342065bc066fd",
+      "size": 46225
+    },
+    {
+      "path": "public/patterns.js",
+      "sha256": "7e653d7ebaa0d3c63cdd88b65038e5578b9d0088cba215cbae224aa97b8523a0",
+      "size": 23812
+    },
+    {
+      "path": "public/collection.js",
+      "sha256": "b22bac4add00ce03b6835cf32bbb002df8641286369eb00e21e2988ffa5eb588",
+      "size": 27803
+    },
+    {
+      "path": "public/score.js",
+      "sha256": "90668494b629fae1dff95bf7c094e6c4ac3e01cd6d2761ba12618fe9bf312aff",
+      "size": 14185
+    },
+    {
+      "path": "public/studio-worklet.js",
+      "sha256": "1ac9d149905958e2023d106eb4204222ed7a7f2f0446f612d0578bb015e0588a",
+      "size": 19749
+    },
+    {
+      "path": "public/graph-ui.js",
+      "sha256": "12d181731a20bed42004a39cbdbdd8aa2043ae08bb4193959b4e7bd2791c31c8",
+      "size": 10947
+    },
+    {
+      "path": "public/scopes.js",
+      "sha256": "717e8e3caf1c3c7d570a442e5ba2eaa52027622b97279147818b0805c8bdb145",
+      "size": 8772
+    },
+    {
+      "path": "public/studio.css",
+      "sha256": "327feb0fcc0deab3fe074928f304c2467568a76c22328fc8fbe836bd1bfd470e",
+      "size": 21563
+    },
+    {
+      "path": "public/studio.js",
+      "sha256": "6ef199f7f5ed488265dc91f496cb72b2d2fd3414de393efc7149bbbdd3ee1d6d",
+      "size": 69609
+    },
+    {
+      "path": "public/research/studio-0.4.md",
+      "sha256": "88845ac412ea2824a92cf3826382c506a4a1472dde2882d0f47e48a025caef69",
+      "size": 5764
+    },
+    {
+      "path": "public/research/studio-0.4-tests.json",
+      "sha256": "f504303d219f4dda51377568ef3ee2166b51e06b11392d9beee2152229b02d05",
+      "size": 2215
+    },
+    {
+      "path": "public/vendor/wabt-1.0.39.js",
+      "sha256": "cecf06ab5c65c3b7c05bafe601bbba61a45e4939889c5c51351e8817ac06f48d",
+      "size": 690700
+    },
+    {
+      "path": "public/vendor/wabt-LICENSE",
+      "sha256": "1d2c1da880eb3805f6033e90d80205a8e44e826c5747ecf23853f4a33e909850",
+      "size": 11371
+    },
+    {
+      "path": "public/orientation.css",
+      "sha256": "c4f9d2b8bb0ff1553b3b16860de3ebb0ee17b9411bdb8cdc46cc0d9698c8040f",
+      "size": 2065
+    },
+    {
+      "path": "public/expression-view.js",
+      "sha256": "23a9e8f48734f197bae8eb1903aefaa06ed9e1bed8eba121ef7b70d58a0754b2",
+      "size": 11333
+    },
+    {
+      "path": "public/expression-view.css",
+      "sha256": "cf1f950f1c9390cc16138069024fccef5a2c09715979edbfdc26714d9134cb97",
+      "size": 2407
+    },
+    {
+      "path": "public/research/leandsp-language-status.md",
+      "sha256": "c2f8ed007e5411e6bc300de7ad7887fe5d178e8bc831be30a7071d7ac74af63f",
+      "size": 5002
+    },
+    {
+      "path": "public/research/expression-0.4.2-tests.json",
+      "sha256": "5a39a51b85db7dc442007a5d57b1c93f67cb9a1d04219519169043cf4d625d50",
+      "size": 1625
+    },
+    {
+      "path": "public/music-model.js",
+      "sha256": "d269f5983fb8735370a1f7a886b6ba3d0cf6476ecda5749257dba251e3dad24d",
+      "size": 5141
+    },
+    {
+      "path": "public/music-view.js",
+      "sha256": "d26bb5f49c5630844a56dad0f08cc74608b0557dbf150ac06205da4c2bc247f9",
+      "size": 27994
+    },
+    {
+      "path": "public/music-view.css",
+      "sha256": "6d34d8dc30a20007042e22381cdc17a4da25e5303bafc6c0661402a585323330",
+      "size": 4412
+    },
+    {
+      "path": "public/research/musical-views-0.4.3.md",
+      "sha256": "e379d1517791c659a5e1112c713cf5988b75e852744558913605dce58146bfb0",
+      "size": 5872
+    },
+    {
+      "path": "public/lean/LeanDSP/Core.lean",
+      "sha256": "6178afc7fa78da35b6d868439b34cbadef88045190012ca25e5c949a38c761d8",
+      "size": 12224
+    },
+    {
+      "path": "public/lean/LeanDSP/Checker.lean",
+      "sha256": "7579e89f5e7538563a1d3afadd6e4e7c48a51288bc3c3b2437e3136e70621d15",
+      "size": 7177
+    },
+    {
+      "path": "public/lean/LeanDSP/Syntax.lean",
+      "sha256": "ac7e5f8dcd0effeba8b63a727353d2bb504f16d745ef285532a46c51dfd3de2f",
+      "size": 6188
+    },
+    {
+      "path": "public/vendor/factoidal-0.7.1/factoidal.js",
+      "sha256": "f5e32f73d6005de50e492ccc9e045a8914ae31dcb88493d6d56330d7b7bc8544",
+      "size": 1069143
+    },
+    {
+      "path": "public/vendor/factoidal-0.7.1/factoidal-npm-entry.js",
+      "sha256": "0e139ba9b3df119fbe4de147975e89e71b681a7dd4541acef67ba4f93daa3a03",
+      "size": 1172637
+    },
+    {
+      "path": "public/vendor/factoidal-0.7.1/LICENSE",
+      "sha256": "2262d4f4329db623982cbae0c69673665b26a4de6a8a61a02d79f545f8649d03",
+      "size": 11299
+    },
+    {
+      "path": "public/vendor/factoidal-0.7.1/NOTICE",
+      "sha256": "a51d075cf99c3baf45ba608ce25f78b7befda43050e4295dea300d0a8b87e681",
+      "size": 1138
+    },
+    {
+      "path": "public/rdf.js",
+      "sha256": "7fd3589ab3ef1f066b5818d6f0c31cf2bfbea8a126b54465c78f64e594e2f2cd",
+      "size": 1520
+    },
+    {
+      "path": "public/lean/catalog.json",
+      "sha256": "79224a64f5dfc6044494e174f407f0883ccb3fa43fba539daca2adf385365331",
+      "size": 341313
+    },
+    {
+      "path": "public/lean/build-report.json",
+      "sha256": "ff489526d532f6d2f70c827e5d9be59b7b81010ce7d51979a3edd2e25e8ff4b3",
+      "size": 5483
+    },
+    {
+      "path": "public/lean-client.js",
+      "sha256": "72f41f6c38613c4a48398c1398a7f54fea223d4b78d4bf65f5fcef34f7816c64",
+      "size": 6723
+    },
+    {
+      "path": "public/taste-lab.js",
+      "sha256": "f8a6578988361be1fb63d0e22263489d45b16adbb25de59facf921ed9a76b385",
+      "size": 24880
+    },
+    {
+      "path": "public/taste-lab.css",
+      "sha256": "77d290a5138805b68be53c542027379f4daa632295ab81c193e7b3d44c445a80",
+      "size": 2977
+    },
+    {
+      "path": "public/lean/LeanDSP/Emitter.lean",
+      "sha256": "d6f346491ac8d05c541c4784dbfd92426ce5ce62c90ef1008d30ee84ad3ed0a6",
+      "size": 11608
+    },
+    {
+      "path": "public/lean/Build.lean",
+      "sha256": "1a545ed6b90c0d36c381fd5cac60f5f2f8e66fa9e4b42a1901c1c9304a36e851",
+      "size": 72793
+    },
+    {
+      "path": "public/lean/README.md",
+      "sha256": "40378b6540125c56d027fbd392ba78d41eb73cf335edd4238bb5b24282602f0f",
+      "size": 5466
+    },
+    {
+      "path": "public/lean/project-files.json",
+      "sha256": "1eea8d63d1e9285aa25ec1b5cb241d3642ccd38564d26089dbe2627f3bc25fd8",
+      "size": 169190
+    },
+    {
+      "path": "public/vendor/factoidal-0.7.1/browser.mjs",
+      "sha256": "e5c04860ed0bb3ac94e1754e5c61d1f1c380ff811a11aa82460e91963d5bbe0b",
+      "size": 94674
+    },
+    {
+      "path": "public/research/studio-0.5.md",
+      "sha256": "c734fc68c91ce00f961aad0a06a937f10e430d23887f11bd621879818db01bf3",
+      "size": 7059
+    },
+    {
+      "path": "public/lean/patterns/roundBass.lean",
+      "sha256": "f7a4bc0e7f644c1542f815d76fe77fe9cedeeeb32353def2a2e8f5dd60ee16d1",
+      "size": 782
+    },
+    {
+      "path": "public/lean/patterns/acidBass.lean",
+      "sha256": "0b61083a8b23b97d46790594baead02e77d5ab1e73d1d4b8b31f684c3e8d9cdd",
+      "size": 1285
+    },
+    {
+      "path": "public/lean/patterns/tine.lean",
+      "sha256": "ee0699c500ee9157e2e4b0ac14c361699a229050d0136355fe57f89536bdc050",
+      "size": 902
+    },
+    {
+      "path": "public/lean/patterns/glass.lean",
+      "sha256": "0c003f579a51921f23bf75602b9cfab4eea26b1679aa98e53a1b9325d0162dbb",
+      "size": 983
+    },
+    {
+      "path": "public/lean/patterns/pluck.lean",
+      "sha256": "e6bce72bc9e537c52791d7b835a05c813226eb0c73e71c03ad722ab4915df161",
+      "size": 1060
+    },
+    {
+      "path": "public/lean/patterns/felt.lean",
+      "sha256": "32473c1078c9fd86fe2442aa28f0c399131f86321f4fd37701655f424792e4fb",
+      "size": 979
+    },
+    {
+      "path": "public/lean/patterns/silk.lean",
+      "sha256": "f711f1fe888c87918e32387ea27b0e63fdcf97cae2827ea51c5f5d0db613b817",
+      "size": 1061
+    },
+    {
+      "path": "public/lean/patterns/choir.lean",
+      "sha256": "a2e4ad32a74d05781690b047d79affd1032ab27cfe44cebc60ee509e2d49454c",
+      "size": 1077
+    },
+    {
+      "path": "public/lean/patterns/organ.lean",
+      "sha256": "9a8796c90194e76f53b660b6b64ed35b23e901f37dbdc8c4b7e8dba347173cdc",
+      "size": 891
+    },
+    {
+      "path": "public/lean/patterns/pulse.lean",
+      "sha256": "7ade00ba3cfb0c5d7a314bbf88d1b6944b9e1972f21ead6845a7e0f990b440be",
+      "size": 1066
+    },
+    {
+      "path": "public/lean/patterns/rain.lean",
+      "sha256": "34d974e74835f5ea3552f40157d497a4a529cbe739a7ae8b3e25c56179b91330",
+      "size": 1110
+    },
+    {
+      "path": "public/lean/patterns/kick.lean",
+      "sha256": "b028d2d2479088b8f2b0a9126982f2f8142011da9901aa3330c60b2831a131b7",
+      "size": 914
+    },
+    {
+      "path": "public/lean/patterns/snare.lean",
+      "sha256": "48138b27f7a031d09f2be7536f90f1aa9a2a223189c46ec705d76b0a3d1eccf0",
+      "size": 1026
+    },
+    {
+      "path": "public/lean/patterns/hat.lean",
+      "sha256": "e47c4673c9576676dc6ec67e83b7fdf8c1daf1726d216b700fed305853ad2a1b",
+      "size": 983
+    },
+    {
+      "path": "public/lean/patterns/clap.lean",
+      "sha256": "823cf9dfacc2dbf32e1dd626371da5a785ec4d65cd6603a2aab94ef506b102e6",
+      "size": 974
+    },
+    {
+      "path": "public/lean/patterns/tom.lean",
+      "sha256": "2a898b3d660127a83710f6a0bdf9591e40e364c28fb2b856129927955d423c2b",
+      "size": 872
+    },
+    {
+      "path": "public/lean/patterns/chamber.lean",
+      "sha256": "bfde3919bb291c8ed8bfbb7edccf039b43e1659950352c49aa8429012c475abc",
+      "size": 1494
+    },
+    {
+      "path": "public/lean/LeanDSP/WasmSubset.lean",
+      "sha256": "264625a2c53a107045c1dfb6e74741d1d0f40e065f78e09985800d3339ee1059",
+      "size": 7958
+    },
+    {
+      "path": "public/pitch-critic.js",
+      "sha256": "3ec712dc775a7af9ed19ebd0b138e23765f6177175f35c15db28d718b95b8d22",
+      "size": 7367
+    },
+    {
+      "path": "public/lean/wasm-subset-report.json",
+      "sha256": "400ad490467bce8b55613c2e0453a31576e7e5afc1290ae428f3125799e1c66c",
+      "size": 2440
+    },
+    {
+      "path": "public/score-critic.js",
+      "sha256": "cd1a45e8c6f1f483cdac0ff905d128a7ef2762dda768e575b1914a0c66f39d2a",
+      "size": 5002
+    },
+    {
+      "path": "public/lean/patterns/shepard.lean",
+      "sha256": "a1b17330059583b5ace9a027fa6f7aabdd49165696b59365468d8f201db97912",
+      "size": 1699
+    },
+    {
+      "path": "public/lean/patterns/phantomRoot.lean",
+      "sha256": "012b6b5e0ef2a14c3bdc8586dff8b07b88c7006588c8a3a63cdb5ceafc8583a6",
+      "size": 1040
+    },
+    {
+      "path": "public/lean/patterns/ghostBeat.lean",
+      "sha256": "358056545eefaecdb106fa841ff3b52be47956e37ebb0ceb97d8270101b71169",
+      "size": 803
+    },
+    {
+      "path": "public/lean/patterns/sineVox.lean",
+      "sha256": "beeaba8ebd7bb02b5386850983bdb33495676c69074211541fe96916383fe6fd",
+      "size": 1770
+    },
+    {
+      "path": "public/lean/patterns/speechGesture.lean",
+      "sha256": "9f9aae579dd9fc2b34f35f9d00907206ec0daeb520ba2f0a71eff5b4d74956c5",
+      "size": 1250
+    },
+    {
+      "path": "public/lean/pattern-map.json",
+      "sha256": "208809f9bfff1fd58b5a2903f9e01c3c400ad8d5e98b9e64a30e653ee91848ff",
+      "size": 280
+    },
+    {
+      "path": "public/lean/patterns/sineChoir.lean",
+      "sha256": "9f1c144566b1502ad9a00d3e92bc864adf4c7e418b19d5a647c43515bb8f7a17",
+      "size": 2155
+    },
+    {
+      "path": "public/research/studio-0.6.md",
+      "sha256": "5c489ffd0e162569dd6227f9b3995c5f445cd0e1843b2ead73df3b13bb2bf7eb",
+      "size": 7786
+    },
+    {
+      "path": "public/sample-sws.js",
+      "sha256": "1dc1b30171b0e12a10b5a4997509987953ddc773edd8d4c601cefc9b5dd83552",
+      "size": 19195
+    },
+    {
+      "path": "public/sample-sws.css",
+      "sha256": "e915df52f7e8786e63de218224aef672d453d57e0bca7935b268e5597e62f94d",
+      "size": 2744
+    },
+    {
+      "path": "public/browser-lean.js",
+      "sha256": "ae1f16bc5caf9f25863806c6978247625ed3936d193d3cb032e00181f62f7d6c",
+      "size": 3145
+    },
+    {
+      "path": "public/audio-proof.js",
+      "sha256": "6e6f1461fb6b42bd3ef2a50b1e36555971fc02ad16bbd07fec5e74d9db4bf6dd",
+      "size": 23837
+    },
+    {
+      "path": "public/proof-verifier.html",
+      "sha256": "ecd345e52784441306325348724880160f94dc6164f29d963e3acb8d1bbc7367",
+      "size": 3050
+    },
+    {
+      "path": "public/proof-verifier.js",
+      "sha256": "355fbdf4f337b966399419b9fa94ecfd7c7e334632df410a57c0058fe711ee5a",
+      "size": 10967
+    },
+    {
+      "path": "public/jigscore.js",
+      "sha256": "3f0b2885fe1885d0e8835780193ae7a684ab52490fa059c017a39279bbc8885a",
+      "size": 3190
+    },
+    {
+      "path": "public/lean/JigScore.lean",
+      "sha256": "554b4f7917b8158d2e1054f28807fde260ed5d31bcf3cfd11dc785be9abf2f04",
+      "size": 2822
+    },
+    {
+      "path": "public/research/jigscore-roadmap.md",
+      "sha256": "f8ee0d7377eb0b2770c25574f962edc8699b7a11191de9ce5d80b73b8fb2be09",
+      "size": 2871
+    },
+    {
+      "path": "public/proof-renderers/studio-worklet-1ac9d149905958e2.js",
+      "sha256": "1ac9d149905958e2023d106eb4204222ed7a7f2f0446f612d0578bb015e0588a",
+      "size": 19749
+    },
+    {
+      "path": "public/proof-render-worker.js",
+      "sha256": "a2bb3527e5525d455647c439d98254432d5ff3e52f45fcf1fdb7b33134368676",
+      "size": 2856
+    },
+    {
+      "path": "public/proof-renderers/proof-render-worker-c308ce46d55a3620.js",
+      "sha256": "c308ce46d55a36203c7a185d5dbda035a17d470c8bdb811bd5f8fe08227445c7",
+      "size": 2505
+    },
+    {
+      "path": "public/proof-renderers/proof-render-worker-a2bb3527e5525d45.js",
+      "sha256": "a2bb3527e5525d455647c439d98254432d5ff3e52f45fcf1fdb7b33134368676",
+      "size": 2856
+    },
+    {
+      "path": "public/proof-evidence/factorymonday-v74.json",
+      "sha256": "415ed2217f1874304aa06d8fa1f2a860d1d9009e387b6209c740df7d1a0ceb8a",
+      "size": 3685
+    }
+  ]
+}

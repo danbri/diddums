@@ -1,0 +1,22 @@
+/* Pattern identity is independent of a composition's track nickname. */
+.pattern-use-label{display:grid;gap:6px;min-width:0;font-size:11px;color:var(--muted)}
+.pattern-use-label select{width:100%;min-width:0;max-width:100%;font-size:12px;color:var(--text)}
+.pattern-use-count{font:10px/1.5 var(--mono);color:var(--muted)}
+.pattern-use-controls{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-top:17px}
+.pattern-use-controls .pattern-use-label{flex:1 1 250px}
+.pattern-use-controls>button{flex:0 0 auto;min-height:44px}
+#patternDetail .section-heading{max-width:900px;margin:22px 0}
+#patternDetail .definition-note{font-size:12px;border-left:2px solid var(--violet);padding-left:12px;margin-top:15px}
+#patternDetail,#patternWorkspaceMount,#compositionWorkspaceMount{min-width:0}
+.node-identity{padding:10px 11px;border:1px solid #62567b;border-radius:8px;background:#1a2438;margin:12px 0}
+.node-identity strong{display:block;color:#dac6f2;font-size:15px}
+.node-identity span{display:block;color:var(--muted);font-size:11px;line-height:1.6;margin-top:4px;overflow-wrap:anywhere}
+.node-identity button{font-size:11px;min-height:38px;margin-top:8px;padding:6px 9px}
+.graph-context{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 13px;border-bottom:1px solid var(--edge);background:#182839;font-size:12px}
+.graph-context>span{flex:1 1 230px;min-width:0;overflow-wrap:anywhere;color:#d1e5ee}
+.graph-context button{font-size:11px;min-height:38px;padding:6px 9px}
+.workspace{scroll-margin-top:12px}
+.graph-node.has-pattern .node-name{color:#e1d2f4}
+.miniature .has-pattern .node-detail{display:block;font-size:calc(var(--readable-font) * .78);line-height:1.1;margin-top:4px;color:#bfd3df}
+.miniature .has-pattern .node-value{margin-top:5px}
+@media(max-width:560px){.pattern-use-label select{font-size:12px}.pattern-use-controls{gap:8px}.pattern-use-controls>button{width:100%}.graph-context{padding:10px}.graph-context button{min-height:42px}.node-identity button{min-height:42px}.graph-node.has-pattern .node-name{padding-right:15px}}

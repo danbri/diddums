@@ -1,0 +1,46 @@
+{
+  "schema": "jigdaw-expression-inspector-tests/0.1",
+  "date": "2026-09-17",
+  "runtimeTestDeployment": 33,
+  "viewport": [390, 844],
+  "browser": "Managed Chromium; not a physical iPhone test",
+  "definitionTests": {
+    "pattern": "acidBass / Amber ladder",
+    "opensWithoutAudio": true,
+    "returnExpressionVisible": true,
+    "coefficientInputs": ["target", "env", "sr", "life"],
+    "v2Inputs": ["ic2", "g", "v1"],
+    "atomicSubexpression": "(t0 + t0)",
+    "atomicEnclosingStatement": "let correction",
+    "upstreamDependenciesVisible": true,
+    "orderedStateWriteRegressionPassed": true,
+    "returnExpressionEditTestPassed": true,
+    "horizontalPageOverflow": false
+  },
+  "compilation": {
+    "patternsCompiled": 17,
+    "allWebAssemblyValidate": true,
+    "allBinarySizesMatchPriorRecordedSizes": true,
+    "compilerDSPEmissionChanged": false,
+    "note": "Binary-size comparison is a regression check, not a compiler-correctness proof. This update changed inspection metadata, not DSP emission."
+  },
+  "liveTest": {
+    "composition": "Glass Transit",
+    "track": "Transit bass",
+    "instance": "bass#0",
+    "probe": "v2",
+    "statement": "let v2 := ic2 + g * v1",
+    "sampleRate": 44100,
+    "traceSamples": 1024,
+    "reportedNonFiniteSamples": 0,
+    "measuredNodesInSnapshot": 15,
+    "pauseSuspendsAudio": true,
+    "runtimeErrors": []
+  },
+  "limitations": [
+    "No Lean kernel is used by this DSL/parser/compiler",
+    "No proof of DSP correctness or stability",
+    "No full-collection listening test for this UI update",
+    "Screenshot captured but not visually reviewed in this run"
+  ]
+}

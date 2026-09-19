@@ -1,0 +1,122 @@
+{
+  "schema": "leandsp-native-build-report/4",
+  "checkedAt": "2026-09-17T23:47:27.678Z",
+  "leanVersion": "4.34.0",
+  "executor": "Lean4web native Lean 4.34.0 server via LSP for elaboration/kernel audit; WABT assembly and browser/V8 runtime checks separately recorded",
+  "buildHash": "1a545ed6b90c0d36c381fd5cac60f5f2f8e66fa9e4b42a1901c1c9304a36e851",
+  "catalogHash": "79224a64f5dfc6044494e174f407f0883ccb3fa43fba539daca2adf385365331",
+  "patternCount": 23,
+  "errors": [],
+  "axiomAudits": [
+    "'LeanDSP.compileExpr_correct' depends on axioms: [propext, Quot.sound]",
+    "'LeanDSP.compile_correct' depends on axioms: [propext, Quot.sound]",
+    "'LeanDSP.compile_trace_correct' depends on axioms: [propext, Quot.sound]",
+    "'LeanDSP.all_instantiations' depends on axioms: [propext, Quot.sound]",
+    "'LeanDSP.compileExpr_length' depends on axioms: [propext]",
+    "'LeanDSP.ring_index_lt' does not depend on any axioms",
+    "'LeanDSP.lower_correct' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'LeanDSP.io_region_safe' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'LeanDSP.buffer_region_safe' depends on axioms: [propext, Quot.sound]",
+    "'LeanDSP.instance_memory_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'LeanDSP.WasmSubset.lowerCode_correct' depends on axioms: [propext]",
+    "'LeanDSP.WasmSubset.compileExpr_toWasm_correct' depends on axioms: [propext, Quot.sound]",
+    "'LeanDSP.WasmSubset.lowerBlock_correct' depends on axioms: [propext, Quot.sound]",
+    "'LeanDSP.WasmSubset.compileBlock_toWasm_correct' depends on axioms: [propext, Quot.sound]",
+    "'VelvetSub' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'AmberLadder' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'VelvetTines' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'PrismaticBell' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'OrchardString' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'FeltMallet' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'SilkEnsemble' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'DistantVowels' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'NocturnalDrawbars' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'ChromeSequence' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'BreathingRain' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'RoundMembrane' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'PaperSnare' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'MetallicHat' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'RoomHands' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'CeramicResonator' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'DiffuseChamber' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'ImpossibleAscent' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'PhantomRoot' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'GhostBeating' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'ThreeSineVoice' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'SpeechGestures' depends on axioms: [propext, Classical.choice, Quot.sound]",
+    "'SixSineChoir' depends on axioms: [propext, Classical.choice, Quot.sound]"
+  ],
+  "sorryAxAccepted": false,
+  "verification": {
+    "compilerTheorem": "LeanDSP.WasmSubset.compileBlock_toWasm_correct",
+    "traceTheorem": "LeanDSP.compile_trace_correct",
+    "provedThrough": "typed WasmSubset ordered block semantics",
+    "remainingTrustBoundary": [
+      "typed WasmSubset -> textual WAT pretty-printer/helper WAT bodies",
+      "WABT",
+      "WebAssembly runtime",
+      "JavaScript score/scheduler/mixer/effects"
+    ]
+  },
+  "releaseChanges": {
+    "previousCatalogHash": "6a918a35230a7f58cd0787852f1a1c23224ee056e685fbc5af3355fc4a7f6361",
+    "existingFamilies": {
+      "count": 22,
+      "watTextUnchanged": true
+    },
+    "additions": [
+      {
+        "id": "sineChoir",
+        "name": "SixSineChoir",
+        "wasmSha256": "72cda13759dd8273210e11303db5134afb02a2872af1bfef0fe050a90205b5ca",
+        "watSha256": "16e8bde9a2e7750de7d52554ca2602d86eef2d29f272ba133f94737fc019ca11",
+        "purpose": "six-tone choral doubling of the three-formant sine-wave-speech vowel trajectories"
+      }
+    ]
+  },
+  "runtimeGuards": {
+    "sineChoir": {
+      "wasmValidate": true,
+      "wasmBytes": 2458,
+      "nonFinite": 0,
+      "peak": 0.43203166127204895,
+      "rms": 0.13571446161532116,
+      "frameGuard": true,
+      "pointerGuard": true,
+      "fixedMemory": true
+    }
+  },
+  "mechanismDiagnostics": {
+    "sineChoir": {
+      "spread": 0.0017,
+      "vowels": {
+        "a": [
+          800,
+          1200,
+          2500
+        ],
+        "e": [
+          500,
+          1900,
+          2600
+        ],
+        "i": [
+          300,
+          2300,
+          3000
+        ],
+        "o": [
+          500,
+          900,
+          2400
+        ],
+        "u": [
+          350,
+          800,
+          2200
+        ]
+      },
+      "interpretation": "Goertzel checks found the intended ±0.17% paired peaks around each F1/F2/F3 target; the slow beating is generated by the paired formant tones themselves."
+    }
+  }
+}

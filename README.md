@@ -40,3 +40,16 @@ That is a compatibility target, not the Diddums product name.
 ## Licensing
 
 Project-level licensing is not yet declared in this repository. Vendored third-party material retains its own licensing and notices.
+
+
+## GitHub Pages
+
+The static site is deployed from `public/` by `.github/workflows/pages.yml`.
+
+The 6.36 MB Lean-generated Factoidal Wasm is deliberately fetched during the Pages job from pinned `danbri/factoidal` commit `30154c0467ee529b7a056bb9c2ac61f144578619` and must match SHA-256:
+
+`6201b6c477e81b9996df1cd75d9a90630118eb02cf48f5dbb94d40af330172b4`
+
+The harvested Plugin Universe tar snapshot is not needed by the runtime and is not published to Pages.
+
+Diddums' static URLs are deployment-root-relative, so the same tree works at both `/diddums/` on GitHub Pages and `/` on a future custom domain.

@@ -1,0 +1,59 @@
+{
+  "schema": "jigdaw-signing-interop/1",
+  "testedAt": "2026-09-18",
+  "dannyJigDaw": {
+    "repository": "danja/jigdaw",
+    "testedCommit": "07ae9f7f22aa9bd566a82d745418d84e628655d0",
+    "signingLandingCommit": "0eee9ade4111a76edef85c522e245c771639ae61",
+    "cryptosuite": "jigdaw-eddsa-2026",
+    "referenceCanonicalDigest": "sha384-GSXazEifn5veJx6af2m7ok7/4yy3ZTK+PuKJ68pK3vLUbg/RmgZ5OQ4OzlZYBJEl"
+  },
+  "factoidalLean": {
+    "repository": "danbri/factoidal",
+    "packageCommit": "30154c0467ee529b7a056bb9c2ac61f144578619",
+    "engineSourceGitSha": "a26edea7fe3687b6d218cd86e5f90b2d9d520ce3",
+    "leanToolchain": "leanprover/lean4:v4.33.1",
+    "wasmSha256": "6201b6c477e81b9996df1cd75d9a90630118eb02cf48f5dbb94d40af330172b4",
+    "wasmBytes": 6359842,
+    "requiredOps": [
+      "parseToDatasetJson",
+      "canonicalizeToNQuads"
+    ],
+    "vcCryptoDispatchExposed": false,
+    "glueAdaptation": "Browser-only URL/runtime adaptation; no change to Lean Wasm bytes."
+  },
+  "implementation": {
+    "fstarFallback": false,
+    "rdfAndCanonicalization": "Lean-generated Factoidal Wasm",
+    "cryptoPrimitive": "WebCrypto SHA-384 + Ed25519, matching danja/jigdaw Signature.js normative implementation",
+    "keyEncoding": "Multikey Ed25519 0xed01 + multibase base58btc",
+    "onlineKeyResolution": "Optional; fetched verification method is parsed by Lean Factoidal and must agree with inline sec:publicKeyMultibase."
+  },
+  "tests": {
+    "referenceDigest": {
+      "pass": true,
+      "expected": "sha384-GSXazEifn5veJx6af2m7ok7/4yy3ZTK+PuKJ68pK3vLUbg/RmgZ5OQ4OzlZYBJEl",
+      "actual": "sha384-GSXazEifn5veJx6af2m7ok7/4yy3ZTK+PuKJ68pK3vLUbg/RmgZ5OQ4OzlZYBJEl"
+    },
+    "ephemeralRoundTrip": {
+      "pass": true,
+      "digestMatches": true,
+      "signatureValid": true,
+      "keySource": "inline"
+    },
+    "tamperedProfile": {
+      "pass": true,
+      "signatureValid": false,
+      "digestMatches": false
+    },
+    "tamperedProvenance": {
+      "pass": true,
+      "signatureValid": false,
+      "digestMatches": true
+    }
+  },
+  "boundary": {
+    "statement": "This interop verifies Danny's profile/bundle signing semantics. It does not make an identity/trust decision from a valid unknown key, and it does not claim that jigdaw-eddsa-2026 itself signs Diddums' JIGP proof-audio certificate.",
+    "future": "A JigDAW-compatible signed profile can bind a Diddums proof-audio WAV as a resource by integrity digest, or a separate audio-attestation profile can be specified without pretending it is already normative in danja/jigdaw."
+  }
+}

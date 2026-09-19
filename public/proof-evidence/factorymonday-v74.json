@@ -1,0 +1,107 @@
+{
+  "schema": "jigdaw-composition-render-reference/1",
+  "composition": "factorymonday",
+  "title": "Factory Monday",
+  "generatedAgainst": {
+    "hatchableVersion": 74,
+    "proofAudioSchema": "jigdaw-composition-audio/1"
+  },
+  "render": {
+    "sampleRate": 48000,
+    "channels": 2,
+    "encoding": "f32le-interleaved",
+    "master": 0.58,
+    "frames": 5959385,
+    "pcmBytes": 47675080,
+    "pcmSha256": "aac8e1a1efcf059ece7b1f22a5e9904c7423ae88b93ae781fc4d72c1947c4bcc",
+    "nonFinite": 0,
+    "tailFrames": 288000
+  },
+  "jigScore": {
+    "programSha256": "f47042d559ce4f3c58f9d570332456b3e090bf57054c8989bb3aa4af3f88a8d0",
+    "eventPlanSha256": "f3476bcd1a38165eb6ab777410b8d15bdf57b0468554928c5fd71694f51b7844",
+    "eventCount": 2738,
+    "sampleRateIndependent": true
+  },
+  "renderer": {
+    "workletSha256": "1ac9d149905958e2023d106eb4204222ed7a7f2f0446f612d0578bb015e0588a",
+    "workerSha256": "a2bb3527e5525d455647c439d98254432d5ff3e52f45fcf1fdb7b33134368676",
+    "observabilityDisabled": [
+      "capture",
+      "captureTrace",
+      "probe",
+      "sendTelemetry",
+      "logEvent",
+      "flushEventLog"
+    ],
+    "eightBarEquivalence": {
+      "comparedWithWorkerSha256": "c308ce46d55a36203c7a185d5dbda035a17d470c8bdb811bd5f8fe08227445c7",
+      "pcmSha256": "f5aac509082434b6fa94f1d0797620f679eb0d0825f884885b446d53ff543cec",
+      "bitIdentical": true
+    }
+  },
+  "leanDSP": {
+    "leanVersion": "4.34.0",
+    "buildHash": "1a545ed6b90c0d36c381fd5cac60f5f2f8e66fa9e4b42a1901c1c9304a36e851",
+    "compilerTheorem": "LeanDSP.WasmSubset.compileBlock_toWasm_correct",
+    "traceTheorem": "LeanDSP.compile_trace_correct",
+    "exactCompilerCommit": null,
+    "modules": [
+      {
+        "id": "acidBass",
+        "wasmSha256": "5a23b3ff7a9fb4c677ff39f5cb8cfe428c4b705f89cd1395fb37c813273e0e1a"
+      },
+      {
+        "id": "silk",
+        "wasmSha256": "9eaeff0f255f4935456be2427b40675ad81b90da149aa9febc9fb8c4b1605363"
+      },
+      {
+        "id": "organ",
+        "wasmSha256": "c66a5e3e7cb55dc4b17dcd4c9d1778eee9de20440cae5a74aa1c8048177f7d94"
+      },
+      {
+        "id": "pulse",
+        "wasmSha256": "7bd6e30095af8b99fea347d5113cac2eb512a0befa55abd1083ceb811ee6c1c6"
+      },
+      {
+        "id": "glass",
+        "wasmSha256": "61f26e99a9f670cc50607835fe19caa542cbafaea124c15fae4ab110c22336c2"
+      },
+      {
+        "id": "kick",
+        "wasmSha256": "bdde438afadd546b1c94e91f2d86f55473fa29dc20237174f3433ee486f74740"
+      },
+      {
+        "id": "snare",
+        "wasmSha256": "3ba6987a8a12674af2ecd65d94092860fae84881f35447786b8ec527bb31c334"
+      },
+      {
+        "id": "tom",
+        "wasmSha256": "77864034e681bc922d6e5dfe8575d316e690b0bfd109319e7a5f60cf5fb2ff29"
+      },
+      {
+        "id": "clap",
+        "wasmSha256": "b59bbdbc3719196f2fb3ba6b411e9666ed82c5a81194d8c3d4e64cbfbd3c6865"
+      },
+      {
+        "id": "hat",
+        "wasmSha256": "deca7a93c3f60205a8a8cff5f29c654cebb927035999faa7166394a16c53ac01"
+      },
+      {
+        "id": "chamber",
+        "wasmSha256": "cdfd7a5768c4fb47f82d10849b97e6d32cfa7b7639bc380d811ef9b9c35f1638"
+      }
+    ]
+  },
+  "evidence": {
+    "method": "Hatchable server-side V8 isolate executing the exact archived AudioWorklet source with the same headless observational-method disablement recorded in the proof worker.",
+    "elapsedMs": 12069,
+    "exactReplayCertificateTest": {
+      "scope": "first 8 bars + 1 s tail",
+      "structuralPass": true,
+      "replayPcmMatch": true,
+      "nonFinite": 0
+    },
+    "nativeLeanToolchainStatus": "Pinned catalog/build evidence says Lean 4.34.0, but exact compiler commit is not recorded; release-equivalence remains fail-closed."
+  }
+}

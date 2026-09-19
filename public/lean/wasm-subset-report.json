@@ -1,0 +1,77 @@
+{
+  "schema": "leandsp-wasm-subset-proof-upgrade/1",
+  "checkedAt": "2026-09-17",
+  "leanVersion": "4.34.0",
+  "executor": "Lean4web native Lean 4.34.0 server via LSP",
+  "catalogAtProofUpgradeSha256": "1e56f6fd8535831838dc345bf50bb7ab82e6808587d0b5fe44c425e91a0e3e9a",
+  "currentCatalogSha256": "79224a64f5dfc6044494e174f407f0883ccb3fa43fba539daca2adf385365331",
+  "theoremAudits": [
+    {
+      "name": "LeanDSP.WasmSubset.lowerCode_correct",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "name": "LeanDSP.WasmSubset.compileExpr_toWasm_correct",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "LeanDSP.WasmSubset.lowerBlock_correct",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    {
+      "name": "LeanDSP.WasmSubset.compileBlock_toWasm_correct",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ]
+    }
+  ],
+  "sorryAx": false,
+  "patterns": [
+    "roundBass",
+    "acidBass",
+    "tine",
+    "glass",
+    "pluck",
+    "felt",
+    "silk",
+    "choir",
+    "organ",
+    "pulse",
+    "rain",
+    "kick",
+    "snare",
+    "hat",
+    "clap",
+    "tom",
+    "chamber"
+  ],
+  "regression": {
+    "artifactCount": 17,
+    "allWatTextIdenticalToCatalogAtProofUpgrade": true,
+    "wasmBytesThereforeUnchangedByProofUpgrade": true,
+    "subsequentIntentionalSoundRevision": {
+      "pattern": "tom",
+      "oldWasmSha256": "a1ff7da6d8e42bfd3904730fd5aaf52e777316fff3ee379d638a819a9384fe59",
+      "newWasmSha256": "77864034e681bc922d6e5dfe8575d316e690b0bfd109319e7a5f60cf5fb2ff29",
+      "evidence": "build-report.json"
+    }
+  },
+  "trustBoundary": {
+    "before": "Verified source semantics -> LeanDSP stack IR; IR -> textual WAT was unproved.",
+    "now": "Verified source semantics -> stack IR -> typed WasmSubset expression/block semantics. Remaining compiler boundary begins at typed WasmSubset -> textual WAT pretty-printing/helper WAT definitions, followed by WABT and the WebAssembly engine."
+  },
+  "notes": [
+    "The typed subset explicitly represents constants, logical local/global references, unary/binary/compare operations, select, buffer taps, ordered bind/store/push, and output.",
+    "Scalar semantics remain parametric; the proof does not claim approximate sin/exp helpers equal real-number functions.",
+    "The JavaScript host scheduler, mixer, effects routing and browser engine remain outside this theorem."
+  ]
+}
