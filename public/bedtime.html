@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Nearly bedtime · Diddums</title>
+<style>
+:root{color-scheme:dark;font:16px/1.5 system-ui,sans-serif;background:#091421;color:#e4eaf2}*{box-sizing:border-box}body{margin:0}main{max-width:1100px;margin:auto;padding:24px 18px 64px}a{color:#b0d9fc}h1{font-size:clamp(28px,6vw,44px);line-height:1.12;letter-spacing:-.035em;margin:18px 0 8px}h2{font-size:20px;margin:0 0 12px}p{margin:8px 0 16px}.muted,small{color:#abbccc}.kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase}.card{background:#101f30;border:1px solid #2c4156;border-radius:16px;padding:18px;margin-top:18px}.row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}button,.linkbutton{font:inherit;background:#203d57;color:#fff;border:1px solid #527491;padding:10px 16px;border-radius:9px;text-decoration:none;cursor:pointer;min-height:44px}button:disabled{opacity:.5;cursor:wait}button.primary{background:#b8dcf3;color:#0b2031;font-weight:700}input[type=range]{accent-color:#a9d8f3;min-width:100px;max-width:100%}#seek{width:100%;margin:18px 0 4px}#status{min-height:1.5em;overflow-wrap:anywhere}.error{color:#ffb8af}.badge{display:inline-block;padding:3px 9px;border:1px solid #806c3f;color:#ffe0a4;border-radius:99px;font-size:12px}#roll{display:block;width:100%;height:310px;touch-action:pan-y;border-radius:8px;background:#08131f}#time{font-variant-numeric:tabular-nums;margin-left:auto}textarea{width:100%;height:280px;resize:vertical;background:#091421;color:#e4eaf2;border:1px solid #3c536a;border-radius:8px;padding:12px;font:12px/1.6 ui-monospace,monospace;tab-size:10;white-space:pre;overflow:auto;margin:12px 0}summary{cursor:pointer;font-weight:600}label{display:inline-flex;align-items:center;gap:8px}code{font:13px ui-monospace,monospace}input[type=file]{max-width:100%}.legend{font-size:13px}.legend span{margin-right:18px}.accomp{color:#9acbee}.melody{color:#c5b2ef}.uncertain{color:#ffd89b}footer{font-size:13px;margin-top:24px;color:#abbccc}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #fff;outline-offset:3px}@media(max-width:550px){main{padding:18px 12px 40px}.card{padding:14px}#roll{height:260px}.row{gap:8px}button{padding:9px 12px}}
+</style>
+</head>
+<body><main>
+<div class="row"><a href="./index.html">Diddums studio</a><span class="kicker">Imported performance</span></div>
+<h1>It's nearly bedtime</h1>
+<p class="muted">Instrumental · performed timing · two editable note parts</p>
+<span class="badge">Draft audio transcription</span>
+<p id="summary" class="muted">Loading note events…</p>
+<section class="card" aria-label="Playback">
+<div class="row"><button id="play" class="primary" disabled>Play</button><button id="stop" disabled>Stop</button><label>Volume <input id="volume" aria-label="Volume" type="range" min="0" max="1" step="0.01" value="0.65"></label><output id="time">0:00 / 2:08</output></div>
+<input id="seek" type="range" min="0" max="127" step="1" value="0" aria-label="Seek in whole seconds">
+<div id="status" role="status" aria-live="polite">Preparing performance…</div>
+<p class="muted"><small>Playback: Diddums' native LeanDSP Velvet Tines and chamber, through its existing AudioWorklet. This is a resynthesis, not the original piano recording. Seek uses whole seconds.</small></p>
+<canvas id="roll" aria-label="Piano roll: time in seconds, accompaniment and melody pitches"></canvas>
+<p class="legend"><span class="accomp">Accompaniment</span><span class="melody">Melody</span><span class="uncertain">Outlined: review flagged</span></p>
+<div class="row"><label><input id="accomp" type="checkbox" checked> Accompaniment</label><label><input id="melody" type="checkbox" checked> Melody</label><label><input id="follow" type="checkbox" checked> Follow playback</label></div>
+</section>
+<section class="card"><h2>Note data</h2>
+<div class="row"><button id="textExport" disabled>Export text</button><button id="midiExport" disabled>Export MIDI</button><button id="jsonExport" disabled>Export JSON</button></div>
+<p class="muted"><small>The MIDI uses 60 BPM only so one beat equals one second. This is not an estimate of the tune's musical tempo. No timing quantization or sustain-pedal events are applied.</small></p>
+<details><summary>Edit notes or load another performance</summary><p>One tab-separated row per note. Columns: <code>start_s duration_s midi_note velocity part_index review</code>. Part 0 is accompaniment; part 1 is melody. Durations and starts are seconds. MIDI 60 is C4. The review field may be blank.</p><textarea id="editor" aria-label="Editable note events" spellcheck="false"></textarea><div class="row"><button id="apply">Apply text</button><button id="reset">Restore transcription</button><label>Load JSON <input id="import" type="file" accept=".json,application/json"></label></div></details>
+</section>
+<section class="card"><h2>What the extraction does—and does not—claim</h2><p>Pitch and attack candidates came from recording-specific harmonic templates and non-negative spectral decomposition, with limited spectral review. The result has not been checked note by note.</p><p>Durations are estimated playback gates, not exact key-release measurements. Velocities approximate relative dynamics, not the keyboard's original MIDI values. No pedal movements were recovered. The two parts are split by register, not verified hand assignment.</p><p class="muted">Rows marked <code>check</code> particularly need review; unmarked rows can also contain mistakes. Notes already sounding at the start are placed at time zero.</p></section>
+<footer id="provenance"></footer>
+</main><script type="module" src="./bedtime-session.js"></script></body></html>
