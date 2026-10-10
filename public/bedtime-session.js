@@ -4,6 +4,7 @@ import {siteUrl} from './site-url.js';
 
 const $=id=>document.getElementById(id), clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const schema='diddums.performance-notes/1', ids=['accompaniment','melody'];
+$('provenance').style.overflowWrap='anywhere';
 let data=null, original=null, session=null, ctx=null, node=null, modules=null, runtime=null;
 let playing=false, loaded=false, generation=0, position=0, latest=null, loadedMessage=null, windowStart=0;
 const errors=[], eventLog=[];
@@ -89,8 +90,8 @@ export function midiBytes(p){
 }
 function draw(){
  if(!data)return;const c=$('roll'),rect=c.getBoundingClientRect(),w=rect.width,h=rect.height,dpr=Math.min(devicePixelRatio||1,2);if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);}const g=c.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);
- const span=w<600?14:28,left=36,top=25,bottom=12,lo=Math.min(47,...data.notes.map(r=>r[2])-0),hi=Math.max(82,...data.notes.map(r=>r[2]));
- if($('follow').checked)windowStart=Math.max(0,Math.floor(Math.max(0,position-2)/span)*span);
+ const span=w<600?14:28,left=36,top=25,bottom=12,lo=Math.min(47,...data.notes.map(r=>r[2])),hi=Math.max(82,...data.notes.map(r=>r[2]));
+ if($('follow').checked)windowStart=Math.max(0,Math.floor(position/span)*span);
  const x=t=>left+(t-windowStart)/span*(w-left),y=n=>top+(hi-n)/(hi-lo+1)*(h-top-bottom),rh=(h-top-bottom)/(hi-lo+1);
  g.font='10px system-ui';for(let n=lo;n<=hi;n++){g.fillStyle=[1,3,6,8,10].includes(n%12)?'#0a1521':'#101f30';g.fillRect(left,y(n),w-left,rh);if(n%12===0){g.fillStyle='#aabed0';g.fillText('C'+(Math.floor(n/12)-1),3,y(n)+8);}}
  for(let t=Math.ceil(windowStart/2)*2;t<windowStart+span;t+=2){g.fillStyle='#7e97ad';g.fillText(t+'s',x(t)+3,15);g.strokeStyle='#26384a';g.beginPath();g.moveTo(x(t),top);g.lineTo(x(t),h-bottom);g.stroke();}
@@ -105,4 +106,4 @@ $('import').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;if(f.s
 $('textExport').onclick=()=>save('nearly-bedtime.notes.txt',textOf(data),'text/plain;charset=utf-8');$('jsonExport').onclick=()=>save('nearly-bedtime.performance.json',JSON.stringify(data,null,2)+'\n','application/json');$('midiExport').onclick=()=>save('nearly-bedtime.mid',midiBytes(data),'audio/midi');
 new ResizeObserver(draw).observe($('roll'));
 window.bedtime={get data(){return data;},get session(){return session;},get modules(){return modules;},get context(){return ctx;},get node(){return node;},get diagnostics(){return {ready:!!data,playing,loaded,position,noteCount:data?.notes.length||0,reviewCount:data?.notes.filter(r=>r[5]).length||0,sampleRate:ctx?.sampleRate||null,loadedMessage,telemetry:latest?.telemetry||null,rms:latest?.measurements?.out?.rms||0,peak:latest?.measurements?.out?.peak||0,nonFinite:latest?.nonFinite||0,eventCount:eventLog.length,errors:[...errors]};},get eventLog(){return eventLog;},play,stop,seek,toSession,validatePerformance,midiBytes,textOf};
-try{const r=await fetch('./performances/nearly-bedtime.json');if(!r.ok)throw new Error('Performance file unavailable: '+r.status);original=validatePerformance(await r.json());await accept(structuredClone(original));}catch(e){fail(e);}
+(async()=>{try{const r=await fetch('./performances/nearly-bedtime.json');if(!r.ok)throw new Error('Performance file unavailable: '+r.status);original=validatePerformance(await r.json());await accept(structuredClone(original));}catch(e){fail(e);}})();
