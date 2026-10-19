@@ -24,7 +24,7 @@
 // browser plumbing is the fake filesystem we prime via
 // `globalThis.jsoo_fs_tmp`; see README.md for more on that.
 
-const DEFAULT_URL = '/vendor/factoidal-0.7.1/factoidal.js';
+const DEFAULT_URL = 'vendor/factoidal-0.7.1/factoidal.js';
 
 let _factoidalUrl = DEFAULT_URL;
 let _factoidalSrc = null;
@@ -66,22 +66,22 @@ function loadFactoidalSource() {
 }
 
 const DATA_FORMAT_EXT = {
-  turtle:   'ttl',
-  ttl:      'ttl',
+  turtle: 'ttl',
+  ttl: 'ttl',
   ntriples: 'nt',
-  nt:       'nt',
-  nquads:   'nq',
-  nq:       'nq',
-  trig:     'trig',
-  rdfxml:   'rdf',
+  nt: 'nt',
+  nquads: 'nq',
+  nq: 'nq',
+  trig: 'trig',
+  rdfxml: 'rdf',
   'rdf-xml': 'rdf',
-  rdf:      'rdf',
-  jsonld:   'jsonld',
+  rdf: 'rdf',
+  jsonld: 'jsonld',
   'json-ld': 'jsonld',
 };
 
 const OUTPUT_FORMATS = new Set(['json', 'csv', 'tsv', 'xml', 'table', 'ntriples']);
-const ENTAIL_VALUES  = new Set(['none', 'RDFS', 'OWL-RL', 'x-rdfscore', 'x-rdfsplus']);
+const ENTAIL_VALUES = new Set(['none', 'RDFS', 'OWL-RL', 'x-rdfscore', 'x-rdfsplus']);
 
 function extForFormat(fmt) {
   const key = String(fmt || 'turtle').toLowerCase();
@@ -160,7 +160,7 @@ export function encodeTextAsBundleBytes(s) {
         const hi = c, lo = s.charCodeAt(++i);
         const cp = 0x10000 + (((hi & 0x3ff) << 10) | (lo & 0x3ff));
         out.push(0xf0 | (cp >> 18), 0x80 | ((cp >> 12) & 0x3f),
-                 0x80 | ((cp >> 6) & 0x3f), 0x80 | (cp & 0x3f));
+          0x80 | ((cp >> 6) & 0x3f), 0x80 | (cp & 0x3f));
       }
     }
     bytes = new Uint8Array(out);
@@ -211,25 +211,25 @@ export async function runFactoidalCli(args, files, options) {
 
   // Preserve anything we're about to overwrite.
   const orig = {
-    log:    console.log,
-    error:  console.error,
-    argv:   globalThis.process && globalThis.process.argv,
-    exit:   globalThis.process && globalThis.process.exit,
+    log: console.log,
+    error: console.error,
+    argv: globalThis.process && globalThis.process.argv,
+    exit: globalThis.process && globalThis.process.exit,
     jsooFs: globalThis.jsoo_fs_tmp,
   };
 
   const stdoutBuf = [];
   const stderrBuf = [];
-  console.log   = (...a) => stdoutBuf.push(a.join(' '));
+  console.log = (...a) => stdoutBuf.push(a.join(' '));
   console.error = (...a) => stderrBuf.push(a.join(' '));
 
-  globalThis.process      = globalThis.process || {};
+  globalThis.process = globalThis.process || {};
   globalThis.process.argv = ['node', 'factoidal', ...args];
   // Mount under `/static/`: that path is an MlFakeDevice in js_of_ocaml
   // both in the browser and under Node. `/tmp/` is only fake in the
   // browser; keeping one path keeps the Node and browser drivers in
   // lockstep.
-  globalThis.jsoo_fs_tmp  = (files || []).map((f) => ({
+  globalThis.jsoo_fs_tmp = (files || []).map((f) => ({
     name: f.name, content: f.content,
   }));
 
@@ -238,7 +238,7 @@ export async function runFactoidalCli(args, files, options) {
   globalThis.process.exit = (n) => { exitCode = n | 0; throw EXIT_SENTINEL; };
 
   function restore() {
-    console.log   = orig.log;
+    console.log = orig.log;
     console.error = orig.error;
     if (globalThis.process) {
       globalThis.process.argv = orig.argv;
@@ -285,15 +285,15 @@ export async function query(dataString, queryString, options) {
     throw new TypeError('query: queryString must be a string');
   }
 
-  const opts       = options || {};
+  const opts = options || {};
   const dataFormat = opts.dataFormat || 'turtle';
-  const entail     = opts.entail     || 'none';
-  const output     = opts.output     || 'json';
+  const entail = opts.entail || 'none';
+  const output = opts.output || 'json';
   // SPARQL 1.2 opt-in: {sparql12:true} or {version:'1.2'} parses the
   // query with the tokenize_12 parser (--sparql12) and loads the data in
   // Mode_12 (--rdf12), so triple-term patterns / TRIPLE / isTRIPLE /
   // lang-dir builtins work. Default stays SPARQL 1.1, byte-identical.
-  const sparql12   = opts.sparql12 === true || String(opts.version || '') === '1.2';
+  const sparql12 = opts.sparql12 === true || String(opts.version || '') === '1.2';
 
   if (!ENTAIL_VALUES.has(entail)) {
     throw new TypeError(
@@ -341,15 +341,15 @@ export async function query(dataString, queryString, options) {
       (stderr || stdout || `factoidal exited with code ${exitCode}`).trim();
     const err = new Error('SPARQL query failed: ' + msg);
     err.exitCode = exitCode;
-    err.stderr   = stderr;
-    err.stdout   = stdout;
+    err.stderr = stderr;
+    err.stdout = stdout;
     throw err;
   }
 
   if (output !== 'json') return stdout;
 
   const firstBrace = stdout.indexOf('{');
-  const lastBrace  = stdout.lastIndexOf('}');
+  const lastBrace = stdout.lastIndexOf('}');
   if (firstBrace < 0 || lastBrace < firstBrace) {
     const err = new Error(
       'factoidal did not produce JSON on stdout. Raw output: ' + stdout
@@ -386,10 +386,10 @@ export async function query(dataString, queryString, options) {
 // surface as a rejected promise carrying the engine's own stderr, so
 // callers can render the honest failure instead of inventing one.
 async function dumpNQuads(mode, text, options) {
-  const opts     = options || {};
-  const format   = opts.format || 'jsonld';
+  const opts = options || {};
+  const format = opts.format || 'jsonld';
   const { ext, rdf12 } = extAnd12(format);
-  const baseIRI  = opts.baseIRI || '';
+  const baseIRI = opts.baseIRI || '';
   const dataPath = '/static/data.' + ext;
 
   const argv = [mode, '-d', dataPath];
@@ -403,8 +403,8 @@ async function dumpNQuads(mode, text, options) {
     const msg = (stderr || stdout || `factoidal exited with code ${exitCode}`).trim();
     const err = new Error(`${mode === '--canonicalize' ? 'canonicalize' : 'toRdf'} failed: ${msg}`);
     err.exitCode = exitCode;
-    err.stderr   = stderr;
-    err.stdout   = stdout;
+    err.stderr = stderr;
+    err.stdout = stdout;
     throw err;
   }
   return stdout;
@@ -515,7 +515,7 @@ export async function queryDataset(files, queryString, options) {
     throw new TypeError('queryDataset: queryString must be a string');
   }
 
-  const opts   = options || {};
+  const opts = options || {};
   const entail = opts.entail || 'none';
   const output = opts.output || 'json';
   const engine = opts.engine || 'js';
@@ -536,8 +536,8 @@ export async function queryDataset(files, queryString, options) {
     // actually changes — setFactoidalWasmUrl() unconditionally clears
     // the cache, and this can run once per query.
     if (opts.wasmUrl && typeof wasmMod.setFactoidalWasmUrl === 'function'
-        && (typeof wasmMod.getFactoidalWasmUrl !== 'function'
-            || wasmMod.getFactoidalWasmUrl() !== opts.wasmUrl)) {
+      && (typeof wasmMod.getFactoidalWasmUrl !== 'function'
+        || wasmMod.getFactoidalWasmUrl() !== opts.wasmUrl)) {
       wasmMod.setFactoidalWasmUrl(opts.wasmUrl);
     }
     const trigText = mergeFilesToTrig(files);
@@ -558,11 +558,11 @@ export async function queryDataset(files, queryString, options) {
   const cliFiles = [];
   const argv = [];
   files.forEach((f, i) => {
-    const ext  = extForFormat(f.dataFormat || 'turtle');
+    const ext = extForFormat(f.dataFormat || 'turtle');
     const path = '/static/data-' + i + '.' + ext;
     cliFiles.push({ name: path, content: encodeTextAsBundleBytes(f.content || '') });
     if (f.graph) argv.push('--named', f.graph + '=' + path);
-    else         argv.push('-d', path);
+    else argv.push('-d', path);
   });
   argv.push('-e', encodeTextAsBundleBytes(queryString), '-o', output === 'json' ? 'json' : output);
   if (entail !== 'none') argv.push('--entail', entail);
@@ -574,15 +574,15 @@ export async function queryDataset(files, queryString, options) {
     const msg = (stderr || stdout || `factoidal exited with code ${exitCode}`).trim();
     const err = new Error('SPARQL query failed: ' + msg);
     err.exitCode = exitCode;
-    err.stderr   = stderr;
-    err.stdout   = stdout;
+    err.stderr = stderr;
+    err.stdout = stdout;
     throw err;
   }
 
   if (output !== 'json') return stdout;
 
   const firstBrace = stdout.indexOf('{');
-  const lastBrace  = stdout.lastIndexOf('}');
+  const lastBrace = stdout.lastIndexOf('}');
   if (firstBrace < 0 || lastBrace < firstBrace) {
     const err = new Error('factoidal did not produce JSON on stdout. Raw output: ' + stdout);
     err.stdout = stdout;
@@ -763,7 +763,7 @@ export async function unregisterExtensionFunction(iri) {
   extFunctions.delete(iri);
   const abi = await loadNpmEntry();
   if (typeof abi.unregisterExtensionFunction === 'function'
-      && extInstalled.has(iri)) {
+    && extInstalled.has(iri)) {
     abiEntryResult(abi.unregisterExtensionFunction(iri),
       'unregisterExtensionFunction');
     extInstalled.delete(iri);
@@ -1065,7 +1065,7 @@ export async function vcEd25519Sign(secretKeyHex, messageHex) {
  */
 export async function vcEd25519Verify(publicKeyHex, messageHex, signatureHex) {
   if (typeof publicKeyHex !== 'string' || typeof messageHex !== 'string' ||
-      typeof signatureHex !== 'string') {
+    typeof signatureHex !== 'string') {
     throw new TypeError('vcEd25519Verify: publicKeyHex, messageHex and signatureHex must be strings');
   }
   const abi = await loadNpmEntry();
@@ -1087,7 +1087,7 @@ export async function vcEd25519Verify(publicKeyHex, messageHex, signatureHex) {
  */
 export async function vcEddsaCreateFromCanonical(secretKeyHex, canonicalDocument, canonicalConfig) {
   if (typeof secretKeyHex !== 'string' || typeof canonicalDocument !== 'string' ||
-      typeof canonicalConfig !== 'string') {
+    typeof canonicalConfig !== 'string') {
     throw new TypeError('vcEddsaCreateFromCanonical: all three arguments must be strings');
   }
   const abi = await loadNpmEntry();
@@ -1111,7 +1111,7 @@ export async function vcEddsaCreateFromCanonical(secretKeyHex, canonicalDocument
  */
 export async function vcEddsaVerifyFromCanonical(publicKeyHex, canonicalDocument, canonicalConfig, proofValue) {
   if (typeof publicKeyHex !== 'string' || typeof canonicalDocument !== 'string' ||
-      typeof canonicalConfig !== 'string' || typeof proofValue !== 'string') {
+    typeof canonicalConfig !== 'string' || typeof proofValue !== 'string') {
     throw new TypeError('vcEddsaVerifyFromCanonical: all four arguments must be strings');
   }
   const abi = await loadNpmEntry();
