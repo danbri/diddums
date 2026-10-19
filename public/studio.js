@@ -20,7 +20,7 @@ import {makeCompositionProof,canonicalJson as proofCanonical} from './audio-proo
 import {compositionFromRecipe,recipeFromParams,songFromRecipe} from './maker.js';
 import {compositionFromSong,decodeSong,songFromComposition,songLink} from './song.js';
 import {mountMaker} from './maker-ui.js';
-import {siteUrl} from './site-url.js';
+import {siteUrl,assetUrl} from './site-url.js';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),wait=ms=>new Promise(r=>setTimeout(r,ms));
 // A ?prompt=…/?sounds=… URL opens a shared track instead of the first collection piece.
@@ -84,7 +84,7 @@ async function compilePattern(id){
 }
 function neededPatterns(c){return [...new Set([...c.tracks.map(t=>t.pattern),...drumKit.map(d=>d.pattern),'chamber'])];}
 let runtimeReady=null;
-async function ensureRuntime(){if(!ctx)ctx=new AudioContext({latencyHint:'interactive'});const resumed=ctx.state==='running'?null:ctx.resume();if(!runtimeReady)runtimeReady=(async()=>{await ctx.audioWorklet.addModule(siteUrl('studio-worklet.js'));audio=new AudioWorkletNode(ctx,'diddums-studio',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2]});outputGain=ctx.createGain();outputGain.gain.value=1;audio.connect(outputGain).connect(ctx.destination);analyser=ctx.createAnalyser();analyser.fftSize=1024;analyser.smoothingTimeConstant=.78;outputGain.connect(analyser);audio.port.onmessage=onAudio;audio.onprocessorerror=()=>{playing=false;updateTransport();notify('The audio processor stopped. Reload to reset it; diagnostics are available.',true)};if(!telemetryTimer)telemetryTimer=setInterval(updateLiveStatus,250);})().catch(e=>{runtimeReady=null;throw e;});await runtimeReady;if(resumed)await Promise.race([resumed,wait(1500)]);if(ctx.state!=='running')throw new Error('Audio is blocked by the browser. Tap Play again.');}
+async function ensureRuntime(){if(!ctx)ctx=new AudioContext({latencyHint:'interactive'});const resumed=ctx.state==='running'?null:ctx.resume();if(!runtimeReady)runtimeReady=(async()=>{await ctx.audioWorklet.addModule(assetUrl('studio-worklet.js'));audio=new AudioWorkletNode(ctx,'diddums-studio',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2]});outputGain=ctx.createGain();outputGain.gain.value=1;audio.connect(outputGain).connect(ctx.destination);analyser=ctx.createAnalyser();analyser.fftSize=1024;analyser.smoothingTimeConstant=.78;outputGain.connect(analyser);audio.port.onmessage=onAudio;audio.onprocessorerror=()=>{playing=false;updateTransport();notify('The audio processor stopped. Reload to reset it; diagnostics are available.',true)};if(!telemetryTimer)telemetryTimer=setInterval(updateLiveStatus,250);})().catch(e=>{runtimeReady=null;throw e;});await runtimeReady;if(resumed)await Promise.race([resumed,wait(1500)]);if(ctx.state!=='running')throw new Error('Audio is blocked by the browser. Tap Play again.');}
 async function playPiece(id=piece.id,automatic=false){
  sampleSws?.stop();if(definitionId)setTab('listen');contextUse=null;labPlaying=null;
  const req=++requestId;loading=true;$('#play').disabled=true;notify('Loading hash-matched native-Lean instrument artifacts…',false,15000);

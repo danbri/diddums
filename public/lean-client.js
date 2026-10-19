@@ -1,12 +1,12 @@
 // Native-build artifact loader. There is intentionally no JavaScript DSP compiler fallback.
-import {siteUrl} from './site-url.js';
+import {siteUrl,assetUrl} from './site-url.js';
 const EXPECTED_CATALOG='2ea408c7d6122cb8e94362703011a66a5d40a19f61b6a6cbfd5d121450760460';
 const normalized=s=>String(s).replace(/\r\n/g,'\n').trim();
 const sha=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');
 const textHash=s=>sha(new TextEncoder().encode(s));
 let catalogPromise=null;
 export function leanCatalog(){
- if(!catalogPromise)catalogPromise=(async()=>{const r=await fetch(siteUrl('lean/catalog.json'));if(!r.ok)throw new Error('Native Lean catalog unavailable: '+r.status);const bytes=await r.arrayBuffer();if(await sha(bytes)!==EXPECTED_CATALOG)throw new Error('Native catalog integrity mismatch; reload after the release finishes.');const c=JSON.parse(new TextDecoder().decode(bytes));if(c.schema!=='leandsp-native-catalog/1'||c.leanVersion!=='4.34.0')throw new Error('Unsupported native Lean build');return c;})().catch(e=>{catalogPromise=null;throw e;});
+ if(!catalogPromise)catalogPromise=(async()=>{const r=await fetch(assetUrl('lean/catalog.json'));if(!r.ok)throw new Error('Native Lean catalog unavailable: '+r.status);const bytes=await r.arrayBuffer();if(await sha(bytes)!==EXPECTED_CATALOG)throw new Error('Native catalog integrity mismatch; reload after the release finishes.');const c=JSON.parse(new TextDecoder().decode(bytes));if(c.schema!=='leandsp-native-catalog/1'||c.leanVersion!=='4.34.0')throw new Error('Unsupported native Lean build');return c;})().catch(e=>{catalogPromise=null;throw e;});
  return catalogPromise;
 }
 export async function loadLeanKernel(id,source){
@@ -44,7 +44,7 @@ export function zipFiles(files){
  const centralSize=central.reduce((n,c)=>n+c.length,0),end=new Uint8Array(22),v=new DataView(end.buffer);v.setUint32(0,0x06054b50,true);v.setUint16(8,count,true);v.setUint16(10,count,true);v.setUint32(12,centralSize,true);v.setUint32(16,offset,true);const result=new Uint8Array(offset+centralSize+22);let pos=0;for(const c of [...chunks,...central,end]){result.set(c,pos);pos+=c.length;}return result;
 }
 export async function downloadLeanProject(drafts={}){
- const r=await fetch(siteUrl('lean/project-files.json'));if(!r.ok)throw new Error('Lean source project unavailable');const bundle=await r.json(),files={...bundle.files};
+ const r=await fetch(assetUrl('lean/project-files.json'));if(!r.ok)throw new Error('Lean source project unavailable');const bundle=await r.json(),files={...bundle.files};
  for(const [id,source]of Object.entries(drafts)){if(!/^[A-Za-z][A-Za-z0-9_]*$/.test(id)||!files['patterns/'+id+'.lean'])throw new Error('Unknown draft pattern');files['patterns/'+id+'.lean']='import LeanDSP.Syntax\nopen LeanDSP\n\n'+normalized(source)+'\n';}
  saveFile('jigdaw-native-lean.zip',zipFiles(files),'application/zip');
 }

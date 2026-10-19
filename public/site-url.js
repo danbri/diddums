@@ -8,3 +8,7 @@ export function sitePath(path=''){
   return u.pathname+u.search+u.hash;
 }
 export const siteRoot=SITE_ROOT.href;
+// Live runtime files fetched outside the module graph (worklet, catalogs) get the deploy's build id,
+// written into the page by tools/stamp-build.py, so a browser never pairs them with a stale page.
+const BUILD=globalThis.document?.querySelector?.('meta[name="diddums-build"]')?.content||'';
+export function assetUrl(path=''){const u=new URL(siteUrl(path));if(BUILD)u.searchParams.set('v',BUILD);return u.href;}

@@ -37,7 +37,10 @@ jobs:
 
       - name: Prepare static site
         shell: bash
-        run: touch public/.nojekyll
+        run: |
+          touch public/.nojekyll
+          # One build id across pages, styles and modules: Pages caches each file for 10 minutes.
+          python3 tools/stamp-build.py public "${GITHUB_SHA::12}"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
