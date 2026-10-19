@@ -2,8 +2,8 @@
 //
 // Curve:     "0@0 1@2.5 1@14.8 0@15"   value@time, linear between points; two points at one time = a jump.
 //            Times are seconds; suffix b for bars ("1@4b"). Before the first / after the last point the end value holds.
-// Sequence:  "x . . x@.6 .*7 | A2:2 _"  one token per step. x = the track's note, . _ - = rest,
-//            a note name (C4 = 60) or MIDI number, @velocity, :length-in-steps, *repeat.
+// Sequence:  "x . . x@.6 .*7 | A2:2 C4+E4+G4 _"  one token per step. x = the track's note, . _ - = rest,
+//            a note name (C4 = 60) or MIDI number, + joins a chord, @velocity, :length-in-steps, *repeat.
 // Pair:      {width:.8, seqR:'…', delay:.12, transposeR:7, noteR:'E5'} → two tracks <id>L / <id>R at ∓width;
 //            the right track's events are delayed by `delay` seconds whatever its role.
 export const AUTOMATABLE=['level','pan','send','colour','life','tune'];
@@ -24,6 +24,7 @@ export function parseCurve(text,secondsPerBar=2){
  if(typeof text==='number')return [[0,text]];
  const points=[];
  for(const tok of String(text||'').split(/[\s,]+/).filter(Boolean).slice(0,256)){
+  if(/^-?[\d.]+$/.test(tok)&&Number.isFinite(Number(tok))){points.push([0,Number(tok)]);continue;} // a bare number is a constant
   const m=tok.match(/^(-?[\d.]+)@(-?[\d.]+)(s|b)?$/);if(!m)throw new Error('Bad curve point "'+tok+'" (expected value@time)');
   points.push([Number(m[2])*(m[3]==='b'?secondsPerBar:1),Number(m[1])]);
  }
@@ -40,7 +41,8 @@ export function parseSequence(text,defaultNote=60){
  const steps=[];
  for(const raw of String(text||'').split(/[\s,|]+/).filter(Boolean)){
   const m=raw.match(/^([^@:*]+)(?:@([\d.]+))?(?::([\d.]+))?(?:\*(\d+))?$/);if(!m)throw new Error('Bad sequence token "'+raw+'"');
-  const rest=/^[._-]$/.test(m[1]),step=rest?null:{note:m[1]==='x'?defaultNote:parseNote(m[1],defaultNote),velocity:m[2]!=null?clamp(Number(m[2]),0,1):null,length:m[3]!=null?clamp(Number(m[3]),.05,64):null};
+  const rest=/^[._-]$/.test(m[1]),notes=rest?[]:m[1].split('+').slice(0,8).map(n=>{if(n==='x')return defaultNote;const v=parseNote(n,null);if(v==null)throw new Error('Bad note "'+n+'" in "'+raw+'"');return v;});
+  const step=rest?null:{notes,velocity:m[2]!=null?clamp(Number(m[2]),0,1):null,length:m[3]!=null?clamp(Number(m[3]),.05,64):null};
   for(let i=0;i<clamp(Number(m[4]??1),1,256);i++)steps.push(step);
   if(steps.length>4096)throw new Error('Sequence too long');
  }
@@ -70,7 +72,7 @@ export function timelineNotes(t,endSeconds,secondsPerBar){
  while(time<to&&notes.length<4096){
   if(!loop&&i>=seq.length)break;
   const step=clamp(curveAt(stepCurve,time),.01,30),s=seq[i%seq.length];
-  if(s)notes.push({time,note:s.note,velocity:s.velocity??Number(t.velocity??.85),seconds:Math.min(to-time,step*(s.length??gate)),index:i%seq.length});
+  if(s)for(const note of s.notes)notes.push({time,note,velocity:s.velocity??Number(t.velocity??.85),seconds:Math.min(to-time,step*(s.length??gate)),index:i%seq.length});
   time+=step;i++;
  }
  return notes;

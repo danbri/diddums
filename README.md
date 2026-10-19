@@ -42,25 +42,30 @@ That is a compatibility target, not the Diddums product name.
 Project-level licensing is not yet declared in this repository. Vendored third-party material retains its own licensing and notices.
 
 
-## Make & share (URL recipes)
+## Make: compose with Claude, edit by touch, share a link
 
-The **Make** tab turns a short text prompt, or a hand-picked set of sounds, into a full composition. Everything is encoded in the URL query string, so a link reproduces the same track for anyone:
+The **Make** tab (the landing page on phones) turns a description into a piece:
 
-```
-https://danbri.github.io/diddums/?prompt=epic+space+opera+ambiance+with+radio+chatter
-https://danbri.github.io/diddums/?sounds=voidDrone,starfield,radioChatter,radioConsonants:0.3&key=D+minor&bpm=64&rhythm=none&say=control+this+is+orbit+four
-```
+1. **Compose with Claude.** Claude writes a *Song* (`public/song.js`): JSON describing tracks, notes placed in seconds, stereo pairs and automation curves. The request uses structured outputs against `SONG_SCHEMA` (`public/ai.js`); Diddums validates the result, and if anything cannot play, sends the exact problems back for one repair round. Two routes, both usable on an iPhone:
+   - **API key:** the browser calls the Claude API directly (`@anthropic-ai/sdk` 0.131.0 from jsDelivr, loaded only when used) with the person's own key, kept on their device if they ask. Default model `claude-opus-5-5`, with server-side refusal fallback.
+   - **Claude app, no key:** Diddums copies a self-contained prompt (the same guide Claude gets through the API) for the Claude app or any chat assistant; the person pastes the reply back.
+2. **Edit by touch.** Each track is a card: tap to preview or change its sound, a volume slider, Stereo pair toggle, Tone sliders, Notes, and Animate, where automation is drawn with a finger and stored as compact `value@seconds` text.
+3. **Share.** The native share sheet sends a link: `?song=` (the Song, deflated and base64url-encoded) or, for simple tracks, readable `?prompt=…&sounds=…` parameters. `?piece=<id>` opens a collection piece; every collection piece can be loaded into Make and rebuilds identically from its Song form.
+
+"Quick sketch, no AI" maps keywords in the description to sounds offline (`public/maker.js`). It is a fallback, not the composer.
+
+On iOS, audio starts inside the first tap and uses `navigator.audioSession.type = 'playback'` where available so it plays with the silent switch on.
+
+### URL recipe parameters
 
 | Parameter | Meaning |
 |---|---|
-| `prompt` | Free text. Keywords (space, radio, epic, ambient, rain, ocean, city, forest, cathedral, machine, dance, retro, dark, dream…) choose sounds, key, tempo, beat and section names. |
-| `sounds` | Comma list of sound ids from `public/sounds.js`, each optionally `:level`. A raw `pattern.role` pair (e.g. `tine.keys`) also works. Maximum 8, the worklet's track limit. |
+| `prompt` | Free text for the offline keyword sketch. |
+| `sounds` | Comma list of sound ids from `public/sounds.js`, each optionally `:level` and `^width/delay` for a stereo pair. A raw `pattern.role` pair (e.g. `tine.keys`) also works. |
 | `title`, `bpm`, `key`, `meter`, `rhythm` | e.g. `key=F# lydian`, `meter=7/8`, `rhythm=none` for ambient. |
-| `minutes`, `room`, `seed` | Approximate length, reverb size (0–1), seed for generated melody/bass. |
-| `say` | Words spoken by the sine-wave speech voices (Radio chatter, Whistle choir…). |
-| `chords`, `melody`, `bass`, `harmony`, `names` | Optional explicit musical material; see the reference panel in the Make tab. |
-
-Explicit parameters override anything derived from `prompt`. The prompt mapping is a deterministic keyword table in `public/maker.js`; it uses no network service or ML model.
+| `minutes`, `room`, `seed`, `say` | Length, reverb size (0–1), generator seed, words for the speech voices. |
+| `auto.<sound>.<key>`, `auto.master` | Automation curves. |
+| `song` | A complete Song (deflate-raw, base64url). |
 
 ### Sound library
 

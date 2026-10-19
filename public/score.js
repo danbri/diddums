@@ -67,7 +67,7 @@ export function makeSession(c,sr,overrides={}){
    }else if(t.role==='sequence'){
     const seq=Array.isArray(t.sequence)&&t.sequence.length?t.sequence:[0,null,7,null],gate=Math.max(.05,Math.min(2,Number(t.gate??.18))),oct=Number(t.octave??12);for(let step=0;step<steps;step++){const raw=seq[(bar*steps+step)%seq.length];if(raw===null||raw===undefined||last&&step>steps/2)continue;const interval=typeof raw==='object'?Number(raw.note):Number(raw),accent=typeof raw==='object'?Math.max(.2,Math.min(1.4,Number(raw.velocity??1))):1;if(!Number.isFinite(interval))continue;emit(t.id,bar,step,root+oct+tune(interval,chord),vel*accent,gate,colour,t.life,{sequenceIndex:(bar*steps+step)%seq.length,humanize:t.humanize});}
    }else if(t.role==='arp'){
-    const stride=['amber','violet'].includes(c.id)?1:c.id==='porcelain'?2:2;
+    const stride=c.arpStride??(['amber','violet'].includes(c.id)?1:2);
     const order=[0,2,1,3,2,0,3,1];for(let step=0;step<steps;step+=stride){if(E<.5&&step%4!==0||last&&step>steps/2)continue;const j=(Math.floor(step/stride)+bar%4)%order.length;const degree=chord[1+order[j]%Math.max(1,chord.length-1)];const oct=(bar%4===2&&j>4)?12:0;emit(t.id,bar,step,root+24+degree+oct,vel*(step%4===0?1:.75),.16+stride*.10,colour,t.life);}
    }else{
     const sparse=t.role==='sparse'||t.role==='answer';for(let step=0;step<steps;step++){
