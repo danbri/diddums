@@ -115,3 +115,4 @@ input.invalid,textarea.invalid{border-color:#b0566f!important;background:#2b1720
 .labs-nav button{flex:1 0 auto;min-height:44px;border-radius:10px;background:transparent;border-color:transparent;color:#9fb8c8;font-size:14px}
 .labs-nav button.active{color:var(--mint);border-color:#355967;background:#11303a}
 @media(max-width:560px){.labs-nav{gap:2px;padding:3px}.labs-nav button{flex:1 1 0;min-width:0;padding:6px 4px;font-size:12px;line-height:1.2;white-space:normal}}
+.labs-skill{margin:-6px 0 16px;font-size:13px;line-height:1.5;color:#9fb8c8}

@@ -76,7 +76,7 @@ function updateLiveStatus(){
  e.textContent=(labPlaying?'Compare '+labPlaying.id:'Live DSP')+` · worklet #${telemetryEvidence.seq}${ms?` · ${ms} ms window`:''}${telemetryEvidence.gaps?` · ${telemetryEvidence.gaps} gap${telemetryEvidence.gaps===1?'':'s'}`:''}`;
 }
 const LABS=['make','sws','lab','workbench'];
-function setTab(tab){if(tab!=='sws')sampleSws?.stop();if(tab!=='patterns'&&definitionId)leaveDefinition();activeTab=tab;const inLabs=LABS.includes(tab);for(const b of document.querySelectorAll('[data-tab]'))b.classList.toggle('active','labsTop' in b.dataset?inLabs:b.dataset.tab===tab);$('#labsNav').hidden=!inLabs;for(const p of ['listen','patterns',...LABS])$('#'+p+'Pane').hidden=p!==tab;if(tab==='listen'||tab==='patterns'&&definitionId)requestAnimationFrame(()=>{graph.render();graph.fit();});}
+function setTab(tab){if(tab!=='sws')sampleSws?.stop();if(tab!=='patterns'&&definitionId)leaveDefinition();activeTab=tab;const inLabs=LABS.includes(tab);for(const b of document.querySelectorAll('[data-tab]'))b.classList.toggle('active','labsTop' in b.dataset?inLabs:b.dataset.tab===tab);$('#labsNav').hidden=$('#labsSkill').hidden=!inLabs;for(const p of ['listen','patterns',...LABS])$('#'+p+'Pane').hidden=p!==tab;if(tab==='listen'||tab==='patterns'&&definitionId)requestAnimationFrame(()=>{graph.render();graph.fit();});}
 const sourceFor=id=>patterns[id]?.source;
 const editorSourceFor=id=>sourceEdits[id]??sourceFor(id);
 async function compilePattern(id){
