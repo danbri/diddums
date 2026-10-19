@@ -1,3 +1,6 @@
 # Large generated/vendor artifacts supplied separately or by CI
 public/vendor/factoidal-lean-0.8.0/l4factoidal.wasm
 public/plugin-universe/plugin-universe-dumps.tar
+tools/families/node_modules/
+tools/families/.lean-work/
+tools/families/out/
