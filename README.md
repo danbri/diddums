@@ -42,19 +42,15 @@ That is a compatibility target, not the Diddums product name.
 Project-level licensing is not yet declared in this repository. Vendored third-party material retains its own licensing and notices.
 
 
-## Make: compose with Claude, edit by touch, share a link
+## Labs (experimental): AI-assisted song sketches
 
-The **Make** tab (the landing page on phones) turns a description into a piece:
+The **Labs** tab is experimental and kept apart from the rest of Diddums, which neither uses nor needs any AI service.
 
-1. **Compose with Claude.** Claude writes a *Song* (`public/song.js`): JSON describing tracks, notes placed in seconds, stereo pairs and automation curves. The request uses structured outputs against `SONG_SCHEMA` (`public/ai.js`); Diddums validates the result, and if anything cannot play, sends the exact problems back for one repair round. Two routes, both usable on an iPhone:
-   - **API key:** the browser calls the Claude API directly (`@anthropic-ai/sdk` 0.131.0 from jsDelivr, loaded only when used) with the person's own key, kept on their device if they ask. Default model `claude-opus-5-5`, with server-side refusal fallback.
-   - **Claude app, no key:** Diddums copies a self-contained prompt (the same guide Claude gets through the API) for the Claude app or any chat assistant; the person pastes the reply back.
-2. **Edit by touch.** Each track is a card: tap to preview or change its sound, a volume slider, Stereo pair toggle, Tone sliders, Notes, and Animate, where automation is drawn with a finger and stored as compact `value@seconds` text.
-3. **Share.** The native share sheet sends a link: `?song=` (the Song, deflated and base64url-encoded) or, for simple tracks, readable `?prompt=…&sounds=…` parameters. `?piece=<id>` opens a collection piece; every collection piece can be loaded into Make and rebuilds identically from its Song form.
+1. **Any AI assistant.** "Copy prompt for any AI assistant" copies a self-contained description of the *Song* format (`public/song.js`: tracks, notes placed in seconds, stereo pairs, automation curves) plus the request. Paste it into whichever assistant you use and paste the JSON reply back; Diddums validates it and lists anything it cannot play.
+2. **Optional API route.** With an Anthropic API key, the browser can call that API directly (`public/ai.js`; SDK loaded from jsDelivr only when used, key kept on the device only if asked). This is one optional route, not a dependency.
+3. **Edit and share.** Track cards with preview, volume, stereo pair, tone, notes and finger-drawn automation; links as `?song=` or readable `?sounds=…` parameters. `?piece=<id>` opens a collection piece.
 
-"Quick sketch, no AI" maps keywords in the description to sounds offline (`public/maker.js`). It is a fallback, not the composer.
-
-On iOS, audio starts inside the first tap and uses `navigator.audioSession.type = 'playback'` where available so it plays with the silent switch on.
+"Quick sketch, no AI" maps keywords offline (`public/maker.js`).
 
 ### URL recipe parameters
 

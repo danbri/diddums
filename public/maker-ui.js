@@ -1,4 +1,4 @@
-// Make tab: describe → Claude writes a Song → play, tweak by touch, share. Mobile first.
+// Labs: an AI assistant (any) writes a Song → play, tweak by touch, share. Experimental; mobile first.
 import {sounds,soundById,soundCategories} from './sounds.js';
 import {patterns} from './patterns.js';
 import {AUTOMATABLE,GLOBAL_AUTOMATABLE,parseCurve} from './timeline.js';
@@ -58,19 +58,19 @@ export function mountMaker(root,hooks){
  const settings={key:store.get('diddums.ai.key')||'',model:store.get('diddums.ai.model')||MODELS[0].id,remember:!!store.get('diddums.ai.key')};
  root.innerHTML=`
  <section class="mk-hero">
-  <span class="eyebrow">MAKE</span>
-  <h1>Describe a sound world.</h1>
-  <p>Claude writes the score. Diddums synthesises every sound live, right here. Then tweak it with your fingers and share the link.</p>
+  <span class="eyebrow">LABS · EXPERIMENTAL</span>
+  <h1>Sketch a piece with an AI assistant.</h1>
+  <p>Describe what you want. An AI assistant of your choice writes a Diddums Song (a JSON score), which plays here and can be edited and shared as a link. The rest of Diddums does not use or need any AI service.</p>
   <div class="mk-ask">
    <textarea id="mkPrompt" rows="3" placeholder="${esc(IDEAS[0])}…" aria-label="Describe the music"></textarea>
    <div class="mk-ask-row"><label class="mk-check"><input type="checkbox" id="mkRefine"> Change the current track</label><button type="button" id="mkSettings" class="mk-icon" aria-label="AI settings" title="AI settings">⚙</button></div>
-   <button type="button" id="mkCompose" class="mk-primary">✦ Compose with Claude</button>
-   <div class="mk-alt"><button type="button" id="mkViaApp">No API key? Use the Claude app</button><button type="button" id="mkSketch">Quick sketch, no AI</button></div>
+   <button type="button" id="mkViaApp" class="mk-primary">Copy prompt for any AI assistant</button>
+   <div class="mk-alt"><button type="button" id="mkCompose">Use an Anthropic API key</button><button type="button" id="mkSketch">Quick sketch, no AI</button></div>
    <div id="mkStatus" class="mk-status" role="status" hidden><span class="mk-spinner" aria-hidden="true"></span><span id="mkStatusText"></span><button type="button" id="mkStop">Stop</button></div>
    <div id="mkApp" class="mk-app" hidden>
-    <ol><li><b>The prompt is copied.</b> It includes everything Claude needs to know about Diddums.</li><li><b>Paste it into Claude</b> and send.</li><li><b>Copy Claude's reply</b>, come back, and paste it below.</li></ol>
-    <div class="mk-row"><a id="mkOpenClaude" class="mk-btn" href="https://claude.ai/new" target="_blank" rel="noopener">Open Claude ↗</a><button type="button" id="mkShareText" class="mk-btn">Share prompt…</button><button type="button" id="mkCopyAgain" class="mk-btn">Copy again</button></div>
-    <textarea id="mkReply" rows="3" placeholder="Paste Claude's reply here" aria-label="Claude's reply"></textarea>
+    <ol><li><b>The prompt is copied.</b> It describes the Diddums Song format and your request.</li><li><b>Paste it into the AI assistant you use</b> and send.</li><li><b>Copy the reply</b>, come back, and paste it below.</li></ol>
+    <div class="mk-row"><button type="button" id="mkShareText" class="mk-btn">Share prompt…</button><button type="button" id="mkCopyAgain" class="mk-btn">Copy again</button></div>
+    <textarea id="mkReply" rows="3" placeholder="Paste the assistant's reply here" aria-label="The assistant's reply"></textarea>
     <div class="mk-row"><button type="button" id="mkFromClipboard" class="mk-btn">Paste from clipboard</button><button type="button" id="mkUseReply" class="mk-btn primary">Use this song</button></div>
    </div>
   </div>
@@ -87,7 +87,7 @@ export function mountMaker(root,hooks){
   <ol id="mkTracks" class="mk-tracks"></ol>
   <button type="button" id="mkAdd" class="mk-add">+ Add a sound</button>
   <details class="mk-details" id="mkDetailsBox"><summary>Tempo, key, length, words and whole-mix automation</summary><div id="mkDetails"></div></details>
-  <div class="mk-more"><button type="button" id="mkRemix">Load the piece from Listen</button><button type="button" id="mkCopyJson">Copy song JSON</button><button type="button" id="mkNew">Start empty</button></div>
+  <div class="mk-more"><button type="button" id="mkRemix">Load the piece from Compose</button><button type="button" id="mkCopyJson">Copy song JSON</button><button type="button" id="mkNew">Start empty</button></div>
  </section>
  <dialog id="mkLibrary" class="mk-sheet" aria-label="Sound library">
   <div class="mk-sheet-head"><b id="mkLibTitle">Add a sound</b><button type="button" class="mk-icon" data-close aria-label="Close">✕</button></div>
@@ -96,13 +96,13 @@ export function mountMaker(root,hooks){
   <div id="mkLibList" class="mk-lib"></div>
  </dialog>
  <dialog id="mkSettingsDialog" class="mk-sheet" aria-label="AI settings">
-  <div class="mk-sheet-head"><b>Compose with Claude</b><button type="button" class="mk-icon" data-close aria-label="Close">✕</button></div>
+  <div class="mk-sheet-head"><b>Anthropic API key (optional)</b><button type="button" class="mk-icon" data-close aria-label="Close">✕</button></div>
   <p>Diddums calls the Claude API directly from this browser with your own Anthropic API key. The key is sent only to <code>api.anthropic.com</code>, and usage is billed to your Anthropic account. Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.</p>
   <label class="mk-field">API key <input id="mkKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…"></label>
   <label class="mk-check"><input type="checkbox" id="mkRemember"> Remember the key on this device</label>
   <label class="mk-field">Model <select id="mkModel">${MODELS.map(m=>`<option value="${m.id}">${esc(m.label)}</option>`).join('')}</select></label>
   <div class="mk-row"><button type="button" id="mkSaveKey" class="mk-btn primary">Save</button><button type="button" id="mkForget" class="mk-btn">Forget key</button></div>
-  <p class="mk-hint">No key? Close this and tap “Use the Claude app”: it copies a ready-made prompt for the Claude app (or any chat assistant) and you paste the reply back.</p>
+  <p class="mk-hint">No key needed otherwise: “Copy prompt for any AI assistant” works with whichever assistant you use.</p>
  </dialog>`;
  const $=s=>root.querySelector(s);
  const toast=(m,e)=>hooks.notify(m,e);
@@ -139,7 +139,7 @@ export function mountMaker(root,hooks){
      <button type="button" data-open="tone" aria-expanded="${o==='tone'}">Tone</button>
     </div>
     <div class="mk-panel" data-panel></div>
-   </li>`;}).join('')||'<li class="mk-empty">No sounds yet. Compose with Claude above, or add a sound.</li>';
+   </li>`;}).join('')||'<li class="mk-empty">No sounds yet. Paste a song from an AI assistant above, or add a sound.</li>';
   for(const li of root.querySelectorAll('.mk-card'))renderPanel(li,+li.dataset.i);
  }
  function renderPanel(li,i){
@@ -242,7 +242,7 @@ export function mountMaker(root,hooks){
   }catch(e){toast('Could not share: '+e.message,true);}
  };
  $('#mkCopyJson').onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(song,null,1));toast('Song JSON copied');}catch{toast('Copy failed',true);}};
- $('#mkRemix').onclick=()=>load(hooks.songOfCurrent(),'Loaded the piece from Listen');
+ $('#mkRemix').onclick=()=>load(hooks.songOfCurrent(),'Loaded the piece from Compose');
  $('#mkNew').onclick=()=>load({title:'Untitled',bpm:80,key:'A minor',rhythm:'none',seconds:60,tracks:[]},'Started an empty track');
 
  // ---- Compose ----
@@ -263,17 +263,17 @@ export function mountMaker(root,hooks){
   finally{abort=null;}
  };
  $('#mkStop').onclick=()=>abort?.abort();
- $('#mkSketch').onclick=()=>{hooks.unlock();const p=promptText();if(!p)return;const s=songFromRecipe(recipeFromPrompt(p));s.description=`Offline keyword sketch of “${p}”. For a real composition, use Compose with Claude.`;load(s,'Quick sketch made without AI');if(composition?.tracks.length)hooks.play(composition,{stay:true});};
+ $('#mkSketch').onclick=()=>{hooks.unlock();const p=promptText();if(!p)return;const s=songFromRecipe(recipeFromPrompt(p));s.description=`Offline keyword sketch of “${p}”.`;load(s,'Quick sketch made without AI');if(composition?.tracks.length)hooks.play(composition,{stay:true});};
  $('#mkViaApp').onclick=async()=>{
   const p=promptText();if(!p)return;lastChat=chatPrompt(p,$('#mkRefine').checked?song:null,exampleSong(hooks.example()));
   $('#mkApp').hidden=false;$('#mkShareText').hidden=!navigator.share;
-  try{await navigator.clipboard.writeText(lastChat);toast('Prompt copied. Paste it into Claude.');}catch{toast('Tap “Copy again” to copy the prompt',true);}
+  try{await navigator.clipboard.writeText(lastChat);toast('Prompt copied. Paste it into your AI assistant.');}catch{toast('Tap “Copy again” to copy the prompt',true);}
   $('#mkApp').scrollIntoView({behavior:'smooth',block:'nearest'});
  };
  $('#mkCopyAgain').onclick=async()=>{try{await navigator.clipboard.writeText(lastChat);toast('Prompt copied');}catch{toast('Copy failed',true);}};
  $('#mkShareText').onclick=async()=>{try{await navigator.share({text:lastChat});}catch{}};
  $('#mkFromClipboard').onclick=async()=>{try{$('#mkReply').value=await navigator.clipboard.readText();}catch{toast('Long-press the box and choose Paste',true);}};
- $('#mkUseReply').onclick=()=>{hooks.unlock();try{const r=songFromReply($('#mkReply').value);r.song.prompt=r.song.prompt||$('#mkPrompt').value.trim()||undefined;load(r.song,r.problems.length?'Loaded, with a few problems listed below':'Loaded Claude’s song');$('#mkApp').hidden=true;$('#mkReply').value='';if(composition?.tracks.length)hooks.play(composition,{stay:true});}catch(e){toast(e.message,true);}};
+ $('#mkUseReply').onclick=()=>{hooks.unlock();try{const r=songFromReply($('#mkReply').value);r.song.prompt=r.song.prompt||$('#mkPrompt').value.trim()||undefined;load(r.song,r.problems.length?'Loaded, with a few problems listed below':'Loaded the song');$('#mkApp').hidden=true;$('#mkReply').value='';if(composition?.tracks.length)hooks.play(composition,{stay:true});}catch(e){toast(e.message,true);}};
  $('#mkIdeas').onclick=e=>{const b=e.target.closest('[data-idea]');if(!b)return;$('#mkPrompt').value=b.dataset.idea;$('#mkRefine').checked=false;$('#mkPrompt').focus();};
 
  // ---- Settings ----
