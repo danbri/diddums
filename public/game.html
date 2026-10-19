@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><base href="./"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#091421">
+<title>Diddums · adaptive game music</title>
+<link rel="stylesheet" href="studio.css">
+<style>
+main{max-width:980px}
+.gm-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+.gm-card{border:1px solid #2c4a5f;border-radius:16px;padding:14px;background:linear-gradient(160deg,#112536,#0a1824)}
+#arena{display:block;width:100%;aspect-ratio:4/3;border-radius:12px;background:#07131e;border:1px solid #2a465a;touch-action:none}
+.gm-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 12px}
+.gm-modes button{min-height:52px;font-size:16px;font-weight:650}
+.gm-modes button[aria-pressed=true]{border-color:var(--mint);color:#c9fffa;background:#12373f}
+.gm-modes button[data-mode=fight][aria-pressed=true]{border-color:#e07a7a;color:#ffd0d0;background:#3a1a22}
+.gm-row{display:grid;grid-template-columns:110px 1fr 44px;gap:10px;align-items:center;min-height:48px;font-size:14px;color:#b5c9d6}
+.gm-row input{width:100%}
+.gm-row output{font:13px var(--mono);color:#d5c29d;text-align:right}
+.gm-start{width:100%;min-height:60px;font-size:18px;font-weight:700;color:#062325;background:#91dfd4;border:0;border-radius:14px}
+.gm-auto{display:flex;align-items:center;gap:8px;min-height:48px;font-size:14px;color:#cfe7e4}
+.gm-status{font:12px var(--mono);color:#93acbd;margin:8px 0}
+.gm-status b{color:#c9fffa}
+.gm-layers{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.gm-layers span{position:relative;overflow:hidden;font:12px var(--mono);padding:6px 10px;border-radius:14px;border:1px solid #2c4a5f;color:#6d8799}
+.gm-layers span.on{color:#e5f0f5;border-color:#3f7b80}
+.gm-layers span i{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--mint);transition:width .08s linear}
+#log{font:11px/1.6 var(--mono);color:#8ea6b8;max-height:180px;overflow:auto;margin:0;padding:8px 10px;background:#07111b;border-radius:10px;border:1px solid #23394a}
+#log b{color:#c9fffa;font-weight:600}
+.gm-note{font-size:13px;line-height:1.55}
+@media(max-width:760px){.gm-grid{grid-template-columns:1fr}main{padding-bottom:40px}}
+</style>
+</head><body>
+<header class="app-header"><a class="brand" href="./" aria-label="Diddums home"><span class="jigsaw" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Diddums</a><nav aria-label="Workspace"><a href="./" style="padding:9px">← Studio</a></nav></header>
+<main>
+<div class="section-heading"><span class="eyebrow">LABS · ADAPTIVE MUSIC DEMO</span><h1>Music that follows the game.</h1>
+<p>One endless piece, written a couple of bars ahead from the game's state. Sneaking, exploring and fighting change which parts play, the drum pattern, the energy and the chords, from the next bar line. Low health brings in a heartbeat straight away. Everything is synthesised live by the same LeanDSP instruments as the rest of Diddums.</p></div>
+<div class="gm-grid">
+ <section class="gm-card">
+  <canvas id="arena" aria-label="Game view: your character and the enemies"></canvas>
+  <p class="gm-note">Drag in the field to move. Enemies close in when they notice you; in Fight mode they come straight for you and cost health on contact.</p>
+ </section>
+ <section class="gm-card">
+  <button type="button" id="start" class="gm-start">▶ Start music</button>
+  <div class="gm-modes" role="group" aria-label="Mode"><button type="button" data-mode="sneak">Sneak</button><button type="button" data-mode="explore" aria-pressed="true">Explore</button><button type="button" data-mode="fight">Fight</button></div>
+  <label class="gm-row">Enemies<input id="enemies" type="range" min="0" max="12" step="1" value="2"><output id="enemiesOut">2</output></label>
+  <label class="gm-row">Health<input id="health" type="range" min="0" max="100" step="1" value="100"><output id="healthOut">100</output></label>
+  <label class="gm-auto"><input type="checkbox" id="auto" checked> Autopilot: play a scripted game by itself</label>
+  <div class="gm-status" id="status">Press Start. Changes land on the next bar line.</div>
+  <div class="gm-layers" id="layers"></div>
+  <pre id="log" aria-live="polite"></pre>
+ </section>
+</div>
+<details class="gm-card" style="margin-top:16px"><summary>How a game drives it</summary>
+<p class="gm-note">The page uses <code>adaptive.js</code>. A game calls <code>music.set({mode, enemies, health})</code> whenever its state changes; a plan function maps that state to an arrangement. Nothing else is needed.</p>
+<pre>const music = await startAdaptive({composition, plan});
+music.set({mode: 'fight', enemies: 7});   // re-arranged from the next bar
+music.control('heart', 'level', 0.9);      // mix changes act at once</pre>
+<p class="gm-note">The plan used here: Sneak is drumless with a low drone and sparse plucks; Explore adds chords, a bell melody and a broken beat as enemies appear; Fight switches to an acid bass, brass stabs, arpeggio, saw lead and an industrial kit, on a harder chord progression. More enemies mean more energy (louder, busier parts).</p></details>
+</main>
+<script type="module" src="game.js"></script>
+</body></html>
