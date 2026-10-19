@@ -83,7 +83,8 @@ export function mountMaker(root,hooks){
   <p class="mk-hint">Each one is a complete Song carried in its link. Share sends that link as-is.</p>
   <ul id="mkShowcase" class="mk-showcase-list">${SHOWCASE.map((s,i)=>`<li class="mk-piece"><div class="mk-showcase-head"><b>${esc(s.title)}</b><small>${formatDuration(s.seconds||60)}</small></div>${s.description?`<p class="mk-hint">${esc(s.description)}</p>`:''}<div class="mk-row"><button type="button" class="mk-btn primary" data-play="${i}">▶ Play</button><button type="button" class="mk-btn" data-edit="${i}">Edit</button><button type="button" class="mk-btn" data-share="${i}">Share</button></div></li>`).join('')}</ul>
  </section>
- <section class="mk-song" aria-label="Your track">
+ <section class="mk-song" aria-label="Your working song">
+  <div class="mk-song-head"><h2>Your working song</h2><p class="mk-hint">The one song you are editing, kept on this device. It came from the last link you opened, an assistant's reply, or an example you chose to Edit. Its tracks, waveform and play button belong to it alone.</p></div>
   <div class="mk-bar">
    <canvas id="mkViz" class="mk-viz" aria-hidden="true"></canvas>
    <div class="mk-bar-title"><input id="mkTitle" aria-label="Title" maxlength="80"><small id="mkMeta"></small></div>
@@ -114,7 +115,7 @@ export function mountMaker(root,hooks){
  const $=s=>root.querySelector(s);
  const toast=(m,e)=>hooks.notify(m,e);
  const save=()=>store.set('diddums.make.song',JSON.stringify(song));
- const viz=attachViz($('#mkViz'),hooks.analyser,{mode:'line'});
+ const viz=attachViz($('#mkViz'),()=>liveId&&hooks.isPlaying(liveId)?hooks.analyser():null,{mode:'line'});
  // Live meter on each track card while this song plays.
  hooks.onLevels?.(m=>{
   const on=liveId&&hooks.isPlaying(liveId)&&composition?.tracks.length===song.tracks.length;
@@ -259,7 +260,7 @@ export function mountMaker(root,hooks){
  $('#mkTitle').oninput=()=>{song.title=$('#mkTitle').value;rebuild();};
  $('#mkPlay').onclick=()=>{hooks.unlock();if(liveId&&hooks.isPlaying(liveId)){hooks.pause();return;}rebuild(false);if(!composition?.tracks.length){toast('Add a sound first',true);return;}playLive(composition);viz.kick();};
  // The round button shows whether this song is the one playing.
- setInterval(()=>{const on=!!liveId&&hooks.isPlaying(liveId),b=$('#mkPlay');if(b.dataset.on!==String(on)){b.dataset.on=on;b.textContent=on?'❚❚':'▶';b.setAttribute('aria-label',on?'Pause this track':'Play this track');}},400);
+ setInterval(()=>{root.querySelectorAll('#mkShowcase [data-play]').forEach(b=>{const on=hooks.isPlaying('showcase-'+b.dataset.play);if(b.dataset.on!==String(on)){b.dataset.on=on;b.textContent=on?'❚❚ Pause':'▶ Play';b.closest('.mk-piece').classList.toggle('playing',on);}});const on=!!liveId&&hooks.isPlaying(liveId),b=$('#mkPlay');if(b.dataset.on!==String(on)){b.dataset.on=on;b.textContent=on?'❚❚':'▶';b.setAttribute('aria-label',on?'Pause this track':'Play this track');}},400);
  async function link(){const r=recipeFromSong(song);return r?shareUrl(r):songLink(song);}
  $('#mkShare').onclick=async()=>{
   try{const url=await link(),data={title:song.title||'Diddums',text:(song.title||'A Diddums track')+' · made with Diddums',url};
@@ -280,7 +281,8 @@ export function mountMaker(root,hooks){
   hooks.unlock();
   if(b.dataset.edit!=null){load(structuredClone(s),'Loaded “'+s.title+'” for editing');$('.mk-song').scrollIntoView({behavior:'smooth'});return;}
   const r=checkSong(s);if(!r.composition?.tracks.length){toast(r.problems[0]||'This piece cannot play',true);return;}
-  hooks.play({...r.composition,id:'showcase-'+b.dataset.play},{stay:true});viz.kick();toast('Playing “'+s.title+'”');
+  if(hooks.isPlaying('showcase-'+b.dataset.play)){hooks.pause();return;}
+  hooks.play({...r.composition,id:'showcase-'+b.dataset.play},{stay:true});toast('Playing “'+s.title+'”');
  };
  $('#mkCopyJson').onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(song,null,1));toast('Song JSON copied');}catch{toast('Copy failed',true);}};
  $('#mkRemix').onclick=()=>load(hooks.songOfCurrent(),'Loaded the piece from Compose');

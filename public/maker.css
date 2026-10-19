@@ -138,3 +138,5 @@ input.invalid,textarea.invalid{border-color:#b0566f!important;background:#2b1720
 .mx-row>output{grid-area:out;font:11px var(--mono);color:#d5c29d;min-width:40px;text-align:right}
 .mk-meter{display:block;height:5px;width:0;margin:-2px 0 6px;border-radius:3px;background:var(--mint);box-shadow:0 0 8px #7ce3dd88;transition:width .08s linear}
 .mk-card.sounding{border-color:#3f7b80}
+.mk-song-head h2{font-size:18px;margin:0 0 2px}.mk-song-head .mk-hint{margin:0 0 10px}
+.mk-piece.playing{border-color:var(--mint);box-shadow:0 0 0 1px #7ce3dd55}
