@@ -85,32 +85,14 @@ Return one Song JSON object.`;
  return guideCache;
 }
 
-// JSON Schema for structured outputs (no numeric bounds: song.js clamps values and reports problems).
-const curve={type:'string',description:'value@seconds points, e.g. "0@0 1@2 1@14 0@15"'};
-const obj=(properties,required=[])=>({type:'object',properties,required,additionalProperties:false});
-const soundIds=[...new Set([...sounds.map(s=>s.id),...Object.keys(patterns).filter(k=>k!=='chamber')])];
-export const SONG_SCHEMA=obj({
- title:{type:'string'},description:{type:'string'},seconds:{type:'number'},bpm:{type:'number'},meter:{type:'string',enum:['4/4','3/4','5/4','6/8','7/8']},key:{type:'string'},
- rhythm:{type:'string',enum:rhythms},room:{type:'number'},say:{type:'string'},chords:{type:'array',items:{type:'integer'}},
- sections:{type:'array',items:obj({name:{type:'string'},start:{type:'number'}},['name','start'])},
- automate:obj(Object.fromEntries(GLOBAL_AUTOMATABLE.map(k=>[k,curve]))),
- tracks:{type:'array',items:obj({
-  sound:{type:'string',enum:soundIds},label:{type:'string'},role:{type:'string',enum:ROLES.filter(r=>r!=='timeline')},
-  seq:{type:'string'},note:{type:'string'},step:{type:'string',description:'seconds per step, e.g. "0.25", or a curve'},from:{type:'number'},to:{type:'number'},gate:{type:'number'},loop:{type:'boolean'},
-  level:{type:'number'},pan:{type:'number'},send:{type:'number'},colour:{type:'number'},life:{type:'number'},transpose:{type:'number'},
-  pair:obj({width:{type:'number'},delay:{type:'number'},seqR:{type:'string'},noteR:{type:'string'},transposeR:{type:'number'}}),
-  automate:obj(Object.fromEntries(AUTOMATABLE.map(k=>[k,curve])))
- },['sound'])}
-},['title','description','seconds','tracks']);
-
 function request(prompt,base){
- return base?`Here is the current song:\n\n\`\`\`json\n${JSON.stringify(base)}\n\`\`\`\n\nChange it as follows, keeping what works: ${prompt}\n\nReturn the complete updated song.`:`Compose a song for this request: ${prompt}`;
+ return (base?`Here is the current song:\n\n\`\`\`json\n${JSON.stringify(base)}\n\`\`\`\n\nChange it as follows, keeping what works: ${prompt}\n\nReturn the complete updated song.`:`Compose a song for this request: ${prompt}`)+'\n\nReply with only the Song JSON object.';
 }
 const problemNote=problems=>`Diddums could not use parts of that song:\n${problems.map(p=>'- '+p).join('\n')}\n\nReturn the complete corrected song.`;
 
 // Self-contained text for a chat app (Claude, or another assistant): instructions + request + reply format.
 export function chatPrompt(prompt,base,example){
- return `${songGuide(example)}\n\n---\n\n${request(prompt,base)}\n\nReply with only the Song JSON object, no other text, so it can be pasted straight into Diddums.`;
+ return `${songGuide(example)}\n\n---\n\n${request(prompt,base)}`;
 }
 export function songFromReply(text){const song=songFromText(text);return {song,problems:checkSong(song).problems};}
 
@@ -124,7 +106,9 @@ export async function composeWithClaude({apiKey,model='claude-opus-5-5',prompt,b
  const messages=[{role:'user',content:request(prompt,base)}];
  let last=null;
  for(let attempt=0;attempt<2;attempt++){
-  const params={model,max_tokens:32000,system,messages,thinking:{type:'adaptive'},output_config:{effort:'medium',format:{type:'json_schema',schema:SONG_SCHEMA}}};
+  // No structured-output schema: the API limits those to 24 optional parameters and a Song has more. The guide
+  // describes the format, the reply is parsed leniently and checkSong() feeds any problems back for one repair.
+  const params={model,max_tokens:32000,system,messages,thinking:{type:'adaptive'},output_config:{effort:'medium'}};
   // Server-side fallback re-runs a safety-classifier decline on a suitable model (not offered for Haiku).
   if(model!=='claude-haiku-5-5')Object.assign(params,{betas:['server-side-fallback-2026-07-01'],fallbacks:'default'});
   let chars=0;
@@ -146,13 +130,13 @@ export async function composeWithClaude({apiKey,model='claude-opus-5-5',prompt,b
   if(msg.stop_reason==='refusal')throw new Error('Claude declined this request'+(msg.stop_details?.explanation?': '+msg.stop_details.explanation:'.'));
   if(msg.stop_reason==='max_tokens')throw new Error('The song was too long to finish. Ask for something shorter or simpler.');
   const text=msg.content.filter(b=>b.type==='text').map(b=>b.text).join('');
-  let song;try{song=JSON.parse(text);}catch{throw new Error('Claude returned something that is not a Song.');}
-  const {problems}=checkSong(song);
+  let song,problems;try{song=songFromText(text);({problems}=checkSong(song));}catch(e){song=null;problems=['The reply was not a single Song JSON object ('+e.message+'). Reply with only the JSON object.'];}
   last={song,problems,model:msg.model};
-  if(!problems.length)return last;
+  if(song&&!problems.length)return last;
   // One repair round: show Claude exactly what Diddums rejected. The full assistant content is appended unchanged.
   messages.push({role:'assistant',content:msg.content},{role:'user',content:problemNote(problems)});
  }
+ if(!last.song)throw new Error('Claude did not return a usable Song. Try again, or rephrase the request.');
  return last;
 }
 
