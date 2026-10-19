@@ -71,6 +71,14 @@ The **Labs** tab is experimental and kept apart from the rest of Diddums, which 
 
 `public/sounds.js` holds 54 named presets (space drones, radio chatter, choirs, timpani, harp, music box, rain, heartbeat…). Each preset uses one of the 23 existing hash-matched LeanDSP instrument families and sets its score role, register (`transpose`) and existing colour/life/level/pan/send controls. No new DSP is added, so the pinned native-Lean catalog and its proof boundary are unchanged. Adding a new instrument family still requires the native Lean build described in `public/lean/README.md`.
 
+## MIDI
+
+Labs can open a Standard MIDI File as the working song: each channel and General MIDI instrument becomes a timed-note track on a 16th-note grid, GM programs map to the nearest Diddums sound (`midi-import.js`), and channel 10 drums map to the kick, snare, hat, clap and tom instruments. Any song can be downloaded as MIDI; exports carry GM program numbers chosen to map back to the same instrument families.
+
+## Adaptive game music
+
+`game.html` is a playable demo of `adaptive.js`: an endless score written two bars ahead from game state (`set()`, applied at the next bar line), with in-key event sounds on the next 16th note (`hit()`) and immediate mix changes (`control()`). The skill page explains the API and a systematic mapping from game meaning to music.
+
 ## Timelines, automation and stereo pairs
 
 Compositions can be written against the clock as well as the bar grid (`public/timeline.js`). `?piece=firstcontact` is a worked example.

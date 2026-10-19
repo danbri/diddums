@@ -9,6 +9,9 @@ import {attachViz} from './viz.js';
 import {formatDuration} from './collection.js';
 import {SHOWCASE} from './showcase.js';
 import {siteUrl} from './site-url.js';
+import {songFromMidi} from './midi-import.js';
+import {midiFile} from './music-model.js';
+import {makeSession} from './score.js';
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store={get:k=>{try{return localStorage.getItem(k);}catch{return null;}},set:(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch{}}};
@@ -95,7 +98,7 @@ export function mountMaker(root,hooks){
   <ol id="mkTracks" class="mk-tracks"></ol>
   <button type="button" id="mkAdd" class="mk-add">+ Add a sound</button>
   <details class="mk-details" id="mkDetailsBox"><summary>Tempo, key, length, words and whole-mix automation</summary><div id="mkDetails"></div></details>
-  <div class="mk-more"><button type="button" id="mkRemix">Load the piece from Compose</button><button type="button" id="mkCopyJson">Copy song JSON</button><button type="button" id="mkNew">Start empty</button></div>
+  <div class="mk-more"><button type="button" id="mkRemix">Load the piece from Compose</button><button type="button" id="mkCopyJson">Copy song JSON</button><button type="button" id="mkNew">Start empty</button><button type="button" id="mkMidiOpen">Open a MIDI file</button><button type="button" id="mkMidiSave">Download as MIDI</button><input type="file" id="mkMidiFile" accept=".mid,.midi,audio/midi,audio/x-midi" hidden></div>
  </section>
  <dialog id="mkLibrary" class="mk-sheet" aria-label="Sound library">
   <div class="mk-sheet-head"><b id="mkLibTitle">Add a sound</b><button type="button" class="mk-icon" data-close aria-label="Close">✕</button></div>
@@ -286,6 +289,11 @@ export function mountMaker(root,hooks){
  };
  $('#mkCopyJson').onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(song,null,1));toast('Song JSON copied');}catch{toast('Copy failed',true);}};
  $('#mkRemix').onclick=()=>load(hooks.songOfCurrent(),'Loaded the piece from Compose');
+ // MIDI in and out: General MIDI instruments map to the nearest Diddums sounds (midi-import.js).
+ $('#mkMidiOpen').onclick=()=>$('#mkMidiFile').click();
+ $('#mkMidiFile').onchange=async()=>{const f=$('#mkMidiFile').files[0];$('#mkMidiFile').value='';if(!f)return;
+  try{const r=songFromMidi(await f.arrayBuffer(),f.name.replace(/\.midi?$/i,''));load(r.song,`Opened ${f.name}: ${r.song.tracks.length} tracks`+(r.problems.length?', with problems listed below':''));}catch(e){toast('Could not read that MIDI file: '+e.message,true);}};
+ $('#mkMidiSave').onclick=()=>{try{rebuild(false);if(!composition?.tracks.length)throw new Error('add a sound first');const bytes=midiFile(makeSession(composition,48000)),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([bytes],{type:'audio/midi'}));a.download=(song.title||'diddums').replace(/[^\w\- ]+/g,'').trim()+'.mid';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);}catch(e){toast('Could not export MIDI: '+e.message,true);}};
  $('#mkNew').onclick=()=>load({title:'Untitled',bpm:80,key:'A minor',rhythm:'none',seconds:60,tracks:[]},'Started an empty track');
 
  // ---- Compose ----

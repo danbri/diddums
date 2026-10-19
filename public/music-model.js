@@ -18,6 +18,9 @@ export function applyNoteEdits(session,edits={}){
  if(result.length>32768)throw new Error('The score is limited to 32,768 note events');
  result.sort((a,b)=>a.frame-b.frame||a.track.localeCompare(b.track));return result;
 }
+// General MIDI program (0-based) closest to each instrument family, so other software picks a sensible
+// instrument and midi-import.js maps it back to the same family.
+const GM_PROGRAM_OF={roundBass:32,acidBass:38,tine:4,glass:14,pluck:24,felt:12,silk:48,choir:52,organ:16,pulse:81,rain:122,shepard:95,phantomRoot:16,ghostBeat:89,sineVox:54,sineChoir:54,speechGesture:121,heartbeat:116,orbitBlip:80,sonar:125,radioSnow:127,tom:117,kick:118,snare:118,hat:118,clap:118};
 // Format-1 Standard MIDI File, with a conductor track and a track per instrument.
 // This exports the planned score, NOT the DSP or a capture of allocator/choke behaviour.
 export function midiFile(s){
@@ -30,9 +33,9 @@ export function midiFile(s){
  const conductor=[{tick:0,order:0,data:named(s.title)},{tick:0,order:1,data:meta(81,[(us>>16)&255,(us>>8)&255,us&255])},{tick:0,order:2,data:meta(88,[s.meter[0],den,24,8])}];
  for(const section of s.sections)conductor.push({tick:Math.round(section.start*s.beats*PPQ),order:3,data:meta(6,[...text.encode(section.name)])});
  const chunks=[chunk(conductor)],bf=beatFrames(s);
- const groups=s.tracks.map((t,i)=>({id:t.id,name:t.label,channel:i<9?i:i+1,events:s.events.filter(e=>e.track===t.id)}));
+ const groups=s.tracks.map((t,i)=>({id:t.id,name:t.label,channel:i<9?i:i+1,program:GM_PROGRAM_OF[t.pattern],events:s.events.filter(e=>e.track===t.id)}));
  const percussion=s.events.filter(e=>e.track.startsWith('d:'));if(percussion.length)groups.push({id:'drums',name:'Percussion (GM note mapping)',channel:9,events:percussion});
- for(const g of groups){const events=[{tick:0,order:0,data:named(g.name)}];for(const e of g.events){const start=Math.round(e.frame/bf*PPQ),end=Math.max(start+1,Math.round((e.frame+e.duration)/bf*PPQ)),n=exportNote(e),v=clamp(Math.round(e.velocity*127),1,127);events.push({tick:start,order:2,data:[0x90|g.channel,n,v]},{tick:end,order:1,data:[0x80|g.channel,n,0]});}chunks.push(chunk(events));}
+ for(const g of groups){const events=[{tick:0,order:0,data:named(g.name)}];if(g.program!=null&&g.channel!==9)events.push({tick:0,order:0,data:[0xc0|g.channel,g.program]});for(const e of g.events){const start=Math.round(e.frame/bf*PPQ),end=Math.max(start+1,Math.round((e.frame+e.duration)/bf*PPQ)),n=exportNote(e),v=clamp(Math.round(e.velocity*127),1,127);events.push({tick:start,order:2,data:[0x90|g.channel,n,v]},{tick:end,order:1,data:[0x80|g.channel,n,0]});}chunks.push(chunk(events));}
  const header=[...text.encode('MThd'),0,0,0,6,0,1,...be16(chunks.length),...be16(PPQ)],size=header.length+chunks.reduce((n,b)=>n+b.length,0),out=new Uint8Array(size);out.set(header);let offset=header.length;for(const c of chunks){out.set(c,offset);offset+=c.length;}return out;
 }
 // Every chromatic note carries its accidental in the time-proportional stave.
