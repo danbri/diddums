@@ -1,0 +1,41 @@
+.app-header nav button.make-tab{color:var(--amber)}
+.app-header nav button.make-tab.active{color:var(--amber);border-color:#7a6440;background:#2a2417}
+.maker-prompt{display:flex;gap:8px;max-width:900px}
+.maker-prompt input{flex:1;min-width:0;font-size:16px;background:#0a1926;border:1px solid #4b6b80;color:var(--text);border-radius:10px;padding:12px 14px;min-height:50px}
+.maker-examples{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 22px;max-width:1000px}
+.maker-examples button{min-height:34px;padding:6px 11px;font-size:12px;border-radius:17px;background:#0e2131;color:#b9cfdb}
+.maker-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:14px;align-items:start}
+.maker-card{border:1px solid var(--edge);border-radius:14px;padding:6px 17px 16px;background:#0c1b29;min-width:0}
+.maker-card h2 small{font:10px var(--mono);color:var(--muted);margin-left:6px;font-weight:400}
+.maker-settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 10px;margin-bottom:10px}
+.maker-settings label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);min-width:0}
+.maker-settings label.wide{grid-column:span 3}
+.maker-settings input[type=text],.maker-settings input[type=number],.maker-settings select{width:100%;min-width:0;background:#0a1926;border:1px solid #36566e;color:var(--text);border-radius:7px;padding:8px;min-height:40px}
+.maker-settings label:first-child{grid-column:span 3}
+.maker-pair{display:flex;gap:4px}
+.maker-pair select{flex:1}
+.maker-tracks{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.maker-tracks li{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 90px 42px;gap:8px;align-items:center;border:1px solid #243e51;border-radius:9px;padding:6px 8px;background:#081722}
+.maker-tracks li.empty{display:block;color:var(--muted);font-size:12px;padding:12px}
+.maker-tracks select{min-height:36px;padding:6px;font-size:13px;min-width:0}
+.maker-role{font:10px var(--mono);color:#8fa9bb;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.maker-tracks button{min-height:36px;padding:4px}
+.maker-hint{font-size:11px;line-height:1.6}
+.maker-filter{display:flex;gap:6px;margin-bottom:6px}
+.maker-filter input{flex:1;min-width:0}
+.maker-chips h3{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mint);margin:14px 0 6px}
+.maker-chips>div{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.maker-chips button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-height:52px;padding:7px 10px;border-radius:9px;background:linear-gradient(140deg,#15283d,#0c1b2a)}
+.maker-chips button b{font-size:13px;font-weight:620}
+.maker-chips button small{font:9px var(--mono);color:#8ea6b8;margin-top:2px}
+.maker-chips button.in-use{border-color:var(--amber);background:#2a2417}
+.maker-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0}
+.maker-actions input{flex:1 1 280px;min-width:0;background:#07111b;border:1px solid var(--edge);color:#a7c5cc;border-radius:8px;padding:10px;font:11px var(--mono);min-height:42px}
+.maker-reference table{border-collapse:collapse;font-size:12px;width:100%}
+.maker-reference th{text-align:left;vertical-align:top;font:11px var(--mono);color:#c3d5e3;padding:6px 12px 6px 0;white-space:nowrap}
+.maker-reference td{color:var(--muted);padding:6px 0;border-bottom:1px solid #1b3243}
+.maker-reference code{font:11px var(--mono);color:#c4dce5}
+@media(max-width:850px){.maker-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.maker-prompt{flex-direction:column}.maker-settings{grid-template-columns:1fr 1fr}.maker-settings label.wide,.maker-settings label:first-child{grid-column:span 2}.maker-tracks li{grid-template-columns:minmax(0,1fr) 70px 38px}.maker-role{display:none}.maker-chips>div{grid-template-columns:1fr 1fr}.maker-reference th{white-space:normal}}
+.maker-chips button:disabled{cursor:not-allowed}
+@media(max-width:560px){.app-header{min-width:0}.app-header nav{overflow-x:auto;min-width:0;scrollbar-width:none}.app-header nav button{flex:0 0 auto}}

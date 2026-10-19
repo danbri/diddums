@@ -35,9 +35,9 @@ export function makeSession(c,sr,overrides={}){
  if(!(sr>=8000&&sr<=192000))throw new Error('Unsupported sample rate');
  const beatFrames=sr*60/c.bpm,beats=c.meter[0]*4/c.meter[1],steps=Math.round(beats*4),rand=random(c.seed),events=[],grids=[];
  const tracks=c.tracks.map(t=>({...t,pool:1,poolRequired:1})),kit=drumKit.map(d=>({...d,...(c.drumKit?.[d.id]||{})}));
- const eventIds=new Map();
+ const eventIds=new Map(),transposeOf=new Map(tracks.map(t=>[t.id,Math.round(Number(t.transpose)||0)]));
  const emit=(track,bar,step,note,velocity,length,colour,life,meta={})=>{
-  const swing=(Math.floor(step)%2===1?c.swing:0),jitter=track.startsWith('d:')||meta.speechPart||meta.humanize===false?0:(rand()-.5)*.012;
+  if(!meta.speechPart&&!meta.localPattern&&transposeOf.get(track))note=Math.max(0,Math.min(127,note+transposeOf.get(track)));const swing=(Math.floor(step)%2===1?c.swing:0),jitter=track.startsWith('d:')||meta.speechPart||meta.humanize===false?0:(rand()-.5)*.012;
   const nominalBeat=bar*beats+step/4+swing,frame=Math.max(0,Math.round((nominalBeat+jitter)*beatFrames));
   const base=track+'/'+bar+'/'+step+'/'+note,ordinal=eventIds.get(base)||0;eventIds.set(base,ordinal+1);
   events.push({id:base+'/'+ordinal,frame,track,note,bar,step,nominalBeat,humanizeBeats:jitter,velocity:Math.max(.05,Math.min(1,velocity)),durationBeats:length,duration:Math.max(32,Math.round(length*beatFrames)),colour,life,...meta});
