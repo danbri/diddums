@@ -1,40 +1,48 @@
 // Adaptive music demo: a small stealth/collect game whose live state drives an endless Diddums score.
 // Arrangement changes land on the next bar line; game events answer within a 16th note, in key.
+// Characters follow Heider and Simmel's 1944 animation: a small circle (you), big triangles (hunters),
+// a small triangle (your companion) and a house with a door.
 import {startAdaptive} from './adaptive.js';
 import {compositionFromSong} from './song.js';
 
 const $=s=>document.querySelector(s);
 const song={title:'Adaptive night',bpm:100,meter:'4/4',key:'A minor',rhythm:'none',seconds:600,room:.6,chords:[1,6,3,7],
- melody:[12,null,15,null,19,null,17,15,12,null,10,null,7,null,10,null],
- bass:[0,null,0,null,7,null,0,3,0,null,0,null,10,null,7,null],
  tracks:[
-  {id:'drone',sound:'voidDrone',label:'Low drone'},{id:'wind',sound:'wind',label:'Wind',level:.2},{id:'koto',sound:'koto',label:'Sparse plucks'},
+  {id:'drone',sound:'voidDrone',label:'Low drone'},{id:'wind',sound:'wind',label:'Wind',level:.2},
   {id:'sub',sound:'subBass',label:'Sub bass'},{id:'pad',sound:'nebulaPad',label:'Pad'},{id:'bells',sound:'bells',label:'Bell melody'},
   {id:'acid',sound:'acidLine',label:'Acid bass'},{id:'stabs',sound:'brassStabs',label:'Brass stabs'},{id:'arp',sound:'arpeggiator',label:'Arpeggio'},
   {id:'saw',sound:'chromeLead',label:'Saw lead'},{id:'heart',sound:'heartbeat',label:'Heartbeat',level:1},
+  {id:'iso',sound:'koto',role:'ostinato',hits:5,cycle:7,label:'Koto isorhythm',level:.4},{id:'phase',sound:'marimba',role:'phase',label:'Phasing marimba',level:.35},
+  {id:'cloud',sound:'starfield',role:'cloud',label:'Bell cloud',level:.3},
   // Event voices: never in the arrangement, only played by music.hit().
   {id:'chime',sound:'celesta',label:'Pickup chime',level:.55,role:'timeline',seq:'.'},{id:'alarm',sound:'sonarBlup',label:'Alarm',level:.5,role:'timeline',seq:'.'},
-  {id:'boom',sound:'timpani',label:'Impact',level:.9,role:'timeline',seq:'.'},{id:'zap',sound:'sputnikBeacon',label:'Zap',level:.45,role:'timeline',seq:'.'}]};
+  {id:'boom',sound:'timpani',label:'Impact',level:.9,role:'timeline',seq:'.'}]};
 const composition=compositionFromSong(song);
-const harmonyOf=chords=>compositionFromSong({...song,chords}).harmony;
-const H={calm:harmonyOf([1,6,3,7]),chase:harmonyOf([1,7,6,7]),hero:harmonyOf([1,6,7,1]),dread:harmonyOf([1,2,1,7])};
-const KEY_SHIFT=[0,3,-2,5,1,-4],KEY_NAME=['A minor','C minor','G minor','D minor','B♭ minor','F minor'];
-const shift=(h,s)=>h.map(c=>[c[0]+s,...c.slice(1)]);
-const M={
- calm:[12,null,15,null,19,null,17,15,12,null,10,null,7,null,10,null],
- chase:[12,15,19,15,12,15,19,22,24,22,19,15,17,15,12,10],
- hero:[12,null,19,null,24,null,22,19,24,null,26,24,19,null,22,null],
- dread:[12,null,null,13,12,null,null,null,10,null,null,7,null,null,8,null]};
-const B={calm:[0,null,0,null,7,null,0,3,0,null,0,null,10,null,7,null],drive:[0,0,12,0,0,0,10,0,0,0,12,0,7,0,10,0],dread:[0,null,null,null,1,null,null,null,0,null,null,null,null,null,1,null]};
 const LABEL=Object.fromEntries(song.tracks.map(t=>[t.id,t.label]));
-const MUSIC_TRACKS=song.tracks.filter(t=>!['chime','alarm','boom','zap'].includes(t.id)).map(t=>t.id);
+const MUSIC_TRACKS=song.tracks.filter(t=>t.role!=='timeline').map(t=>t.id);
 
-// Game state → arrangement. Continuous inputs (threat, health) cross thresholds track by track, so the
-// music moves through many intermediate states rather than switching between a few.
-function plan({threat=0,health=1,power=false,level=0}){
- const q=x=>Math.round(x*10)/10,T=q(threat),Hh=Math.round(health*4)/4,low=Hh<=.25,hurt=Hh<=.5;
+// Each level brings a different musical idiom, not just a new key: scale, chord progressions, drum
+// patterns, a characteristic process layer, and melodies written in scale degrees.
+const STYLES=[
+ {name:'Night synth',key:'A minor',ch:{calm:[1,6,3,7],chase:[1,7,6,7],hero:[1,6,7,1],dread:[1,2,1,7]},drums:['ritual','broken','postpunk','factory'],extra:null},
+ {name:'Hijaz',key:'D hijaz',ch:{calm:[1,2,1,7],chase:[1,4,2,1],hero:[1,7,1,4],dread:[1,2,2,1]},drums:['none','clave','clave','dembow'],extra:'iso'},
+ {name:'Pentatonic phase',key:'E yo',ch:{calm:[1],chase:[1,4],hero:[1,3,4,1],dread:[1,2]},drums:['none','bembe','bembe','amen'],extra:'phase'},
+ {name:'Octatonic',key:'F octatonic',ch:{calm:[1,5],chase:[1,3,5,7],hero:[1,3],dread:[1,2,1,2]},drums:['ritual','euclid','amen','amen'],extra:'iso'},
+ {name:'Whole-tone',key:'C wholetone',ch:{calm:[1,2],chase:[1,2,3,4],hero:[1,3,5],dread:[1,4]},drums:['none','halftime','broken','factory'],extra:'cloud'},
+ {name:'Pelog',key:'G pelog',ch:{calm:[1,4],chase:[1,4,5,1],hero:[1,5,4,1],dread:[1,2,1,2]},drums:['none','bembe','bembe','seven'],extra:'phase'}];
+// Melody contours in scale degrees (null = rest); converted per scale so every idiom stays in its own notes.
+const CONTOUR={calm:[0,null,2,null,4,null,3,2,0,null,-1,null,-3,null,-1,null],chase:[0,2,4,2,0,2,4,6,7,6,4,2,3,2,0,-1],
+ hero:[0,null,4,null,7,null,6,4,7,null,8,7,4,null,6,null],dread:[0,null,null,1,0,null,null,null,-1,null,null,-3,null,null,-2,null]};
+const SCALES={minor:[0,2,3,5,7,8,10],hijaz:[0,1,4,5,7,8,10],yo:[0,2,5,7,9],octatonic:[0,2,3,5,6,8,9,11],wholetone:[0,2,4,6,8,10],pelog:[0,1,3,7,8]};
+const degree=(scale,d)=>d==null?null:12+scale[((d%scale.length)+scale.length)%scale.length]+12*Math.floor(d/scale.length);
+const STYLE_DATA=STYLES.map(s=>{const scale=SCALES[s.key.split(' ')[1]],h={},m={};for(const k in s.ch){h[k]=compositionFromSong({...song,key:s.key,chords:s.ch[k]}).harmony;m[k]=CONTOUR[k].map(d=>degree(scale,d));}return {...s,h,m};});
+const B={calm:[0,null,0,null,7,null,0,3,0,null,0,null,10,null,7,null],drive:[0,0,12,0,0,0,10,0,0,0,12,0,7,0,10,0],dread:[0,null,null,null,1,null,null,null,0,null,null,null,null,null,1,null]};
+
+// Game state → arrangement. Continuous inputs cross thresholds track by track.
+function plan({threat=0,health=1,power=false,level=0,safe=false}){
+ const st=STYLE_DATA[level%STYLE_DATA.length],q=x=>Math.round(x*10)/10,T=safe?0:q(threat),Hh=Math.round(health*4)/4,low=Hh<=.25,hurt=Hh<=.5;
  const L=new Set(['wind','heart']);
- if(T<.3&&!power)L.add('drone');if(T<.4&&!power)L.add('koto');
+ if(T<.3&&!power)L.add('drone');if(st.extra&&T<.6)L.add(st.extra);else if(T<.4&&!power)L.add('iso');
  if(!low)L.add('pad');else L.add('drone');
  if(T>=.2&&T<.6)L.add('sub');if(T>=.6||power)L.add('acid');
  if(T<.5&&!hurt&&!power)L.add('bells');
@@ -42,89 +50,118 @@ function plan({threat=0,health=1,power=false,level=0}){
  if((T>=.7&&!hurt)||power)L.add('stabs');
  if(power||(T>=.6&&!hurt))L.add('saw');
  const mood=power?'hero':low&&T>=.3?'dread':T>=.5?'chase':'calm';
- const rhythm=power?'house':low&&T>=.3?'halftime':T<.15?'none':T<.35?'ritual':T<.55?'broken':T<.75?'postpunk':'factory';
- return {name:power?'Power':mood==='dread'?'Desperate':T>=.5?'Hunted':T>=.2?'Watched':'Unseen',rhythm,
-  energy:q(Math.min(1,.25+.7*T+(power?.15:0))*(low?.8:1)),harmony:shift(H[mood],KEY_SHIFT[level%KEY_SHIFT.length]),melody:M[mood],
+ const rhythm=power?'house':low&&T>=.3?'halftime':T<.15?'none':st.drums[T<.35?0:T<.55?1:T<.75?2:3];
+ return {name:`${safe?'Sheltered':power?'Power':mood==='dread'?'Desperate':T>=.5?'Hunted':T>=.2?'Watched':'Unseen'} · ${st.name}`,rhythm,
+  energy:q(Math.min(1,.25+.7*T+(power?.15:0))*(low?.8:1)),harmony:st.h[mood],melody:st.m[mood],
   bass:mood==='dread'?B.dread:T>=.5||power?B.drive:B.calm,layers:[...L]};
 }
 
 // ---- Game ----
-const W=1,Hgt=.75,cv=$('#arena'),g=cv.getContext('2d');
+const narrow=innerWidth<720,W=1,Hgt=narrow?1.25:.62,cv=$('#arena'),g=cv.getContext('2d');
+cv.style.aspectRatio=`${W} / ${Hgt}`;
 const rnd=(a,b)=>a+Math.random()*(b-a),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 let lastLevels={},game,music=null,lastPlan=null,keys={},target=null,last=performance.now();
+const HOUSE={x:.06,y:Hgt-.26,w:.22,h:.2,door:.07};// open door on the right wall
+const inHouse=p=>p.x>HOUSE.x&&p.x<HOUSE.x+HOUSE.w&&p.y>HOUSE.y&&p.y<HOUSE.y+HOUSE.h;
+function free(r=.05){for(let i=0;i<50;i++){const p={x:rnd(.06,.94),y:rnd(.06,Hgt-.06)};if(!inHouse({x:p.x+r,y:p.y})&&!inHouse(p)&&!inHouse({x:p.x-r,y:p.y}))return p;}return {x:.6,y:.3};}
 function newLevel(level,keepScore=0,health=1){
  const n=6+level*2;
- game={level,score:keepScore,health,power:0,combo:0,comboAt:0,invuln:0,over:0,player:{x:.5,y:Hgt-.06},
-  orbs:Array.from({length:n},()=>({x:rnd(.06,.94),y:rnd(.06,Hgt-.15)})),powerOrb:{x:rnd(.1,.9),y:rnd(.1,Hgt-.2)},
-  enemies:Array.from({length:2+level},()=>spawnEnemy()),flash:[]};
+ game={level,score:keepScore,health,power:0,combo:0,comboAt:0,invuln:0,over:0,player:{x:HOUSE.x+HOUSE.w/2,y:HOUSE.y+HOUSE.h/2},ally:{x:HOUSE.x+.05,y:HOUSE.y+.05,a:0},
+  items:[...Array.from({length:n},()=>({...free(),kind:'🍄'})),...Array.from({length:2},()=>({...free(),kind:'💎'})),{...free(),kind:'⭐'}],chest:null,
+  trees:Array.from({length:4},()=>({...free(.1),r:.05})),enemies:Array.from({length:2+level},()=>spawnEnemy()),flash:[]};
 }
-function spawnEnemy(){const e={x:rnd(.05,.95),y:rnd(.05,.3),a:rnd(0,6.28),alert:0,dead:0};return e;}
+function spawnEnemy(){const p=free();return {x:p.x,y:Math.min(p.y,Hgt*.5),a:rnd(0,6.28),vx:0,vy:0,alert:0,dead:0};}
+const hidden=()=>inHouse(game.player)||game.trees.some(t=>dist(game.player,t)<t.r);
 function threat(){
- const p=game.player;let t=0,near=9;
+ if(inHouse(game.player))return 0;const p=game.player;let t=0,near=9;
  for(const e of game.enemies){if(e.dead)continue;if(e.alert>0)t+=.25;near=Math.min(near,dist(p,e));}
  return Math.min(1,t+Math.max(0,(.3-near)/.3)*.35);
 }
 function say(text){const l=$('#log');l.innerHTML=(text+'\n'+l.innerHTML).split('\n').slice(0,40).join('\n');}
 const hit=(track,opts)=>music?.hit(track,opts);
+function wallBlock(o,r){// keep hunters out of the house: push them out through the nearest wall
+ if(o.x>HOUSE.x-r&&o.x<HOUSE.x+HOUSE.w+r&&o.y>HOUSE.y-r&&o.y<HOUSE.y+HOUSE.h+r){
+  const dl=o.x-(HOUSE.x-r),dr=HOUSE.x+HOUSE.w+r-o.x,dt=o.y-(HOUSE.y-r),db=HOUSE.y+HOUSE.h+r-o.y,m=Math.min(dl,dr,dt,db);
+  if(m===dl)o.x=HOUSE.x-r;else if(m===dr)o.x=HOUSE.x+HOUSE.w+r;else if(m===dt)o.y=HOUSE.y-r;else o.y=HOUSE.y+HOUSE.h+r;}}
 
 function step(dt){
  const p=game.player;
  if(game.over>0){game.over-=dt;if(game.over<=0){newLevel(0);say('<b>New game</b>');}return;}
- // Movement: keyboard, finger/mouse target, or autopilot.
  let vx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0),vy=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0);
  if($('#auto').checked){const a=autopilot();vx=a.x;vy=a.y;}
  else if(target&&!vx&&!vy){vx=target.x-p.x;vy=target.y-p.y;if(Math.hypot(vx,vy)<.01)vx=vy=0;}
- const m=Math.hypot(vx,vy)||1,sp=.32;p.x=Math.max(.02,Math.min(W-.02,p.x+vx/m*sp*dt*(vx||vy?1:0)));p.y=Math.max(.02,Math.min(Hgt-.02,p.y+vy/m*sp*dt*(vx||vy?1:0)));
+ const m=Math.hypot(vx,vy)||1,sp=.3,moving=vx||vy?1:0;p.x=Math.max(.02,Math.min(W-.02,p.x+vx/m*sp*dt*moving));p.y=Math.max(.02,Math.min(Hgt-.02,p.y+vy/m*sp*dt*moving));
  game.power=Math.max(0,game.power-dt);game.invuln=Math.max(0,game.invuln-dt);
- if(game.power>0&&game.power<dt*1.01)hit('zap',{tones:[2,1,0],spread:2,velocity:.6});
- // Orbs: each pickup is the next chord tone up; quick pickups climb an arpeggio.
- for(const o of [...game.orbs])if(dist(p,o)<.035){game.orbs.splice(game.orbs.indexOf(o),1);game.combo=performance.now()-game.comboAt<1800?game.combo+1:0;game.comboAt=performance.now();game.score+=10*(1+game.combo);
-  hit('chime',{tones:[game.combo%8],octave:1,velocity:.7+.04*Math.min(6,game.combo)});game.flash.push({x:o.x,y:o.y,t:.4,c:'#7ce3dd'});}
- if(game.powerOrb&&dist(p,game.powerOrb)<.04){game.powerOrb=null;game.power=7;hit('chime',{tones:[0,1,2,4],octave:1,spread:1});hit('boom',{tones:[0],octave:-1});say('<b>Power</b>: the patrols can be knocked out for 7 s');}
- // Enemies: patrol, notice you inside their sight radius, chase, give up after a while.
+ if(game.power>0&&game.power<dt*1.01)hit('chime',{tones:[2,1,0],spread:2,velocity:.5});
+ // Companion: circles you and stays close, like the small triangle in the film.
+ const al=game.ally;al.a+=dt*2.2;const tx=p.x+Math.cos(al.a)*.05,ty=p.y+Math.sin(al.a)*.05;al.x+=(tx-al.x)*Math.min(1,dt*4);al.y+=(ty-al.y)*Math.min(1,dt*4);
+ for(const it of [...game.items])if(dist(p,it)<.04){game.items.splice(game.items.indexOf(it),1);
+  if(it.kind==='⭐'){game.power=7;hit('chime',{tones:[0,1,2,4],octave:1});hit('boom',{tones:[0],octave:-1});say('<b>Star</b>: the hunters can be knocked out for 7 s');}
+  else{game.combo=performance.now()-game.comboAt<1800?game.combo+1:0;game.comboAt=performance.now();const gem=it.kind==='💎';game.score+=(gem?50:10)*(1+game.combo);
+   hit('chime',gem?{tones:[game.combo%8,game.combo%8+2],octave:1,spread:1}:{tones:[game.combo%8],octave:1,velocity:.7+.04*Math.min(6,game.combo)});}
+  game.flash.push({x:it.x,y:it.y,t:.4,c:'#7ce3dd'});}
+ if(!game.chest&&!game.items.some(i=>i.kind==='🍄')){game.chest={...free(),kind:'💰'};hit('chime',{tones:[0,2,4],octave:1,grid:4,velocity:.6});say('A <b>treasure chest</b> has appeared');}
+ if(game.chest&&dist(p,game.chest)<.045){hit('chime',{tones:[0,1,2,4,5,6],octave:1,velocity:.85});hit('boom',{tones:[0,0],octave:-1,spread:4});game.score+=200;
+  const next=STYLES[(game.level+1)%STYLES.length];say(`<b>Level ${game.level+2}</b>: ${next.name} (${next.key}), one more hunter`);newLevel(game.level+1,game.score,game.health);return;}
+ const isHidden=hidden();
  for(const e of game.enemies){
-  if(e.dead){e.dead-=dt;if(e.dead<=0){Object.assign(e,spawnEnemy());}continue;}
-  const d=dist(p,e),sight=.18+.02*game.level;
-  if(d<sight&&game.power<=0){if(e.alert<=0){hit('alarm',{tones:[0],octave:1,grid:2,velocity:.7});game.flash.push({x:e.x,y:e.y,t:.5,c:'#edbc74'});}e.alert=2.2;}else e.alert=Math.max(0,e.alert-dt);
+  if(e.dead){e.dead-=dt;if(e.dead<=0)Object.assign(e,spawnEnemy());continue;}
+  const d=dist(p,e),sight=.2+.015*game.level;
+  if(d<sight&&!isHidden&&game.power<=0){if(e.alert<=0){hit('alarm',{tones:[0],octave:1,grid:2,velocity:.7});game.flash.push({x:e.x,y:e.y,t:.5,c:'#edbc74'});}e.alert=2.2;}else e.alert=Math.max(0,e.alert-dt);
   let ax,ay,spd;
-  if(game.power>0){ax=e.x-p.x;ay=e.y-p.y;spd=.16;}else if(e.alert>0){ax=p.x-e.x;ay=p.y-e.y;spd=.16+.012*game.level;}else{e.a+=rnd(-2,2)*dt;ax=Math.cos(e.a);ay=Math.sin(e.a);spd=.07;}
-  const am=Math.hypot(ax,ay)||1;e.x+=ax/am*spd*dt;e.y+=ay/am*spd*dt;
-  if(e.x<.03||e.x>W-.03)e.a=Math.PI-e.a;if(e.y<.03||e.y>Hgt-.03)e.a=-e.a;e.x=Math.max(.03,Math.min(W-.03,e.x));e.y=Math.max(.03,Math.min(Hgt-.03,e.y));
-  if(d<.04){
-   if(game.power>0){e.dead=6;e.alert=0;game.score+=50;hit('zap',{tones:[2,4],spread:1,velocity:.8});game.flash.push({x:e.x,y:e.y,t:.5,c:'#ba96f0'});}
-   else if(game.invuln<=0){game.health=Math.max(0,game.health-.15);game.invuln=1.5;hit('boom',{tones:[0],octave:-1,velocity:1});const k=Math.hypot(p.x-e.x,p.y-e.y)||1;p.x+=(p.x-e.x)/k*.06;p.y+=(p.y-e.y)/k*.06;game.flash.push({x:p.x,y:p.y,t:.5,c:'#ff7a7a'});
+  if(game.power>0){ax=e.x-p.x;ay=e.y-p.y;spd=.15;}
+  else if(e.alert>0&&!inHouse(p)){ax=p.x-e.x;ay=p.y-e.y;spd=(.15+.012*game.level)*(1+.6*Math.max(0,Math.sin(performance.now()/180)));}// lunging
+  else{e.a+=rnd(-2,2)*dt;ax=Math.cos(e.a);ay=Math.sin(e.a);spd=.06;}
+  const am=Math.hypot(ax,ay)||1;e.vx=ax/am*spd;e.vy=ay/am*spd;e.x+=e.vx*dt;e.y+=e.vy*dt;
+  if(e.x<.03||e.x>W-.03)e.a=Math.PI-e.a;if(e.y<.03||e.y>Hgt-.03)e.a=-e.a;e.x=Math.max(.03,Math.min(W-.03,e.x));e.y=Math.max(.03,Math.min(Hgt-.03,e.y));wallBlock(e,.03);
+  if(d<.045){
+   if(game.power>0){e.dead=6;e.alert=0;game.score+=50;hit('boom',{tones:[2],velocity:.6});hit('chime',{tones:[4,6],octave:1,spread:1,velocity:.6});game.flash.push({x:e.x,y:e.y,t:.5,c:'#ba96f0'});}
+   else if(game.invuln<=0){game.health=Math.max(0,game.health-.15);game.invuln=1.5;hit('boom',{tones:[0],octave:-1,velocity:1});const k=d||1;p.x+=(p.x-e.x)/k*.06;p.y+=(p.y-e.y)/k*.06;game.flash.push({x:p.x,y:p.y,t:.5,c:'#ff7a7a'});
     if(game.health<=0){game.over=4;hit('boom',{tones:[0,-1,-2,-4],octave:-1,spread:3,velocity:1});hit('chime',{tones:[3,2,1,0],spread:3,velocity:.6});say(`<b>Caught</b> on level ${game.level+1} with ${game.score} points`);}}
   }
  }
- if(!game.enemies.some(e=>e.alert>0&&!e.dead))game.health=Math.min(1,game.health+dt*.05);
- if(!game.orbs.length){hit('chime',{tones:[0,1,2,4,5,6],octave:1,spread:1,velocity:.85});hit('boom',{tones:[0,0],octave:-1,spread:4});say(`<b>Level ${game.level+2}</b>: key change to ${KEY_NAME[(game.level+1)%KEY_NAME.length]}, more patrols`);newLevel(game.level+1,game.score,game.health);}
+ if(inHouse(p))game.health=Math.min(1,game.health+dt*.12);else if(!game.enemies.some(e=>e.alert>0&&!e.dead))game.health=Math.min(1,game.health+dt*.04);
  for(const f of game.flash)f.t-=dt;game.flash=game.flash.filter(f=>f.t>0);
 }
-// Autopilot: head for the nearest orb (or the power orb when chased), steering away from hunters.
+// Autopilot: shelter when badly hurt, use the star when hunted, otherwise collect, steering clear of hunters.
 function autopilot(){
- const p=game.player,hunters=game.enemies.filter(e=>!e.dead&&(e.alert>0||dist(p,e)<.15));
- const goal=game.power>0?game.enemies.filter(e=>!e.dead).sort((a,b)=>dist(p,a)-dist(p,b))[0]:(hunters.length&&game.powerOrb)?game.powerOrb:game.orbs.slice().sort((a,b)=>dist(p,a)-dist(p,b))[0];
+ const p=game.player,hunters=game.enemies.filter(e=>!e.dead&&(e.alert>0||dist(p,e)<.15)),star=game.items.find(i=>i.kind==='⭐');
+ let goal;
+ if(game.health<.35&&game.power<=0)goal=inHouse(p)?{x:p.x,y:p.y}:{x:HOUSE.x+HOUSE.w+.02,y:HOUSE.y+HOUSE.h/2,door:true};
+ else if(game.power>0)goal=game.enemies.filter(e=>!e.dead).sort((a,b)=>dist(p,a)-dist(p,b))[0];
+ else if(hunters.length&&star)goal=star;
+ else goal=game.chest||game.items.filter(i=>i.kind!=='⭐').sort((a,b)=>dist(p,a)-dist(p,b))[0];
+ if(goal?.door&&Math.abs(p.y-goal.y)<.03&&p.x<HOUSE.x+HOUSE.w+.04)goal={x:HOUSE.x+HOUSE.w/2,y:goal.y};
  if(!goal)return {x:0,y:0};let x=goal.x-p.x,y=goal.y-p.y;const m=Math.hypot(x,y)||1;x/=m;y/=m;
- if(game.power<=0)for(const e of hunters){const d=dist(p,e)||1,w=.12/(d*d);x+=(p.x-e.x)/d*w;y+=(p.y-e.y)/d*w;}
+ if(game.power<=0)for(const e of hunters){const d=dist(p,e)||1,w=.1/(d*d);x+=(p.x-e.x)/d*w;y+=(p.y-e.y)/d*w;}
  return {x,y};
 }
 
+function tri(x,y,a,r,fill,stroke){g.beginPath();for(let i=0;i<3;i++){const k=a+(i===0?0:i===1?2.5:-2.5),rr=i===0?r*1.4:r;g.lineTo(x+Math.cos(k)*rr,y+Math.sin(k)*rr);}g.closePath();g.fillStyle=fill;g.fill();g.strokeStyle=stroke;g.lineWidth=2;g.stroke();}
 function draw(){
  const dpr=Math.min(2,devicePixelRatio||1),r=cv.getBoundingClientRect(),w=Math.round(r.width*dpr),h=Math.round(r.height*dpr);if(cv.width!==w)cv.width=w;if(cv.height!==h)cv.height=h;
  const S=w/W,X=v=>v*S,t=performance.now()/1000,th=threat();
- g.fillStyle=game.power>0?'#1f1838':`rgb(${10+40*th},${22-8*th},${34-14*th})`;g.fillRect(0,0,w,h);
- g.strokeStyle='#ffffff0d';for(let i=1;i<10;i++){g.beginPath();g.moveTo(i*w/10,0);g.lineTo(i*w/10,h);g.stroke();}for(let i=1;i<8;i++){g.beginPath();g.moveTo(0,i*h/8);g.lineTo(w,i*h/8);g.stroke();}
- for(const o of game.orbs){g.fillStyle='#7ce3dd';g.globalAlpha=.6+.4*Math.sin(t*4+o.x*20);g.beginPath();g.arc(X(o.x),X(o.y),X(.012),0,6.28);g.fill();}g.globalAlpha=1;
- if(game.powerOrb){g.fillStyle='#edbc74';g.beginPath();g.arc(X(game.powerOrb.x),X(game.powerOrb.y),X(.02+.004*Math.sin(t*6)),0,6.28);g.fill();}
- for(const e of game.enemies){if(e.dead)continue;const sight=.18+.02*game.level;
-  g.fillStyle=e.alert>0?'#ff7a7a12':'#edbc740c';g.beginPath();g.arc(X(e.x),X(e.y),X(sight),0,6.28);g.fill();
-  g.fillStyle=game.power>0?'#8a7ab8':e.alert>0?'#ff7a7a':'#edbc74';g.beginPath();g.arc(X(e.x),X(e.y),X(.022),0,6.28);g.fill();}
+ g.fillStyle=game.power>0?'#1f1838':`rgb(${12+40*th},${24-8*th},${36-14*th})`;g.fillRect(0,0,w,h);
+ // House: an open box with a door, as in the film.
+ const hx=X(HOUSE.x),hy=X(HOUSE.y),hw=X(HOUSE.w),hh=X(HOUSE.h),door=X(HOUSE.door);
+ g.fillStyle=inHouse(game.player)?'#7ce3dd18':'#ffffff08';g.fillRect(hx,hy,hw,hh);g.strokeStyle='#d8e6ee';g.lineWidth=3*dpr;g.beginPath();
+ g.moveTo(hx+hw,hy+hh/2-door/2);g.lineTo(hx+hw,hy);g.lineTo(hx,hy);g.lineTo(hx,hy+hh);g.lineTo(hx+hw,hy+hh);g.lineTo(hx+hw,hy+hh/2+door/2);g.stroke();
+ g.textAlign='center';g.textBaseline='middle';g.fillStyle='#ffffff';
+ const E=narrow?1.25:1;
+ for(const tr of game.trees){g.font=`${X(.09*E)}px serif`;g.fillText('🌲',X(tr.x),X(tr.y));}
+ for(const it of [...game.items,...(game.chest?[game.chest]:[])]){const s=(it.kind==='🍄'?.05:it.kind==='💰'?.07:.055)*E;g.font=`${X(s)*(1+.08*Math.sin(t*4+it.x*20))}px serif`;g.fillText(it.kind,X(it.x),X(it.y));}
+ for(const e of game.enemies){if(e.dead)continue;const sight=.2+.015*game.level;
+  g.fillStyle=e.alert>0?'#ff7a7a14':'#ffffff07';g.beginPath();g.arc(X(e.x),X(e.y),X(sight),0,6.28);g.fill();
+  tri(X(e.x),X(e.y),Math.atan2(e.vy,e.vx),X(.035),game.power>0?'#5b4e86':e.alert>0?'#c84a4a':'#2a3f52',game.power>0?'#b8a6f0':e.alert>0?'#ffb0b0':'#d8e6ee');}
  for(const f of game.flash){g.strokeStyle=f.c;g.globalAlpha=f.t*2;g.lineWidth=3*dpr;g.beginPath();g.arc(X(f.x),X(f.y),X(.03+(.5-f.t)*.15),0,6.28);g.stroke();}g.globalAlpha=1;
- const p=game.player,beat=music?1+.18*Math.max(0,Math.cos(t*Math.PI*2*100/60)):1;
- g.fillStyle=game.invuln>0&&Math.floor(t*12)%2?'#ffffff55':game.power>0?'#f6e27a':'#7ce3dd';g.beginPath();g.arc(X(p.x),X(p.y),X(.024)*beat,0,6.28);g.fill();
- g.fillStyle='#e5f0f5';g.font=`${13*dpr}px ui-monospace,monospace`;g.fillText(`LEVEL ${game.level+1}   ${game.score} pts   ${game.orbs.length} orbs left`,10*dpr,20*dpr);
+ const al=game.ally;tri(X(al.x),X(al.y),al.a+1.6,X(.018),'#2a3f52','#91dfd4');
+ const p=game.player,beat=music?1+.15*Math.max(0,Math.cos(t*Math.PI*2*100/60)):1,hid=hidden();
+ g.beginPath();g.arc(X(p.x),X(p.y),X(.022)*beat,0,6.28);g.fillStyle=game.invuln>0&&Math.floor(t*12)%2?'#ffffff33':game.power>0?'#f6e27a':hid?'#7ce3dd66':'#7ce3dd';g.fill();g.strokeStyle='#e5f0f5';g.lineWidth=2*dpr;g.stroke();
+ g.textAlign='left';g.textBaseline='alphabetic';g.fillStyle='#e5f0f5';g.font=`${13*dpr}px ui-monospace,monospace`;
+ g.fillText(`LEVEL ${game.level+1} · ${STYLES[game.level%STYLES.length].name}   ${game.score} pts   🍄 ${game.items.filter(i=>i.kind==='🍄').length}`,10*dpr,20*dpr);
  g.fillStyle='#ffffff22';g.fillRect(10*dpr,28*dpr,w*.3,7*dpr);g.fillStyle=game.health<.3?'#ff7a7a':'#91dfd4';g.fillRect(10*dpr,28*dpr,w*.3*game.health,7*dpr);
  if(game.power>0){g.fillStyle='#f6e27a';g.fillRect(10*dpr,38*dpr,w*.3*game.power/7,4*dpr);}
+ if(hid&&!inHouse(p)){g.fillStyle='#7ce3dd';g.fillText('hidden',10*dpr,56*dpr);}
  if(game.over>0){g.fillStyle='#000a';g.fillRect(0,0,w,h);g.fillStyle='#ffd0d0';g.font=`${28*dpr}px system-ui,sans-serif`;g.textAlign='center';g.fillText('Caught',w/2,h/2);g.textAlign='left';}
 }
 
@@ -132,15 +169,15 @@ const sent={};function ctl(id,key,v){const k=id+key;if(Math.abs((sent[k]??-9)-v)
 function frame(now){
  const dt=Math.min(.05,(now-last)/1000);last=now;
  step(dt);draw();
- if(music){const s={threat:threat(),health:game.health,power:game.power>0,level:game.level};music.set(s);
+ if(music){const s={threat:threat(),health:game.health,power:game.power>0,level:game.level,safe:inHouse(game.player)};music.set(s);
   ctl('heart','level',game.health<.6?Math.min(1.3,(.6-game.health)/.6*1.5):0);
   ctl('energy','level',.8+.6*s.threat);
-  $('#meters').innerHTML=`Threat <b>${Math.round(s.threat*100)}%</b> · Health <b>${Math.round(game.health*100)}%</b>${s.power?' · <b>Power</b>':''} · Key <b>${KEY_NAME[game.level%KEY_NAME.length]}</b>`;}
+  $('#meters').innerHTML=`Threat <b>${Math.round(s.threat*100)}%</b> · Health <b>${Math.round(game.health*100)}%</b>${s.power?' · <b>Power</b>':''}${s.safe?' · <b>Sheltered</b>':''} · <b>${STYLES[game.level%STYLES.length].name}</b> (${STYLES[game.level%STYLES.length].key})`;}
  requestAnimationFrame(frame);
 }
 function renderLayers(p){
  const on=new Set(p.layers);
- $('#layers').innerHTML=MUSIC_TRACKS.map(id=>`<span data-id="${id}" class="${on.has(id)&&(id!=='heart'||game.health<.6)?'on':''}">${LABEL[id]}<i></i></span>`).join('')+`<span data-id="drums" class="${p.rhythm!=='none'?'on':''}">Drums · ${p.rhythm}<i></i></span>`;
+ $('#layers').innerHTML=MUSIC_TRACKS.map(id=>`<span data-id="${id}" class="${on.has(id)&&id!=='heart'?'on':''}">${LABEL[id]}<i></i></span>`).join('')+`<span data-id="drums" class="${p.rhythm!=='none'?'on':''}">Drums · ${p.rhythm}<i></i></span>`;
 }
 
 $('#start').onclick=async()=>{
@@ -148,7 +185,7 @@ $('#start').onclick=async()=>{
  if(music){if(!b.dataset.paused){music.pause();b.dataset.paused='1';b.textContent='▶ Resume music';}else{music.resume();delete b.dataset.paused;b.textContent='❚❚ Pause music';}return;}
  b.disabled=true;b.textContent='Loading instruments…';
  try{
-  music=await startAdaptive({composition,plan,state:{threat:0,health:1,power:false,level:0},
+  music=await startAdaptive({composition,plan,state:{threat:0,health:1,power:false,level:0,safe:true},
    onBar:(bar,p)=>{$('#status').innerHTML=`Bar <b>${bar+1}</b> · <b>${p.name}</b> · energy ${p.energy} · drums ${p.rhythm}`;if(JSON.stringify(p)!==JSON.stringify(lastPlan)){lastPlan=p;renderLayers(p);say(`bar ${bar+1}: <b>${p.name}</b> → ${p.layers.filter(l=>l!=='heart'&&l!=='wind').map(l=>LABEL[l]).join(', ')}${p.rhythm!=='none'?', '+p.rhythm+' drums':''}`);}},
    onLevels:m=>{lastLevels=m;for(const s of document.querySelectorAll('#layers span')){const v=m[s.dataset.id]?.rms||0,w=v>0?Math.max(0,Math.min(1,(20*Math.log10(v)+60)/60)):0;s.querySelector('i').style.width=(w*100).toFixed(0)+'%';s.classList.toggle('on',w>.05||(lastPlan?.layers.includes(s.dataset.id)&&s.dataset.id!=='heart')||(s.dataset.id==='drums'&&lastPlan?.rhythm!=='none'));}}});
   b.textContent='❚❚ Pause music';
@@ -161,4 +198,4 @@ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);$('#auto
 cv.addEventListener('pointermove',e=>{if(e.buttons)target=toField(e);});
 cv.addEventListener('pointerup',()=>{target=null;});
 newLevel(0);requestAnimationFrame(frame);
-window.adaptiveDemo={get levels(){return lastLevels;},get game(){return game;},get music(){return music;},plan};
+window.adaptiveDemo={get levels(){return lastLevels;},get game(){return game;},get music(){return music;},plan,STYLES};

@@ -34,12 +34,13 @@ export async function startAdaptive({composition,plan,state={},onBar=()=>{},onLe
  const needed=[...new Set([...composition.tracks.map(t=>t.pattern),...drumKit.map(d=>d.pattern),'chamber'])];
  const modules=await Promise.all(needed.map(id=>loadLeanKernel(id,patterns[id].source)));
 
- // Voice pools are fixed at load, so size them from a dense worst case: every layer at full energy.
+ // Voice pools are fixed at load, so size them from a dense worst case (every layer at full energy), capped:
+ // the worklet steals the oldest voice when a pool is full, and small pools keep Wasm memory bounded.
  const sr=ctx.sampleRate,worst=makeSession({...composition,rhythm:'factory',bars:16,sections:[{name:'Sizing',start:0,bars:16,energy:1,roles:ALL_ROLES}]},sr);
  let current=plan(state),events=planEvents(composition,current,0,lookahead,sr),until=lookahead;
  const session={...worst,id:composition.id+'-live',bars:ENDLESS_BARS,durationFrames:Number.MAX_SAFE_INTEGER/4,
   sections:[{name:current.name||'Live',start:0,bars:ENDLESS_BARS,energy:current.energy??.6,roles:ALL_ROLES}],
-  tracks:worst.tracks.map(t=>({...t,pool:Math.min(24,Math.max(4,t.poolRequired+2)),poolRequired:Math.min(24,Math.max(4,t.poolRequired+2)),automation:null})),automation:null,events};
+  tracks:worst.tracks.map(t=>{const n=t.role==='timeline'?3:Math.min(8,Math.max(2,t.poolRequired));return {...t,pool:n,poolRequired:n,automation:null};}),automation:null,events};
  const barFrames=session.beats*60/composition.bpm*sr;
  let position=0,lastBar=-1,generation=1;
  let heardAt=0;

@@ -5,7 +5,7 @@ export const MAX_TRACK_VOICES=24;
 export const framesPerBar=(c,sr)=>Math.round(c.meter[0]*4/c.meter[1]*60/c.bpm*sr);
 export function sectionAt(c,bar){return c.sections.find(s=>bar>=s.start&&bar<s.start+s.bars)||c.sections[c.sections.length-1];}
 function random(seed){let s=seed|0;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return(s>>>0)/4294967296};}
-const group=role=>['keys','stabs','long'].includes(role)?'pad':role==='sequence'?'arp':role==='drone'?'bass':role==='continuous'?'air':['speechVowel','speechConsonant'].includes(role)?'lead':['sparse','answer'].includes(role)?'lead':role;
+const group=role=>['keys','stabs','long'].includes(role)?'pad':role==='sequence'?'arp':role==='drone'?'bass':role==='continuous'?'air':['speechVowel','speechConsonant'].includes(role)?'lead':['sparse','answer','canon','tintinnabuli'].includes(role)?'lead':['ostinato','euclid','phase'].includes(role)?'arp':role==='cloud'?'air':role;
 const trackActive=(track,section)=>(!track.onlySections||track.onlySections.includes(section.name))&&(!track.excludeSections||!track.excludeSections.includes(section.name));
 const VOWEL_COLOUR={a:0,e:.25,i:.5,o:.75,u:.999};
 const CONSONANT_COLOUR={p:.05,b:.08,t:.14,d:.17,k:.25,g:.28,h:.31,f:.32,v:.33,m:.43,n:.52,l:.76,r:.80,j:.84,w:.91,s:.98};
@@ -22,6 +22,10 @@ export function drumSteps(c,bar){
  else if(c.rhythm==='halftime'){add('bd',[0,7,10]);add('sd',[8]);add('rs',[6,14]);add('ch',[2,6,10,14]);if(E>.65)add('oh',[15]);}
  else if(c.rhythm==='postpunk'){add('bd',[0,6,8,11]);add('sd',[4,12]);for(let i=0;i<steps;i+=2)add('ch',[i]);if(bar%4===3)add('mt',[15]);}
  else if(c.rhythm==='factory'){add('bd',[0,3,8,11]);add('sd',[4,12]);if(E>.68)add('cp',[4,12]);add('ch',[2,6,10,14]);if(E>.58)add('ch',[0,4,8,12]);if(E>.72)add('oh',[6,14]);if(bar%2===1)add('rs',[7,15]);if(bar%8===7){add('lt',[9]);add('mt',[12]);add('ht',[15]);}}
+ else if(c.rhythm==='clave'){add('bd',[0,8]);add('rs',bar%2===0?[0,6,12]:[4,8]);add('ch',[2,6,10,14]);add('lt',[11]);}
+ else if(c.rhythm==='bembe'){const n=steps;add('bd',[0,Math.round(n/2)]);add('rs',euclid(7,12).map((x,i)=>x?Math.round(i*n/12):-1).filter(i=>i>=0));add('ch',[2,5,8,11].map(i=>Math.round(i*n/12)));if(bar%2)add('lt',[n-2]);}
+ else if(c.rhythm==='dembow'){add('bd',[0,4,8,12]);add('sd',[3,6,11,14]);add('ch',[0,2,4,6,8,10,12,14]);}
+ else if(c.rhythm==='amen'){add('bd',[0,2,10,11]);add('sd',[4,7,9,12,15]);for(let i=0;i<steps;i+=2)add('ch',[i]);if(bar%4===3)add('oh',[14]);}
  else if(c.rhythm==='shuffle'){add('bd',[0,7,10]);add('sd',[4,12]);add('ch',[0,2,5,6,8,10,13,14]);if(bar%2===1)add('rs',[15]);}
  else if(c.rhythm==='suite'){
   const room=Math.floor(bar/8);add('bd',room<2?[0,8]:room===4?[0]:room===5?[0,7,10]:[0,4,8,12]);
@@ -31,6 +35,44 @@ export function drumSteps(c,bar){
  if(E<.5){p.cp=[];p.oh=[];p.ch=p.ch.filter((_,i)=>i%2===0)}
  if(bar%8===7&&E>.5){add('mt',[steps-3]);add('ht',[steps-1]);p.ch=p.ch.filter(i=>i<steps-2)}
  return p;
+}
+// Euclidean rhythm: k onsets spread as evenly as possible over n steps, optionally rotated.
+export const euclid=(k,n,rot=0)=>Array.from({length:n},(_,i)=>{const j=(i+rot)%n;return Math.floor(j*k/n)!==Math.floor((j+n-1)%n*k/n)||(j===0&&k>0);});
+// Process roles: techniques from minimalism, medieval and non-Western practice, all following the
+// song's chords. g counts 16th steps from the start of the piece, so long cycles never reset at bar lines.
+function processRole(t,bar,chord,root,steps,E,vel,colour,last,emit,c,rand){
+ const pitches=(c.melody||[]).filter(v=>v!=null),tones=[0,chord[2],chord[3],chord[4]];
+ for(let step=0;step<steps;step++){
+  if(last&&step>steps/2)break;const g=bar*steps+step;
+  if(t.role==='ostinato'){
+   // Isorhythm: a rhythm cycle (talea) and a pitch cycle (color) of different lengths, so the
+   // combination takes many bars to repeat.
+   const talea=euclid(Number(t.hits)||5,Number(t.cycle)||7);if(!talea[g%talea.length])continue;
+   const per=talea.filter(Boolean).length,n=Math.floor(g/talea.length)*per+talea.slice(0,g%talea.length).filter(Boolean).length;
+   const pc=pitches.length?pitches[n%pitches.length]:tones[n%4]+12;emit(t.id,bar,step,root+12+tune(pc,chord),vel*(n%3===0?1:.82),.3,colour,t.life);
+  }else if(t.role==='euclid'){
+   // Evenly spread onsets, more of them at higher energy, rotating every bar; root, fifth and octave.
+   const n=Number(t.cycle)||steps,k=Math.min(n,Math.max(1,Math.round((Number(t.hits)||3)+E*3)));if(!euclid(k,n,bar%4)[g%n])continue;
+   emit(t.id,bar,step,root+12+[0,chord[3],12,chord[2]][(Math.floor(g/n)+step)%4],vel*(step%4===0?1:.75),.2,colour,t.life);
+  }else if(t.role==='phase'){
+   // Phasing by steps (after Reich): the melody's notes as an unbroken 16th stream that slips one
+   // step ahead every two bars against any part playing the same notes straight.
+   if(!pitches.length||(E<.4&&step%2))continue;emit(t.id,bar,step,root+12+tune(pitches[(g+Math.floor(bar/2))%pitches.length],chord),vel*(step%4===0?1:.8),.22,colour,t.life);
+  }else if(t.role==='canon'){
+   // The melody again, later (default half a bar) and a fifth higher (`interval` semitones).
+   const delay=Number(t.delaySteps)||Math.round(steps/2),src=g-delay;if(src<0)continue;
+   const v=c.melody[(src+(Math.floor(src/steps)%4===1?4:0))%c.melody.length];if(v==null||(E<.4&&step%4))continue;
+   emit(t.id,bar,step,root+12+tune(v,chord)+(t.interval!=null?Number(t.interval):7),vel*.85,.33,colour,t.life);
+  }else if(t.role==='tintinnabuli'){
+   // After Pärt: for each melody note, the nearest chord tone above it.
+   const v=c.melody[(g+(bar%4===1?4:0))%c.melody.length];if(v==null||(E<.4&&step%4))continue;
+   const m=root+12+tune(v,chord),above=[0,chord[2],chord[3],12,12+chord[2],12+chord[3],24,24+chord[2]].map(x=>root+12+x).find(x=>x>m)??m+12;
+   emit(t.id,bar,step,above,vel*.8,.5,colour,t.life);
+  }else if(t.role==='cloud'){
+   // Aleatoric cloud: chord tones scattered over three octaves, density set by energy.
+   if(rand()>.08+.3*E)continue;emit(t.id,bar,step,root+12+tones[Math.floor(rand()*4)]+12*Math.floor(rand()*3),vel*(.5+.5*rand()),.15+rand()*.6,colour,t.life);
+  }
+ }
 }
 export function makeSession(c,sr,overrides={}){
  if(!(sr>=8000&&sr<=192000))throw new Error('Unsupported sample rate');
@@ -63,9 +105,11 @@ export function makeSession(c,sr,overrides={}){
     for(const step of rhythm.filter(n=>n<steps))for(const n of chord.slice(1))emit(t.id,bar,step,root+24+n,vel*.80,t.role==='keys'?.65:.23,colour,t.life);
    }else if(t.role==='bass'){
     const pat=c.bass||[0,null,null,0,null,7,null,null,0,null,3,null,7,null,5,null];
-    for(let step=0;step<steps;step++){const v=pat[(step+((bar%4===3)?2:0))%pat.length];if(v===null||last&&step>steps/2)continue;emit(t.id,bar,step,root+tune(v,chord),vel,(c.rhythm==='halftime'?.45:.29),colour,t.life,{humanize:t.humanize});}
+    for(let step=0;step<steps;step++){const v=pat[(bar*steps+step+((bar%4===3)?2:0))%pat.length];if(v===null||last&&step>steps/2)continue;emit(t.id,bar,step,root+tune(v,chord),vel,(c.rhythm==='halftime'?.45:.29),colour,t.life,{humanize:t.humanize});}
    }else if(t.role==='sequence'){
     const seq=Array.isArray(t.sequence)&&t.sequence.length?t.sequence:[0,null,7,null],gate=Math.max(.05,Math.min(2,Number(t.gate??.18))),oct=Number(t.octave??12);for(let step=0;step<steps;step++){const raw=seq[(bar*steps+step)%seq.length];if(raw===null||raw===undefined||last&&step>steps/2)continue;const interval=typeof raw==='object'?Number(raw.note):Number(raw),accent=typeof raw==='object'?Math.max(.2,Math.min(1.4,Number(raw.velocity??1))):1;if(!Number.isFinite(interval))continue;emit(t.id,bar,step,root+oct+tune(interval,chord),vel*accent,gate,colour,t.life,{sequenceIndex:(bar*steps+step)%seq.length,humanize:t.humanize});}
+   }else if(['ostinato','euclid','phase','canon','tintinnabuli','cloud'].includes(t.role)){
+    processRole(t,bar,chord,root,steps,E,vel,colour,last,emit,c,rand);
    }else if(t.role==='arp'){
     const stride=c.arpStride??(['amber','violet'].includes(c.id)?1:2);
     const order=[0,2,1,3,2,0,3,1];for(let step=0;step<steps;step+=stride){if(E<.5&&step%4!==0||last&&step>steps/2)continue;const j=(Math.floor(step/stride)+bar%4)%order.length;const degree=chord[1+order[j]%Math.max(1,chord.length-1)];const oct=(bar%4===2&&j>4)?12:0;emit(t.id,bar,step,root+24+degree+oct,vel*(step%4===0?1:.75),.16+stride*.10,colour,t.life);}
@@ -73,7 +117,7 @@ export function makeSession(c,sr,overrides={}){
     const sparse=t.role==='sparse'||t.role==='answer';for(let step=0;step<steps;step++){
      if(sparse&&step%4!==((t.role==='answer')?2:0))continue;
      if(t.role==='answer'&&bar%2===0||t.role==='sparse'&&bar%4===2)continue;
-     let interval=c.melody[(step+(bar%4===1?4:0))%c.melody.length];if(interval===null)continue;
+     let interval=c.melody[(bar*steps+step+(bar%4===1?4:0))%c.melody.length];if(interval===null)continue;
      if(E<.4&&!sparse&&step%4!==0||last&&step>steps/2)continue;
      if(bar%8===7&&step>steps-5)interval=[12,14,12,7][step%4];
      if(bar%8>=4&&step%5===0)interval+=12;

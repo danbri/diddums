@@ -52,11 +52,26 @@ A song-shaped piece:
 
 1. Choose \`key\`, \`bpm\`, \`meter\` and a \`rhythm\` (the drum machine) that suit the style; \`"none"\` for drumless pieces.
 2. Harmony: \`chords\` as scale degrees, 4–8 of them; each chord lasts two bars and the list repeats. Or exact chords in \`harmony\`.
-3. \`melody\` and \`bass\`: one bar of steps (16 in 4/4, 12 in 3/4 or 6/8; only the first bar's worth is used), each a number of semitones above the current chord's root, or \`null\` for a rest. Diddums moves the pattern onto every chord. Values that are a third (3, 4, 15, 16, 27, 28) or a seventh (10, 11, 22, 23) in any octave snap to the current chord's own third or seventh, so they never clash; other values are played as written (7 and 19 are the fifth, 12 and 24 the root, 2, 5, 9, 14, 17, 21 are passing notes). The melody sounds an octave above these values. The engine varies it: bar 2 of every 4 starts four steps later in the pattern, bars 5–8 of every 8 lift some notes an octave, and the last bar of every 8 ends with a short fill. Leave either out and Diddums writes one. For a longer hook than one bar, or a different chorus tune, add a timed track: the role harmony starts at 0 s and each chord lasts two bars (2 × beats per bar × 60 / bpm seconds), so a timed melody can be lined up with it.
+3. \`melody\` and \`bass\`: steps (16 per bar in 4/4, 12 in 3/4 or 6/8) of up to four bars (64 values), each a number of semitones above the current chord's root, or \`null\` for a rest. A pattern longer than a bar runs on across bars, so write two- or four-bar phrases rather than repeating one bar. Diddums moves the pattern onto every chord. Values that are a third (3, 4, 15, 16, 27, 28) or a seventh (10, 11, 22, 23) in any octave snap to the current chord's own third or seventh, so they never clash; other values are played as written (7 and 19 are the fifth, 12 and 24 the root, 2, 5, 9, 14, 17, 21 are passing notes). The melody sounds an octave above these values. The engine varies it: bar 2 of every 4 starts four steps later in the pattern, bars 5–8 of every 8 lift some notes an octave, and the last bar of every 8 ends with a short fill. Leave either out and Diddums writes one. For a different chorus tune, add a timed track: the role harmony starts at 0 s and each chord lasts two bars (2 × beats per bar × 60 / bpm seconds), so a timed melody can be lined up with it.
 4. 4–6 \`sections\`, each with \`energy\` (0–1; higher is louder and busier: below 0.5 the arpeggio keeps to the beats, below 0.4 the melody does) and \`roles\`, the only kinds of role track that play in it: \`bass\`, \`pad\`, \`lead\`, \`arp\`, \`air\`, \`drums\`. Arrange by bringing parts in and out: a sparse opening, a build, a full peak, a breakdown, a return, a fade. Pick a bpm that makes bars a round number of seconds (60 or 120 bpm: 4 s or 2 s per 4/4 bar; 96 bpm: 2.5 s) so section starts are easy to place. Sections do not affect timed tracks: give those \`from\`/\`to\` or a \`level\` automation curve.
 5. 3–6 role tracks: a bass, a chord instrument, a lead, and optionally an arpeggio, a texture and a voice. Role kinds: \`bass\` and \`drone\` count as bass; \`pad\`, \`keys\`, \`stabs\` and \`long\` as pad; \`arp\` and \`sequence\` as arp; \`lead\`, \`sparse\`, \`answer\` and the speech roles as lead; \`air\` and \`continuous\` as air.
 6. Then add timed tracks for hooks, fills and effects, and automation for fades and sweeps.
 7. Songs usually run 1.5–3 minutes; ambient pieces can be longer.
+
+## Avoid the obvious
+
+Minor key, four chords, four-on-the-floor and a saw lead is one idiom among many. Unless the request asks for it, reach further:
+
+- **Scales** (the word after the key note in \`key\`): church modes \`major\`, \`minor\`, \`dorian\`, \`phrygian\`, \`lydian\`, \`mixolydian\`, \`locrian\`; \`harmonic\` (harmonic minor); \`hijaz\` (Arabic, Balkan and klezmer colour, with its augmented second); \`acoustic\` (lydian dominant); five-note \`pentatonic\` (minor), \`yo\` (Japanese major pentatonic), \`hirajoshi\` and \`pelog\` (Javanese-like); \`blues\`; \`wholetone\` (no home note, dreamlike); \`octatonic\` (half-whole, tense). Chords are built from every other note of the scale, so five- and six-note scales give open, quartal or whole-tone chords rather than ordinary triads.
+- **Process roles** (set \`role\`; all follow the chords):
+  - \`ostinato\`: isorhythm. A rhythm of \`hits\` evenly spread over \`cycle\` steps (default 5 in 7) carries the melody's notes in turn; the two cycles have different lengths, so the line takes many bars to repeat. \`hits: 1, cycle: 1\` plays the melody's notes as an unbroken 16th stream.
+  - \`phase\`: the melody's notes as a 16th stream that slips one step ahead every two bars (after Steve Reich). Pair it with an \`ostinato\` (\`hits: 1, cycle: 1\`) on the same sound.
+  - \`euclid\`: \`hits\` evenly spread over \`cycle\` steps, more at higher energy, rotating each bar, on root, fifth and octave (3 in 8 is the tresillo, 5 in 8 the cinquillo, 7 in 12 the West African bell).
+  - \`canon\`: the melody again \`delaySteps\` later (default half a bar), \`interval\` semitones higher (default 7).
+  - \`tintinnabuli\`: for each melody note, the nearest chord tone above it (after Arvo Pärt). Pair with a \`lead\` track.
+  - \`cloud\`: chord tones scattered over three octaves at random, denser at higher energy.
+- **More drum patterns**: \`clave\` (son clave, 3-2), \`bembe\` (12/8 bell; use 6/8 or 12/8), \`dembow\` (reggaeton), \`amen\` (breakbeat), plus \`seven\` for 7/8 and \`euclid\` for off-kilter grooves. Or use \`"none"\` and let a \`euclid\` track be the rhythm.
+- **Form**: static harmony (\`chords: [1]\`) with slowly changing texture is as valid as a progression; so are odd meters (5/4, 7/8) and long, slow pieces built from one process.
 
 ## Song fields
 
@@ -67,7 +82,7 @@ A song-shaped piece:
 - \`sections\`: [{"name", "start" (seconds), "energy" (0–1), "roles" (list)}] — named parts shown to the listener as movements. Starts are rounded to bar lines.
 - \`chords\`: scale degrees 1–7 for the harmony that role-based tracks follow, e.g. [1,6,3,7]. Each chord lasts two bars.
 - \`harmony\` (instead of \`chords\`): exact chords, each \`[root MIDI note 24–60, 0, third, fifth, seventh]\` in semitones above the root, e.g. \`[[36,0,3,7,10],[39,0,4,7,11]]\` (Cm7, Ebmaj7).
-- \`melody\`, \`bass\`: one-bar step patterns in semitones above each chord's root, \`null\` for rests (see above).
+- \`melody\`, \`bass\`: step patterns of up to four bars, in semitones above each chord's root, \`null\` for rests (see above).
 - \`swing\` 0–0.2: delays every second sixteenth for a shuffled feel.
 - \`tracks\`: up to 16 voices (a stereo pair counts as two).
 - \`automate\`: whole-mix curves. \`master\` 0–1.5 (1 = normal, 0 = total silence); \`room\` (reverb size), \`damp\` (reverb darkness), \`wet\` (reverb level) and \`echo\` (echo level) all 0–0.94.

@@ -3,10 +3,11 @@
 <title>Diddums · adaptive game music</title>
 <link rel="stylesheet" href="studio.css">
 <style>
-main{max-width:980px}
-.gm-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+main{max-width:1400px}
+.gm-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px;align-items:start}
+.gm-grid>.gm-card:first-child{padding:8px}
 .gm-card{border:1px solid #2c4a5f;border-radius:16px;padding:14px;background:linear-gradient(160deg,#112536,#0a1824)}
-#arena{display:block;width:100%;aspect-ratio:4/3;border-radius:12px;background:#07131e;border:1px solid #2a465a;touch-action:none}
+#arena{display:block;width:100%;max-height:78vh;border-radius:12px;background:#07131e;border:1px solid #2a465a;touch-action:none}
 .gm-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 12px}
 .gm-modes button{min-height:52px;font-size:16px;font-weight:650}
 .gm-modes button[aria-pressed=true]{border-color:var(--mint);color:#c9fffa;background:#12373f}
@@ -26,16 +27,16 @@ main{max-width:980px}
 #log{font:11px/1.6 var(--mono);color:#8ea6b8;max-height:180px;overflow:auto;margin:0;padding:8px 10px;background:#07111b;border-radius:10px;border:1px solid #23394a}
 #log b{color:#c9fffa;font-weight:600}
 .gm-note{font-size:13px;line-height:1.55}
-@media(max-width:760px){.gm-grid{grid-template-columns:1fr}main{padding-bottom:40px}}
+@media(max-width:900px){.gm-grid{grid-template-columns:1fr}main{padding:12px 8px 40px}.section-heading h1{font-size:26px}}
 </style>
 </head><body>
 <header class="app-header"><a class="brand" href="./" aria-label="Diddums home"><span class="jigsaw" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Diddums</a><nav aria-label="Workspace"><a href="./" style="padding:9px">← Studio</a></nav></header>
 <main>
 <div class="section-heading"><span class="eyebrow">LABS · ADAPTIVE MUSIC DEMO</span><h1>Music that follows the game.</h1>
-<p>Collect the cyan orbs without being caught. Patrols notice you inside their circle and give chase; the gold orb lets you knock them out for seven seconds. Clearing a level changes key and adds a patrol. The score is one endless piece written a couple of bars ahead from how much danger you are in, your health and your power, and every pickup, alarm, hit and knockout answers within a sixteenth note, in key.</p></div>
+<p>Gather the 🍄 mushrooms, then grab the 💰 treasure that appears to reach the next level. 💎 gems are worth more. Big triangles hunt you once you enter their circle; hide among 🌲 trees or in the house, where they cannot follow and you heal. A ⭐ star lets you knock them out for seven seconds. Your companion is the small triangle. The music is one endless piece shaped by your danger, health and power, and every level brings a different musical idiom.</p></div>
 <div class="gm-grid">
  <section class="gm-card">
-  <canvas id="arena" aria-label="Game: you are the cyan dot"></canvas>
+  <canvas id="arena" aria-label="Game: you are the small circle"></canvas>
   <p class="gm-note">Move with arrow keys or WASD, or hold a finger or the mouse where you want to go. Autopilot plays by itself so you can just listen.</p>
  </section>
  <section class="gm-card">
@@ -48,10 +49,12 @@ main{max-width:980px}
  </section>
 </div>
 <details class="gm-card" style="margin-top:16px"><summary>What drives what</summary>
-<p class="gm-note"><b>Threat</b> (patrols chasing you, and how close the nearest is) brings parts in one by one: drone and plucks when unseen; sub bass and a sparse kit when watched; arpeggio, acid bass, saw lead and harder drums as the hunt builds. <b>Health</b> changes the music itself: below half the bell melody and saw lead drop out; near death the chords turn to a flat-second dread progression with a halftime beat, the pad gives way to a drone, and a heartbeat grows louder. <b>Power</b> switches to a heroic progression and house beat. <b>Level</b> changes key.</p>
-<p class="gm-note">Events use <code>music.hit()</code>: notes are chosen from the chord playing at that moment and placed on the next 16th note (0.15 s at 100 bpm). Pickups climb the chord as an arpeggio when collected quickly; being spotted sounds a sonar ping on the beat; a hit is a low timpani; a knockout is a beacon blip; levels and game over get short phrases.</p>
+<p class="gm-note"><b>Threat</b> (hunters chasing you, and how close the nearest is) brings parts in one at a time: drone and a process layer when unseen; sub bass and a sparse kit when watched; arpeggio, acid bass, saw lead and harder drums as the hunt builds. <b>Health</b> changes the music itself: below half the bell melody and saw lead drop out; near death the chords turn to a dread progression with a halftime beat, the pad gives way to a drone, and a heartbeat grows louder. <b>Power</b> switches to a heroic progression and house beat. In the <b>house</b> the music settles.</p>
+<p class="gm-note"><b>Each level is a different idiom</b>, not just a new key: night synth (A minor), hijaz (D, the scale of much Arabic and Balkan music, with a koto isorhythm and clave), pentatonic phasing (E, a marimba slipping against the beat, bembé bell), octatonic (F, the half-whole scale of chase music, Amen-style breaks), whole-tone (C, a scattered bell cloud) and pelog (G, a Javanese-like five-note scale). Melodies are written as scale degrees, so each idiom keeps to its own notes.</p>
+<p class="gm-note">Events use <code>music.hit()</code>: notes come from the chord playing at that moment, on the next 16th note. Mushrooms climb the chord as an arpeggio when collected quickly; gems play two notes; being spotted sounds a sonar ping on the beat; a hit is a low timpani; levels and game over get short phrases.</p>
+<p class="gm-note">The characters follow Heider and Simmel's 1944 film, in which people read chases, bullying and protection into a moving circle, two triangles and a box.</p>
 <pre>const music = await startAdaptive({composition, plan});
-music.set({threat: 0.7, health: 0.3});               // re-arranged from the next bar
+music.set({threat: 0.7, health: 0.3, level: 2});      // re-arranged from the next bar
 music.hit('chime', {tones: [0, 1, 2], spread: 1});   // root, third, fifth on the next 16ths</pre></details>
 </main>
 <script type="module" src="game.js"></script>

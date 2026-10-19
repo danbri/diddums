@@ -16,10 +16,14 @@ import {AUTOMATABLE,GLOBAL_AUTOMATABLE,parseCurve,parseSequence,parseNote} from 
 export const SONG_SCHEMA_ID='diddums-song/1';
 export const MAX_TRACKS=16; // studio-worklet.js accepts at most 16 tracks per session (a stereo pair uses two)
 export const MAX_SECONDS=600;
-export const rhythms=['none','brush','halftime','broken','shuffle','house','motorik','postpunk','factory','euclid','seven','ritual','suite'];
-export const ROLES=['bass','drone','pad','long','keys','stabs','arp','sequence','lead','sparse','answer','air','continuous','speechVowel','speechConsonant','timeline'];
-export const modes={minor:[0,2,3,5,7,8,10],major:[0,2,4,5,7,9,11],dorian:[0,2,3,5,7,9,10],lydian:[0,2,4,6,7,9,11],phrygian:[0,1,3,5,7,8,10],mixolydian:[0,2,4,5,7,9,10]};
-const progressions={minor:[[1,6,3,7],[1,4,6,5],[1,7,6,7],[1,6,4,5]],major:[[1,5,6,4],[1,4,6,5],[1,6,4,5]],dorian:[[1,4,1,7],[1,2,4,1]],lydian:[[1,2,1,7],[1,2,5,1]],phrygian:[[1,2,1,7],[1,2,7,1]],mixolydian:[[1,7,4,1],[1,4,7,4]]};
+export const rhythms=['none','brush','halftime','broken','shuffle','house','motorik','postpunk','factory','euclid','seven','ritual','suite','clave','bembe','dembow','amen'];
+export const ROLES=['bass','drone','pad','long','keys','stabs','arp','sequence','lead','sparse','answer','air','continuous','speechVowel','speechConsonant','ostinato','euclid','phase','canon','tintinnabuli','cloud','timeline'];
+export const modes={minor:[0,2,3,5,7,8,10],major:[0,2,4,5,7,9,11],dorian:[0,2,3,5,7,9,10],lydian:[0,2,4,6,7,9,11],phrygian:[0,1,3,5,7,8,10],mixolydian:[0,2,4,5,7,9,10],
+ // Beyond the church modes. Chords stack every other scale note, so five- and six-note scales give
+ // open, quartal or whole-tone chords rather than ordinary triads.
+ locrian:[0,1,3,5,6,8,10],harmonic:[0,2,3,5,7,8,11],hijaz:[0,1,4,5,7,8,10],acoustic:[0,2,4,6,7,9,10],
+ pentatonic:[0,3,5,7,10],yo:[0,2,5,7,9],hirajoshi:[0,2,3,7,8],pelog:[0,1,3,7,8],blues:[0,3,5,6,7,10],wholetone:[0,2,4,6,8,10],octatonic:[0,2,3,5,6,8,9,11]};
+const progressions={locrian:[[1,2,1,7]],harmonic:[[1,4,5,1],[1,6,4,5]],hijaz:[[1,2,1,7],[1,4,2,1]],acoustic:[[1,2,1,7]],pentatonic:[[1,4,3,5],[1,2,4,1]],yo:[[1,4,2,5],[1,3,4,1]],hirajoshi:[[1,4,1,5]],pelog:[[1,4,5,1]],blues:[[1,3,1,4]],wholetone:[[1,2,3,4]],octatonic:[[1,3,5,7]],minor:[[1,6,3,7],[1,4,6,5],[1,7,6,7],[1,6,4,5]],major:[[1,5,6,4],[1,4,6,5],[1,6,4,5]],dorian:[[1,4,1,7],[1,2,4,1]],lydian:[[1,2,1,7],[1,2,5,1]],phrygian:[[1,2,1,7],[1,2,7,1]],mixolydian:[[1,7,4,1],[1,4,7,4]]};
 const NOTE={c:0,d:2,e:4,f:5,g:7,a:9,b:11};
 const PC_NAME=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
 export const DEFAULT_NAMES=['Opening','Rising','Bloom','Hush','Peak','Fade'];
@@ -29,7 +33,7 @@ export function hash(text){let h=2166136261;for(const ch of String(text)){h^=ch.
 export function rng(seed){let s=seed|0||1;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return(s>>>0)/4294967296;};}
 
 export function parseKey(text){
- const m=String(text||'').trim().toLowerCase().match(/^([a-g])\s*(#|♯|b|♭|-?sharp|-?flat)?\s*(.*)$/);
+ const m=String(text||'').trim().toLowerCase().match(/^([a-g])\s*(#|♯|b(?![a-z])|♭|-?sharp|-?flat)?\s*(.*)$/);
  if(!m)return null;
  let pc=NOTE[m[1]];if(m[2])pc+=/#|♯|sharp/.test(m[2])?1:-1;
  const rest=m[3].trim(),mode=rest.startsWith('maj')||rest==='ionian'?'major':rest.startsWith('min')||rest==='m'||rest==='aeolian'?'minor':Object.keys(modes).find(k=>rest.startsWith(k))||(rest?null:'major');
@@ -64,12 +68,13 @@ export function syllablesFor(text,stepsPerSyllable=1.75){
 }
 
 function chordFor(tonic,scale,degree,r,extended){
- const i=degree-1,at=k=>scale[(i+k)%7]+12*Math.floor((i+k)/7),root=scale[i];
+ const n=scale.length,i=(degree-1)%n,at=k=>scale[(i+k)%n]+12*Math.floor((i+k)/n),root=scale[i];
  let midi=36+((tonic+root)%12);if(midi>45)midi-=12;
  return [midi,0,at(2)-root,at(4)-root,extended&&r()<.5?14:at(6)-root];
 }
-function generateMelody(r,sparse,stepsPerBar){
- const pool=[12,14,15,17,19,21,22,24,26],out=[];let last=4;
+function generateMelody(r,sparse,stepsPerBar,scale){
+ // Seven-note scales keep the original pool (and so the original seeded melodies); other scales use their own notes.
+ const pool=!scale||scale.length===7?[12,14,15,17,19,21,22,24,26]:[...scale.map(v=>v+12),...scale.map(v=>v+24)].filter(v=>v<=27),out=[];let last=Math.min(4,pool.length-1);
  for(let i=0;i<stepsPerBar;i++){
   // Downbeats feed lead/sparse roles; the off-beat (step 2 of each beat) feeds answer-role sounds.
   const p=i%4===0?(sparse?.55:.85):i%4===2?(sparse?.4:.6):(sparse?.08:.4);
@@ -108,7 +113,7 @@ export function compositionFromSong(input){
  const rhythm=rhythms.includes(song.rhythm)?song.rhythm:'none',ambient=rhythm==='none';
  const progression=Array.isArray(song.chords)&&song.chords.length?song.chords.slice(0,8).map(d=>num(d,1,1,7)|0):progressions[key.mode][Math.floor(r()*progressions[key.mode].length)];
  const harmony=Array.isArray(song.harmony)&&song.harmony.length?song.harmony.slice(0,8).map(c=>c.slice(0,5).map((v,i)=>i?num(v,0,0,24):num(v,40,24,60))).filter(c=>c.length>=4):progression.map(d=>chordFor(key.pc,scale,d,r,ambient));
- const melody=Array.isArray(song.melody)&&song.melody.some(v=>v!=null)?song.melody.slice(0,64).map(v=>v==null?null:num(v,12,-24,48)):generateMelody(r,ambient,stepsPerBar);
+ const melody=Array.isArray(song.melody)&&song.melody.some(v=>v!=null)?song.melody.slice(0,64).map(v=>v==null?null:num(v,12,-24,48)):generateMelody(r,ambient,stepsPerBar,scale);
  const bass=Array.isArray(song.bass)&&song.bass.some(v=>v!=null)?song.bass.slice(0,64).map(v=>v==null?null:num(v,0,-24,48)):generateBass(r,stepsPerBar);
  const barSeconds=meter[0]*4/meter[1]*60/bpm,groups=ambient?ALL_GROUPS:[...ALL_GROUPS,'drums'];
  let sections;
@@ -152,7 +157,7 @@ export function compositionFromSong(input){
   // Advanced role-playback fields, mainly carried over when a collection piece is remixed.
   const names=new Set(sections.map(s=>s.name)),nameList=v=>Array.isArray(v)?v.filter(x=>names.has(x)):undefined;
   if(t.onlySections)track.onlySections=nameList(t.onlySections);if(t.excludeSections)track.excludeSections=nameList(t.excludeSections);
-  if(role!=='timeline'){if(t.octave!=null)track.octave=num(t.octave,12,-36,48);if(t.gate!=null)track.gate=num(t.gate,.18,.05,2);if(typeof t.humanize==='boolean')track.humanize=t.humanize;if(t.speechOffsetSteps!=null)track.speechOffsetSteps=num(t.speechOffsetSteps,0,-16,16);
+  if(role!=='timeline'){if(t.octave!=null)track.octave=num(t.octave,12,-36,48);if(t.gate!=null)track.gate=num(t.gate,.18,.05,2);if(typeof t.humanize==='boolean')track.humanize=t.humanize;if(t.speechOffsetSteps!=null)track.speechOffsetSteps=num(t.speechOffsetSteps,0,-16,16);for(const [k,lo,hi] of [['hits',1,32],['cycle',1,64],['delaySteps',1,64],['interval',-24,24]])if(t[k]!=null)track[k]=num(t[k],lo,lo,hi)|0;
    if(Array.isArray(t.sequence))track.sequence=t.sequence.slice(0,64).map(v=>v==null?null:typeof v==='object'?{note:num(v.note,0,-24,48),velocity:num(v.velocity,1,.2,1.4)}:num(v,0,-24,48));}
   // Transmissions come and go in generated forms: leave the opening and the quietest movement to the room.
   if((role==='speechVowel'||role==='speechConsonant')&&!song.sections&&sections.length>=4)track.excludeSections=[sections[0].name,sections[3].name];
@@ -198,7 +203,7 @@ export function songFromComposition(c){
   // never set (a preset's transposition, say), so the Song rebuilds exactly this track.
   const supplied=resolveSound(out.sound)?.preset||{},neutral={level:.4,colour:.4,life:1.2,pan:0,send:.3,transpose:0,octave:12,gate:.18,sequence:[0,null,7,null],humanize:true,speechOffsetSteps:0};
   for(const k of ['level','pan','send','colour','life','transpose','octave','gate','sequence','humanize','speechOffsetSteps']){const have=t[k]??(k in supplied?neutral[k]:undefined);if(have!==undefined&&JSON.stringify(have)!==JSON.stringify(supplied[k]??neutral[k]))out[k]=structuredClone(have);}
-  for(const k of ['seq','note','step','from','to','pair','automate','onlySections','excludeSections'])if(t[k]!=null)out[k]=structuredClone(t[k]);
+  for(const k of ['seq','note','step','from','to','pair','automate','onlySections','excludeSections','hits','cycle','delaySteps','interval'])if(t[k]!=null)out[k]=structuredClone(t[k]);
   if(t.loop===false)out.loop=false;
   return out;
  });
