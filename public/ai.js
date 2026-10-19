@@ -38,32 +38,32 @@ Write music that responds to what was asked for: if the request names events at 
 
 ## Song fields
 
-- \`title\`, \`description\` (one or two sentences about what happens), \`seconds\` (total length, 10–600).
+- \`title\`, \`description\` (one or two sentences about what happens), \`seconds\` (total length, 10–600). The length is rounded up to whole bars (one bar lasts beats-per-bar × 60 / bpm seconds: 4 s at 60 bpm in 4/4, 5 s at 60 bpm in 5/4), so choose bpm and meter that divide the length when it matters.
 - \`bpm\`, \`meter\` ("4/4", "3/4", "6/8", "5/4", "7/8"), \`key\` (e.g. "E minor", "F# lydian"; modes: ${Object.keys(modes).join(', ')}).
 - \`rhythm\`: the built-in drum machine pattern, or "none" for no drums. Options: ${rhythms.join(', ')}.
 - \`room\` 0–1 (reverb size), \`say\` (words the sine-wave speech voices speak).
-- \`sections\`: [{"name", "start" (seconds)}] — named parts shown to the listener as movements.
+- \`sections\`: [{"name", "start" (seconds)}] — named parts shown to the listener as movements. Starts are rounded to bar lines.
 - \`chords\`: scale degrees 1–7 for the harmony that role-based tracks follow, e.g. [1,6,3,7].
 - \`tracks\`: up to 16 voices (a stereo pair counts as two).
-- \`automate\`: whole-mix curves: ${GLOBAL_AUTOMATABLE.join(', ')}. \`master\` 0 means total silence.
+- \`automate\`: whole-mix curves. \`master\` 0–1.5 (1 = normal, 0 = total silence); \`room\` (reverb size), \`damp\` (reverb darkness), \`wet\` (reverb level) and \`echo\` (echo level) all 0–0.94.
 
 ## Tracks
 
 Each track has a \`sound\` (a sound id or an instrument id from the lists below). Then either:
 
 **A. Timed notes** — give \`seq\`, and the track plays exactly what you write:
-- \`seq\`: space-separated steps. \`x\` = the track's \`note\`; \`.\` = rest; a note name (C4 = middle C, F#3, Bb5) or MIDI number; \`C4+E4+G4\` = chord; \`@0.6\` = velocity 0–1; \`:4\` = hold for 4 steps; \`*8\` = repeat the token 8 times. Example: \`"x . . x@.6 .*4 G4:2 C4+E4+G4:4"\`.
-- \`note\` (default note for \`x\`), \`step\` (seconds per step, e.g. 0.25 — or a curve such as "0.9@35 0.15@50" to accelerate), \`from\` / \`to\` (seconds; the seq loops inside this window; \`loop\`: false plays it once), \`gate\` (how long each note sounds, in steps; default 0.5).
+- \`seq\`: space-separated steps. \`x\` = the track's \`note\`; \`.\` = rest; a note name (C4 = middle C, F#3, Bb5) or MIDI number; \`C4+E4+G4\` = chord; \`@0.6\` = velocity 0–1; \`:4\` = this note sounds for 4 steps (every token still advances exactly one step, so follow a held note with rests if nothing else should start); \`*8\` = repeat the token 8 times. Example: \`"x . . x@.6 .*4 G4:2 C4+E4+G4:4"\`.
+- \`note\` (default note for \`x\`), \`step\` (seconds per step, e.g. 0.25 — or a curve such as "0.9@35 0.15@50" to accelerate), \`from\` / \`to\` (seconds; the seq loops inside this window; \`loop\`: false plays it once; nothing starts at or after \`to\` and notes are cut at \`to\`), \`gate\` (how long notes without \`:N\` sound, in steps; default 0.5; \`:N\` overrides it). Without \`note\`, \`x\` is C4.
 
-**B. Role playback** — omit \`seq\` and the sound plays its role (bass line, chords, melody, arpeggio, drone, speech…) from the song's harmony and sections. Set \`role\` to change it: ${ROLES.filter(r=>r!=='timeline').join(', ')}. Speech roles (speechVowel/speechConsonant) speak the \`say\` text.
+**B. Role playback** — omit \`seq\` and the sound plays its role (bass line, chords, melody, arpeggio, drone, speech…) from the song's harmony and sections. Set \`role\` to change it: ${ROLES.filter(r=>r!=='timeline').join(', ')}. Speech roles (speechVowel/speechConsonant) speak the \`say\` text. A role track plays in every section, unless the section lists \`roles\` (bass, pad, lead, arp, air, drums) that exclude its kind; \`onlySections\` / \`excludeSections\` (lists of section names) restrict it further. \`from\`, \`to\` and \`loop\` apply only to timed notes.
 
-Both kinds accept: \`label\`, \`level\` (0–1.5), \`pan\` (−1 left … 1 right), \`send\` (reverb/echo 0–1), \`colour\` (0–1, brightness/character, instrument-specific), \`life\` (0.03–8 s, decay/release), \`transpose\` (semitones).
+Both kinds accept: \`label\`, \`level\` (0–1.5), \`pan\` (−1 left … 1 right), \`send\` (reverb/echo 0–1), \`colour\` (0–1, brightness/character, instrument-specific), \`life\` (0.03–8 s, decay/release), \`transpose\` (semitones). A bare instrument id starts from level 0.4, colour 0.4, life 1.2, send 0.3; a sound id starts from its preset's values.
 
 **Stereo pairs** — \`"pair": {"width": 0.8, "delay": 0.02, "seqR": "…", "noteR": "E5", "transposeR": 7}\` turns one track into a left and a right voice at ∓width. The right side can play its own sequence (\`seqR\`), note or transposition, and starts \`delay\` seconds later (0.01–0.03 widens a sound; 0.1–0.4 gives call-and-response or decorrelated noise).
 
-**Automation** — \`"automate": {"level": "0@0 1@2.5 1@14.8 0@15"}\`: points are value@seconds, joined linearly; two points at the same time make an instant change. Track keys: ${AUTOMATABLE.join(', ')} (\`level\` multiplies the track level; \`tune\` is in semitones and bends all notes, good for Doppler or rising tension; \`pan\` on a pair sets its width). Use automation for fades, sweeps, movement and transformation.
+**Automation** — \`"automate": {"level": "0@0 1@2.5 1@14.8 0@15"}\`: points are value@seconds, joined linearly; two points at the same time make an instant change. Track keys: ${AUTOMATABLE.join(', ')} (\`level\` multiplies the track level; \`tune\` is in semitones and bends all notes, good for Doppler or rising tension; \`pan\` on a pair sets its width, so to sweep a sound across the stereo field use a single track). Ranges: \`level\` 0–1.5, \`pan\` −1…1, \`send\` 0–1.5, \`colour\` 0–1, \`life\` 0.03–8 s, \`tune\` ±48 semitones. Use automation for fades, sweeps, movement and transformation: a lighthouse beam or passing craft is \`pan\` plus \`level\` on one track; a horn or engine is a low sustained \`organ\`, \`acidBass\` or \`darkDrone\` note with slow \`tune\` and \`level\` curves.
 
-Limits: at most 16 track voices; a single track should not hold more than about 20 overlapping notes (long \`life\` with fast steps piles up); keep total notes under ~8000.
+Limits: at most 16 track voices. Each track can sound at most 24 notes at once, counting each note from its start until its length plus about 1.7 × \`life\` (so a long \`life\` with fast steps piles up; a chord counts once per note); Diddums names the track if this is exceeded. At most 32768 notes in the whole song.
 
 ## Sounds (presets: an instrument plus sensible settings)
 
@@ -75,7 +75,7 @@ ${familyTable()}
 
 ## Example
 
-A 70-second piece: a heartbeat fades in, becomes a radio beacon at 15 s with answering blips in stereo, total silence at 30–35 s, then an accelerating sonar contact and a fade into radio static.
+A 70-second piece: a heartbeat fades in, becomes a radio beacon at 15 s with answering blips in stereo, total silence at 30–35 s, then Geiger clicks, a Morse signal, a slow choir and a monotone voice over the returning heartbeat, and a fade into radio static.
 
 \`\`\`json
 ${JSON.stringify(example)}

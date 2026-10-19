@@ -52,6 +52,10 @@ The **Labs** tab is experimental and kept apart from the rest of Diddums, which 
 
 "Quick sketch, no AI" maps keywords offline (`public/maker.js`).
 
+### Skill page for any LLM
+
+`public/skill/SKILL.md` (served at https://danbri.github.io/diddums/skill/SKILL.md, indexed from `/llms.txt`) teaches an assistant with no prior knowledge of Diddums to write a Song and return a playable `?song=` link (under the host's ~8000-character URL limit). It is generated from the same sound lists and guide as the Labs prompt: run `node tools/build-skill.mjs` after changing sounds, instruments, the Song format or the First Contact example.
+
 ### URL recipe parameters
 
 | Parameter | Meaning |
