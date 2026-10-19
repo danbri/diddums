@@ -27,17 +27,23 @@ main{max-width:1400px}
 #log{font:11px/1.6 var(--mono);color:#8ea6b8;max-height:180px;overflow:auto;margin:0;padding:8px 10px;background:#07111b;border-radius:10px;border:1px solid #23394a}
 #log b{color:#c9fffa;font-weight:600}
 .gm-note{font-size:13px;line-height:1.55}
+html,body{overscroll-behavior:none}
+#play{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.gm-status,.gm-layers,#start,.gm-auto{-webkit-user-select:none;user-select:none}
+.gm-pad{display:none;margin-top:8px;height:110px;border-radius:14px;border:1px dashed #3f6276;background:#0b1926;color:#6d8799;font-size:13px;align-items:center;justify-content:center;text-align:center}
+@media(pointer:coarse){.gm-pad{display:flex}.gm-keys{display:none}}
 @media(max-width:900px){.gm-grid{grid-template-columns:1fr}main{padding:12px 8px 40px}.section-heading h1{font-size:26px}}
 </style>
 </head><body>
 <header class="app-header"><a class="brand" href="./" aria-label="Diddums home"><span class="jigsaw" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Diddums</a><nav aria-label="Workspace"><a href="./" style="padding:9px">← Studio</a></nav></header>
 <main>
 <div class="section-heading"><span class="eyebrow">LABS · ADAPTIVE MUSIC DEMO</span><h1>Music that follows the game.</h1>
-<p>Gather the 🍄 mushrooms, then grab the 💰 treasure that appears to reach the next level. 💎 gems are worth more. Big triangles hunt you once you enter their circle; hide among 🌲 trees or in the house, where they cannot follow and you heal. A ⭐ star lets you knock them out for seven seconds. Your companion is the small triangle. The music is one endless piece shaped by your danger, health and power, and every level brings a different musical idiom.</p></div>
+<p>Collect 🍄, then grab the 💰 to level up. Hide in 🌲 or the house. ⭐ lets you fight back. Grab bonus fruit while it lasts. The music follows what happens.</p></div>
 <div class="gm-grid">
- <section class="gm-card">
+ <section class="gm-card" id="play">
   <canvas id="arena" aria-label="Game: you are the small circle"></canvas>
-  <p class="gm-note">Move with arrow keys or WASD, or hold a finger or the mouse where you want to go. Autopilot plays by itself so you can just listen.</p>
+  <div class="gm-pad" aria-hidden="true">Brush here to move · flick to dash</div>
+  <p class="gm-note gm-keys">Arrow keys or WASD, or hold the mouse where you want to go.</p>
  </section>
  <section class="gm-card">
   <button type="button" id="start" class="gm-start">▶ Start music</button>
@@ -48,14 +54,7 @@ main{max-width:1400px}
   <pre id="log" aria-live="polite"></pre>
  </section>
 </div>
-<details class="gm-card" style="margin-top:16px"><summary>What drives what</summary>
-<p class="gm-note"><b>Threat</b> (hunters chasing you, and how close the nearest is) brings parts in one at a time: drone and a process layer when unseen; sub bass and a sparse kit when watched; arpeggio, acid bass, saw lead and harder drums as the hunt builds. <b>Health</b> changes the music itself: below half the bell melody and saw lead drop out; near death the chords turn to a dread progression with a halftime beat, the pad gives way to a drone, and a heartbeat grows louder. <b>Power</b> switches to a heroic progression and house beat. In the <b>house</b> the music settles.</p>
-<p class="gm-note"><b>Each level is a different idiom</b>, not just a new key: night synth (A minor), hijaz (D, the scale of much Arabic and Balkan music, with a koto isorhythm and clave), pentatonic phasing (E, a marimba slipping against the beat, bembé bell), octatonic (F, the half-whole scale of chase music, Amen-style breaks), whole-tone (C, a scattered bell cloud) and pelog (G, a Javanese-like five-note scale). Melodies are written as scale degrees, so each idiom keeps to its own notes.</p>
-<p class="gm-note">Events use <code>music.hit()</code>: notes come from the chord playing at that moment, on the next 16th note. Mushrooms climb the chord as an arpeggio when collected quickly; gems play two notes; being spotted sounds a sonar ping on the beat; a hit is a low timpani; levels and game over get short phrases.</p>
-<p class="gm-note">The characters follow Heider and Simmel's 1944 film, in which people read chases, bullying and protection into a moving circle, two triangles and a box.</p>
-<pre>const music = await startAdaptive({composition, plan});
-music.set({threat: 0.7, health: 0.3, level: 2});      // re-arranged from the next bar
-music.hit('chime', {tones: [0, 1, 2], spread: 1});   // root, third, fifth on the next 16ths</pre></details>
+<p class="gm-note" style="margin-top:12px">How the music is driven, and how to use it in your own game: <a href="skill/SKILL.md">skill page</a> (Adaptive music for games).</p>
 </main>
 <script type="module" src="game.js"></script>
 </body></html>

@@ -57,10 +57,11 @@ function plan({threat=0,health=1,power=false,level=0,safe=false}){
 }
 
 // ---- Game ----
-const narrow=innerWidth<720,W=1,Hgt=narrow?1.25:.62,cv=$('#arena'),g=cv.getContext('2d');
+const narrow=innerWidth<720,W=1,Hgt=narrow?1.05:.62,cv=$('#arena'),g=cv.getContext('2d');
 cv.style.aspectRatio=`${W} / ${Hgt}`;
+const FRUIT=['🍒','🍓','🍊','🍋','🍑','🍍','🍉','🍇'];
 const rnd=(a,b)=>a+Math.random()*(b-a),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-let lastLevels={},game,music=null,lastPlan=null,keys={},target=null,last=performance.now();
+let steer=null,dash=null,lastLevels={},game,music=null,lastPlan=null,keys={},target=null,last=performance.now();
 const HOUSE={x:.06,y:Hgt-.26,w:.22,h:.2,door:.07};// open door on the right wall
 const inHouse=p=>p.x>HOUSE.x&&p.x<HOUSE.x+HOUSE.w&&p.y>HOUSE.y&&p.y<HOUSE.y+HOUSE.h;
 function free(r=.05){for(let i=0;i<50;i++){const p={x:rnd(.06,.94),y:rnd(.06,Hgt-.06)};if(!inHouse({x:p.x+r,y:p.y})&&!inHouse(p)&&!inHouse({x:p.x-r,y:p.y}))return p;}return {x:.6,y:.3};}
@@ -88,9 +89,12 @@ function step(dt){
  const p=game.player;
  if(game.over>0){game.over-=dt;if(game.over<=0){newLevel(0);say('<b>New game</b>');}return;}
  let vx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0),vy=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0);
+ let gain=1;
  if($('#auto').checked){const a=autopilot();vx=a.x;vy=a.y;}
+ else if(steer&&!vx&&!vy){vx=steer.x;vy=steer.y;gain=Math.min(1,Math.hypot(vx,vy));}
  else if(target&&!vx&&!vy){vx=target.x-p.x;vy=target.y-p.y;if(Math.hypot(vx,vy)<.01)vx=vy=0;}
- const m=Math.hypot(vx,vy)||1,sp=.3,moving=vx||vy?1:0;p.x=Math.max(.02,Math.min(W-.02,p.x+vx/m*sp*dt*moving));p.y=Math.max(.02,Math.min(Hgt-.02,p.y+vy/m*sp*dt*moving));
+ if(dash){dash.t-=dt;if(dash.t<=0)dash=null;else{vx=dash.x;vy=dash.y;gain=2.2;}}
+ const m=Math.hypot(vx,vy)||1,sp=.3*gain,moving=vx||vy?1:0;p.x=Math.max(.02,Math.min(W-.02,p.x+vx/m*sp*dt*moving));p.y=Math.max(.02,Math.min(Hgt-.02,p.y+vy/m*sp*dt*moving));
  game.power=Math.max(0,game.power-dt);game.invuln=Math.max(0,game.invuln-dt);
  if(game.power>0&&game.power<dt*1.01)hit('chime',{tones:[2,1,0],spread:2,velocity:.5});
  // Companion: circles you and stays close, like the small triangle in the film.
@@ -103,6 +107,11 @@ function step(dt){
  if(!game.chest&&!game.items.some(i=>i.kind==='🍄')){game.chest={...free(),kind:'💰'};hit('chime',{tones:[0,2,4],octave:1,grid:4,velocity:.6});say('A <b>treasure chest</b> has appeared');}
  if(game.chest&&dist(p,game.chest)<.045){hit('chime',{tones:[0,1,2,4,5,6],octave:1,velocity:.85});hit('boom',{tones:[0,0],octave:-1,spread:4});game.score+=200;
   const next=STYLES[(game.level+1)%STYLES.length];say(`<b>Level ${game.level+2}</b>: ${next.name} (${next.key}), one more hunter`);newLevel(game.level+1,game.score,game.health);return;}
+ // Bonus fruit, as in Pac-Man: appears now and then for eight seconds, worth more each level.
+ game.fruitIn=(game.fruitIn??rnd(10,18))-dt;
+ if(!game.fruit&&game.fruitIn<=0){game.fruit={...free(),kind:FRUIT[game.level%FRUIT.length],life:8};game.fruitIn=rnd(16,26);}
+ if(game.fruit){game.fruit.life-=dt;if(game.fruit.life<=0)game.fruit=null;
+  else if(dist(p,game.fruit)<.045){const v=100*(game.level+1);game.score+=v;hit('chime',{tones:[0,2,4,6,7],octave:1,velocity:.75});hit('boom',{tones:[0],velocity:.5});game.flash.push({x:game.fruit.x,y:game.fruit.y,t:.5,c:'#f6e27a'});say(`${game.fruit.kind} +${v}`);game.fruit=null;}}
  const isHidden=hidden();
  for(const e of game.enemies){
   if(e.dead){e.dead-=dt;if(e.dead<=0)Object.assign(e,spawnEnemy());continue;}
@@ -149,6 +158,7 @@ function draw(){
  g.textAlign='center';g.textBaseline='middle';g.fillStyle='#ffffff';
  const E=narrow?1.25:1;
  for(const tr of game.trees){g.font=`${X(.09*E)}px serif`;g.fillText('🌲',X(tr.x),X(tr.y));}
+ if(game.fruit&&(game.fruit.life>2||Math.floor(t*6)%2)){g.font=`${X(.065*E)}px serif`;g.fillText(game.fruit.kind,X(game.fruit.x),X(game.fruit.y));}
  for(const it of [...game.items,...(game.chest?[game.chest]:[])]){const s=(it.kind==='🍄'?.05:it.kind==='💰'?.07:.055)*E;g.font=`${X(s)*(1+.08*Math.sin(t*4+it.x*20))}px serif`;g.fillText(it.kind,X(it.x),X(it.y));}
  for(const e of game.enemies){if(e.dead)continue;const sight=.2+.015*game.level;
   g.fillStyle=e.alert>0?'#ff7a7a14':'#ffffff07';g.beginPath();g.arc(X(e.x),X(e.y),X(sight),0,6.28);g.fill();
@@ -183,7 +193,7 @@ function renderLayers(p){
 $('#start').onclick=async()=>{
  const b=$('#start');
  if(music){if(!b.dataset.paused){music.pause();b.dataset.paused='1';b.textContent='▶ Resume music';}else{music.resume();delete b.dataset.paused;b.textContent='❚❚ Pause music';}return;}
- b.disabled=true;b.textContent='Loading instruments…';
+ b.disabled=true;b.textContent='Loading instruments…';if(narrow)$('#play').scrollIntoView({behavior:'smooth',block:'start'});
  try{
   music=await startAdaptive({composition,plan,state:{threat:0,health:1,power:false,level:0,safe:true},
    onBar:(bar,p)=>{$('#status').innerHTML=`Bar <b>${bar+1}</b> · <b>${p.name}</b> · energy ${p.energy} · drums ${p.rhythm}`;if(JSON.stringify(p)!==JSON.stringify(lastPlan)){lastPlan=p;renderLayers(p);say(`bar ${bar+1}: <b>${p.name}</b> → ${p.layers.filter(l=>l!=='heart'&&l!=='wind').map(l=>LABEL[l]).join(', ')}${p.rhythm!=='none'?', '+p.rhythm+' drums':''}`);}},
@@ -193,9 +203,23 @@ $('#start').onclick=async()=>{
 };
 addEventListener('keydown',e=>{if(e.key.startsWith('Arrow')||'wasd'.includes(e.key)){keys[e.key]=true;$('#auto').checked=false;if(e.key.startsWith('Arrow'))e.preventDefault();}});
 addEventListener('keyup',e=>{keys[e.key]=false;});
+// Mouse: hold where you want to go. Touch: a virtual trackpad anywhere on the play area (including the pad
+// below the field), so a thumb brushes in a direction instead of covering the view; a quick swipe dashes.
 const toField=e=>{const r=cv.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*Hgt};};
-cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);$('#auto').checked=false;target=toField(e);});
-cv.addEventListener('pointermove',e=>{if(e.buttons)target=toField(e);});
-cv.addEventListener('pointerup',()=>{target=null;});
+const play=$('#play');let touch=null;
+play.addEventListener('pointerdown',e=>{if(e.target.closest('button,input,label'))return;try{play.setPointerCapture(e.pointerId);}catch{}$('#auto').checked=false;
+ if(e.pointerType==='mouse'){if(e.target===cv)target=toField(e);return;}
+ touch={id:e.pointerId,ox:e.clientX,oy:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now()};e.preventDefault();});
+play.addEventListener('pointermove',e=>{
+ if(e.pointerType==='mouse'){if(e.buttons&&e.target===cv)target=toField(e);return;}
+ if(!touch||e.pointerId!==touch.id)return;let dx=e.clientX-touch.ox,dy=e.clientY-touch.oy;const len=Math.hypot(dx,dy);
+ if(len>60){touch.ox=e.clientX-dx*60/len;touch.oy=e.clientY-dy*60/len;dx*=60/len;dy*=60/len;}// the origin follows the thumb, so reversing is quick
+ steer=len<5?null:{x:dx/60,y:dy/60};e.preventDefault();});
+const endTouch=e=>{if(e.pointerType==='mouse'){target=null;return;}if(!touch||e.pointerId!==touch.id)return;
+ const dx=e.clientX-touch.sx,dy=e.clientY-touch.sy,dt=performance.now()-touch.t,len=Math.hypot(dx,dy);
+ if(dt<220&&len>24){dash={x:dx/len,y:dy/len,t:.22};}touch=null;steer=null;};
+play.addEventListener('pointerup',endTouch);play.addEventListener('pointercancel',endTouch);
+// Keep the page itself still while playing: no scrolling, zooming, text selection or long-press menus.
+for(const ev of ['touchmove','gesturestart','dblclick','contextmenu','selectstart'])play.addEventListener(ev,e=>e.preventDefault(),{passive:false});
 newLevel(0);requestAnimationFrame(frame);
 window.adaptiveDemo={get levels(){return lastLevels;},get game(){return game;},get music(){return music;},plan,STYLES};
