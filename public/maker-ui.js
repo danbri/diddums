@@ -1,5 +1,5 @@
 // Labs: an AI assistant (any) writes a Song → play, tweak by touch, share. Experimental; mobile first.
-import {sounds,soundById,soundCategories} from './sounds.js';
+import {sounds,soundById,soundCategories,familySound} from './sounds.js';
 import {patterns} from './patterns.js';
 import {AUTOMATABLE,GLOBAL_AUTOMATABLE,parseCurve} from './timeline.js';
 import {compositionFromSong,checkSong,songLink,parseKey,keyName,modes,rhythms,MAX_TRACKS,resolveSound} from './song.js';
@@ -213,8 +213,8 @@ export function mountMaker(root,hooks){
  // ---- Sound library sheet ----
  function openLibrary(){$('#mkLibTitle').textContent=replacing!=null?'Change sound':'Add a sound';renderLibrary();$('#mkLibrary').showModal();}
  function renderLibrary(){
-  const q=$('#mkLibSearch').value.toLowerCase(),list=sounds.filter(s=>(!cat||s.category===cat)&&(!q||[s.label,s.id,s.category,s.about,patterns[s.pattern].label].join(' ').toLowerCase().includes(q)));
-  $('#mkLibList').innerHTML=list.map(s=>`<div class="mk-tile"><button type="button" class="mk-tile-add" data-sound="${s.id}"><b>${esc(s.label)}</b><small>${esc(s.about)}</small></button><button type="button" class="mk-icon" data-hear="${s.id}" aria-label="Preview ${esc(s.label)}">▶</button></div>`).join('')||'<p>No matching sounds.</p>';
+  const q=$('#mkLibSearch').value.toLowerCase(),list=sounds.filter(s=>(!cat||s.category===cat)&&(!q||[s.label,s.id,s.category,s.scene,s.about,patterns[s.pattern].label,familySound[s.pattern]].join(' ').toLowerCase().includes(q)));
+  $('#mkLibList').innerHTML=list.map(s=>`<div class="mk-tile"><button type="button" class="mk-tile-add" data-sound="${s.id}"><b>${esc(s.label)}</b><small>${esc(s.about)}</small></button><button type="button" class="mk-icon" data-hear="${s.id}" aria-label="Preview ${esc(s.label)}">▶</button><p class="mk-tile-src"><b>${esc(patterns[s.pattern].label)}</b> · ${esc(familySound[s.pattern]||'')} · <a href="lean/patterns/${s.pattern}.lean" target="_blank" rel="noopener">LeanDSP source</a> · <a href="?pattern=${s.pattern}" target="_blank" rel="noopener">definition</a></p></div>`).join('')||'<p>No matching sounds.</p>';
  }
  $('#mkLibSearch').oninput=renderLibrary;
  $('#mkCats').onclick=e=>{const b=e.target.closest('[data-cat]');if(!b)return;cat=b.dataset.cat;$('#mkCats').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));renderLibrary();};

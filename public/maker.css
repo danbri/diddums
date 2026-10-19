@@ -116,3 +116,5 @@ input.invalid,textarea.invalid{border-color:#b0566f!important;background:#2b1720
 .labs-nav button.active{color:var(--mint);border-color:#355967;background:#11303a}
 @media(max-width:560px){.labs-nav{gap:2px;padding:3px}.labs-nav button{flex:1 1 0;min-width:0;padding:6px 4px;font-size:12px;line-height:1.2;white-space:normal}}
 .labs-skill{margin:-6px 0 16px;font-size:13px;line-height:1.5;color:#9fb8c8}
+.mk-tile-src{grid-column:1/-1;margin:0 4px 6px;font-size:11px;line-height:1.45;color:#8ea6b8}.mk-tile-src b{color:#c8dae4;font-weight:600}
+.pattern-card .pattern-sound{color:#c8dae4;font-size:12px}.pattern-card .pattern-sound b{color:var(--mint);font-weight:600}.pattern-lean{align-self:center;padding:10px;font-size:12px}

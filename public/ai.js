@@ -2,7 +2,8 @@
 // Two routes, both usable on a phone:
 //  1. Direct: the Claude API from the browser with the person's own API key (kept on this device only).
 //  2. Chat app: copy a self-contained prompt into the Claude (or any chat) app, paste the reply back.
-import {sounds,soundCategories} from './sounds.js';
+import {sounds,soundCategories,familySound} from './sounds.js';
+import {compositionById} from './collection.js';
 import {patterns} from './patterns.js';
 import {rhythms,modes,ROLES,checkSong,songFromComposition,songFromText} from './song.js';
 import {AUTOMATABLE,GLOBAL_AUTOMATABLE} from './timeline.js';
@@ -24,7 +25,14 @@ function soundTable(){
  return soundCategories.map(cat=>`### ${cat}\n`+sounds.filter(s=>s.category===cat).map(s=>`- \`${s.id}\` — ${s.label}: ${s.about} (instrument \`${s.pattern}\`, plays as \`${s.role}\` when it has no seq)`).join('\n')).join('\n\n');
 }
 function familyTable(){
- return Object.values(patterns).filter(p=>p.id!=='chamber').map(p=>`- \`${p.id}\` — ${p.label} (${p.family}): ${p.about} Range: ${RANGE[p.id]||'C2–C6'}.`).join('\n');
+ return Object.values(patterns).filter(p=>p.id!=='chamber').map(p=>`- \`${p.id}\` — ${p.label}. Sounds: ${familySound[p.id]}. How it is made: ${p.about} Range: ${RANGE[p.id]||'C2–C6'}.`).join('\n');
+}
+// A song-shaped example: a Collection piece as a Song, with engine-internal fields removed.
+export function songExample(){
+ const s=songFromComposition(compositionById.lowlight);
+ for(const k of ['seed','space','arpStride'])delete s[k];
+ s.seconds=Math.round(s.seconds);s.tracks=s.tracks.map(({id,...t})=>t);
+ return s;
 }
 
 let guideCache=null;
@@ -36,14 +44,31 @@ Diddums is a browser music engine. Every sound is synthesised live by small, for
 
 Write music that responds to what was asked for: if the request names events at particular times, place them at those times; if it describes a mood or a scene, build an arc with contrast — entrances, a change, a peak, a release. Silence and space are musical tools. Prefer a few well-chosen, well-placed sounds to many busy ones.
 
+## Make it a song, not a loop
+
+Most requests (“a track”, “a song”, “music for…”, a genre or a mood) want music: harmony that moves, a bass line, a melody, a pulse, and sections that build and release. Build that core from **role tracks** (B below), which follow the song's chords, and add **timed-note tracks** (A) for particular events, hooks and sound effects. A piece made only of short looping \`seq\` patterns sounds like a loop, not a song. Use timed tracks as the core only for sound design that is about exact moments (a countdown, a signal at 15 s).
+
+A song-shaped piece:
+
+1. Choose \`key\`, \`bpm\`, \`meter\` and a \`rhythm\` (the drum machine) that suit the style; \`"none"\` for drumless pieces.
+2. Harmony: \`chords\` as scale degrees, 4–8 of them; each chord lasts two bars and the list repeats. Or exact chords in \`harmony\`.
+3. \`melody\` and \`bass\`: one bar of steps (16 in 4/4, 12 in 3/4 or 6/8; only the first bar's worth is used), each a number of semitones above the current chord's root, or \`null\` for a rest. Diddums moves the pattern onto every chord. Values that are a third (3, 4, 15, 16, 27, 28) or a seventh (10, 11, 22, 23) in any octave snap to the current chord's own third or seventh, so they never clash; other values are played as written (7 and 19 are the fifth, 12 and 24 the root, 2, 5, 9, 14, 17, 21 are passing notes). The melody sounds an octave above these values. The engine varies it: bar 2 of every 4 starts four steps later in the pattern, bars 5–8 of every 8 lift some notes an octave, and the last bar of every 8 ends with a short fill. Leave either out and Diddums writes one. For a longer hook than one bar, or a different chorus tune, add a timed track: the role harmony starts at 0 s and each chord lasts two bars (2 × beats per bar × 60 / bpm seconds), so a timed melody can be lined up with it.
+4. 4–6 \`sections\`, each with \`energy\` (0–1; higher is louder and busier: below 0.5 the arpeggio keeps to the beats, below 0.4 the melody does) and \`roles\`, the only kinds of role track that play in it: \`bass\`, \`pad\`, \`lead\`, \`arp\`, \`air\`, \`drums\`. Arrange by bringing parts in and out: a sparse opening, a build, a full peak, a breakdown, a return, a fade. Pick a bpm that makes bars a round number of seconds (60 or 120 bpm: 4 s or 2 s per 4/4 bar; 96 bpm: 2.5 s) so section starts are easy to place. Sections do not affect timed tracks: give those \`from\`/\`to\` or a \`level\` automation curve.
+5. 3–6 role tracks: a bass, a chord instrument, a lead, and optionally an arpeggio, a texture and a voice. Role kinds: \`bass\` and \`drone\` count as bass; \`pad\`, \`keys\`, \`stabs\` and \`long\` as pad; \`arp\` and \`sequence\` as arp; \`lead\`, \`sparse\`, \`answer\` and the speech roles as lead; \`air\` and \`continuous\` as air.
+6. Then add timed tracks for hooks, fills and effects, and automation for fades and sweeps.
+7. Songs usually run 1.5–3 minutes; ambient pieces can be longer.
+
 ## Song fields
 
 - \`title\`, \`description\` (one or two sentences about what happens), \`seconds\` (total length, 10–600). The length is rounded up to whole bars (one bar lasts beats-per-bar × 60 / bpm seconds: 4 s at 60 bpm in 4/4, 5 s at 60 bpm in 5/4), so choose bpm and meter that divide the length when it matters.
 - \`bpm\`, \`meter\` ("4/4", "3/4", "6/8", "5/4", "7/8"), \`key\` (e.g. "E minor", "F# lydian"; modes: ${Object.keys(modes).join(', ')}).
-- \`rhythm\`: the built-in drum machine pattern, or "none" for no drums. Options: ${rhythms.join(', ')}.
+- \`rhythm\`: the built-in drum machine pattern, or "none" for no drums. Drums play only in sections whose \`roles\` include \`drums\`; below energy 0.5 they thin out. Patterns: \`house\` four-on-the-floor kick, off-beat hats, claps at high energy; \`motorik\` the same steady four-to-the-floor drive; \`postpunk\` driving syncopated kick, backbeat snare, straight eighth hats; \`broken\` loose broken-beat/trip-hop groove; \`halftime\` slow heavy backbeat (snare on 3), rim clicks; \`shuffle\` swung hats, backbeat; \`brush\` soft jazz-brush feel, rim and light hats (suits 3/4 and 6/8); \`factory\` busy industrial kick pattern, claps and tom fills; \`euclid\` evenly spread off-kilter kicks, rims and hats; \`seven\` a 7/8 groove; \`ritual\` sparse kick every other bar with occasional toms; \`suite\` a kit that builds over 8-bar blocks.
 - \`room\` 0–1 (reverb size), \`say\` (words the sine-wave speech voices speak).
-- \`sections\`: [{"name", "start" (seconds)}] — named parts shown to the listener as movements. Starts are rounded to bar lines.
-- \`chords\`: scale degrees 1–7 for the harmony that role-based tracks follow, e.g. [1,6,3,7].
+- \`sections\`: [{"name", "start" (seconds), "energy" (0–1), "roles" (list)}] — named parts shown to the listener as movements. Starts are rounded to bar lines.
+- \`chords\`: scale degrees 1–7 for the harmony that role-based tracks follow, e.g. [1,6,3,7]. Each chord lasts two bars.
+- \`harmony\` (instead of \`chords\`): exact chords, each \`[root MIDI note 24–60, 0, third, fifth, seventh]\` in semitones above the root, e.g. \`[[36,0,3,7,10],[39,0,4,7,11]]\` (Cm7, Ebmaj7).
+- \`melody\`, \`bass\`: one-bar step patterns in semitones above each chord's root, \`null\` for rests (see above).
+- \`swing\` 0–0.2: delays every second sixteenth for a shuffled feel.
 - \`tracks\`: up to 16 voices (a stereo pair counts as two).
 - \`automate\`: whole-mix curves. \`master\` 0–1.5 (1 = normal, 0 = total silence); \`room\` (reverb size), \`damp\` (reverb darkness), \`wet\` (reverb level) and \`echo\` (echo level) all 0–0.94.
 
@@ -73,7 +98,17 @@ ${soundTable()}
 
 ${familyTable()}
 
-## Example
+## Examples
+
+### A song
+
+Low-Light, from the Diddums collection: four role tracks over a four-chord progression, with a written melody and bass, six sections that bring the bass, arpeggio and drums in and out, and a “broken” drum pattern.
+
+\`\`\`json
+${JSON.stringify(songExample())}
+\`\`\`
+
+### Timed sound design
 
 A 70-second piece: a heartbeat fades in, becomes a radio beacon at 15 s with answering blips in stereo, total silence at 30–35 s, then Geiger clicks, a Morse signal, a slow choir and a monotone voice over the returning heartbeat, and a fade into radio static.
 

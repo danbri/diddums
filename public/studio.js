@@ -11,6 +11,7 @@ import {systemExamples,parseLeanSystem} from './leandsystem.js';
 import {loadJigPlugin,sendPulsePhrase} from './foreignplugins.js';
 import {TasteLab} from './taste-lab.js';
 import {SampleSwsLab} from './sample-sws.js';
+import {familySound} from './sounds.js';
 import {openInBrowserLean,browserLeanEvidence,releaseEquivalenceGate} from './browser-lean.js';
 import {loadLeanKernel,downloadLeanProject,leanCatalog} from './lean-client.js';
 import {runPitchCritic,runTuningAudit} from './pitch-critic.js';
@@ -243,7 +244,7 @@ function renderUsagePicker(host,id){
  label.append(caption,select);host.append(label);
 }
 function renderPatterns(){
- $('#patternCards').innerHTML=Object.values(patterns).map(p=>{const uses=patternUses(p.id),count=new Set(uses.map(u=>u.pieceId)).size;return `<article class="pattern-card" data-pattern="${p.id}"><span class="eyebrow">${esc(p.family)} · INSTRUMENT / EFFECT PATTERN</span><h2>${esc(p.label)}</h2><p>${esc(p.about)}</p><div class="tags">${p.tags.map(esc).join(' / ')}</div><small class="pattern-use-count">${count} compositions · ${uses.length} track uses</small><div data-use-picker="${p.id}"></div><div class="button-row"><button data-pattern-open="${p.id}">Open structure</button><button data-pattern-play="${p.id}">Hear in context</button><button data-pattern-source="${p.id}">Source</button></div></article>`;}).join('');
+ $('#patternCards').innerHTML=Object.values(patterns).map(p=>{const uses=patternUses(p.id),count=new Set(uses.map(u=>u.pieceId)).size;return `<article class="pattern-card" data-pattern="${p.id}"><span class="eyebrow">${esc(p.family)} · INSTRUMENT / EFFECT PATTERN</span><h2>${esc(p.label)}</h2>${familySound[p.id]?`<p class="pattern-sound"><b>Sounds:</b> ${esc(familySound[p.id])}</p>`:''}<p>${esc(p.about)}</p><div class="tags">${p.tags.map(esc).join(' / ')}</div><small class="pattern-use-count">${count} compositions · ${uses.length} track uses</small><div data-use-picker="${p.id}"></div><div class="button-row"><button data-pattern-open="${p.id}">Open structure</button><button data-pattern-play="${p.id}">Hear in context</button><button data-pattern-source="${p.id}">Source</button><a class="pattern-lean" href="lean/patterns/${p.id}.lean" target="_blank" rel="noopener">LeanDSP ↗</a></div></article>`;}).join('');
  for(const el of document.querySelectorAll('[data-use-picker]'))renderUsagePicker(el,el.dataset.usePicker);
  for(const b of document.querySelectorAll('[data-pattern-source]'))b.onclick=()=>openSource(b.dataset.patternSource);
  for(const b of document.querySelectorAll('[data-pattern-play]'))b.onclick=()=>hearPatternInContext(b.dataset.patternPlay).catch(e=>notify(e.message,true));
@@ -358,5 +359,6 @@ music.setSession(session);
 releaseEquivalenceGate().then(g=>{$('#browserLeanGate').textContent=g.exact?'RELEASE-EQUIVALENT LEAN GATE · PASS · exact native/browser toolchain identity':'RELEASE-EQUIVALENT LEAN GATE · BLOCKED · '+g.reason+' Native '+g.native.version+(g.native.commit?' @ '+g.native.commit.slice(0,12):' · commit not recorded')+' · browser '+g.browser.reportedLean+' @ '+g.browser.forkCommit.slice(0,12);$('#browserLeanGate').classList.toggle('error',!g.exact);}).catch(e=>{$('#browserLeanGate').textContent='RELEASE-EQUIVALENT LEAN GATE · ERROR · '+e.message;});
 renderPiece();renderView();renderPatterns();taste.setComposition(piece);$('#sourceText').value=editorSourceFor(sourceId);$('#sourcePattern').value=sourceId;loadSystem();updateTransport();$('#status').classList.remove('show');
 // Preload one pinned native-Lean family; there is intentionally no browser DSP compiler fallback.
+if(patterns[urlParams.get('pattern')]){setTab('patterns');openDefinition(urlParams.get('pattern'));}
 compilePattern('roundBass').then(showCompiler).catch(e=>{$('#compilerStatus').textContent=e.message;});
 const diddumsApi={get state(){return{...diagnostics(),loading,selected:selectedNode?.id,collectionCount:compositions.length,patternCount:Object.keys(patterns).length};},get lastProof(){return lastCompositionProof;},renderProof:()=>renderCompositionProof(false),get sampleSws(){return sampleSws?.diagnostics?.()||null;},get latest(){return latest;},get session(){return session;},get audio(){return audio;},get context(){return ctx;},play:playPiece,seek:seekSection,openDrums:()=>openNode({open:'drums'}),openPattern:openSource,compile:compilePattern,compositions,patterns,makeSession,exportSource:sourceFor};window.diddums=diddumsApi;

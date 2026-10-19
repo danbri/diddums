@@ -131,7 +131,7 @@ export function compositionFromSong(input){
   const {preset,family}=resolved,pair=t.pair&&typeof t.pair==='object'?t.pair:null;
   if(slots+(pair?2:1)>MAX_TRACKS){warnings.push(`${where}: over the ${MAX_TRACKS}-voice track limit`);continue;}
   let id=slug(t.id||preset?.id||family),n=2;while(used.has(id)||used.has(id+'L')||used.has(id+'R'))id=slug(t.id||preset?.id||family).slice(0,20)+n++;
-  const {category,about,companion,id:_p,label:_l,pattern:_f,...base}=preset||{level:.4,colour:.4,life:1.2,pan:0,send:.3,transpose:0};
+  const {category,scene,about,companion,id:_p,label:_l,pattern:_f,...base}=preset||{level:.4,colour:.4,life:1.2,pan:0,send:.3,transpose:0};
   const role=t.seq?'timeline':ROLES.includes(t.role)?t.role:preset?.role||defaultRoleFor(family);
   const track={...base,id,label:String(t.label||preset?.label||patterns[family].label).slice(0,48),pattern:family,role,sound:preset?.id||null};
   for(const [k,a,b] of [['level',0,1.5],['pan',-1,1],['send',0,1.5],['colour',0,1],['life',.03,8],['transpose',-48,48]])if(t[k]!=null)track[k]=num(t[k],track[k],a,b);
