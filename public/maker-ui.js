@@ -116,8 +116,17 @@ export function mountMaker(root,hooks){
  const save=()=>store.set('diddums.make.song',JSON.stringify(song));
  const viz=attachViz($('#mkViz'),hooks.analyser,{mode:'line'});
 
- function rebuild(){
-  const r=checkSong(song);composition=r.composition;problems=r.problems;
+ // Edits reach the playing song: a fader moves the running track at once; anything else reloads the
+ // edited song at the current bar shortly after the last change.
+ let liveId=null,liveTimer=0;
+ const playLive=c=>{liveId=c.id;return hooks.play(c,{stay:true});};
+ function goLive(control){
+  if(!liveId||!hooks.isPlaying(liveId)||!composition?.tracks.length||problems.length)return;
+  if(control){hooks.control(control);return;}
+  clearTimeout(liveTimer);liveTimer=setTimeout(()=>{if(!hooks.isPlaying(liveId)||!composition?.tracks.length||problems.length)return;liveId=composition.id;hooks.play(composition,{stay:true,bar:hooks.bar()});},400);
+ }
+ function rebuild(live=true){
+  const r=checkSong(song);composition=r.composition;problems=r.problems;if(live)goLive();
   const box=$('#mkProblems');box.hidden=!problems.length;box.innerHTML=problems.length?`<b>Some parts cannot play yet</b><ul>${problems.slice(0,6).map(p=>`<li>${esc(p)}</li>`).join('')}</ul>`:'';
   const voices=composition?composition.tracks.reduce((n,t)=>n+(t.pair?2:1),0):0;
   $('#mkMeta').textContent=composition?`${formatDuration(composition.seconds)} · ${composition.key} · ${composition.bpm} BPM · ${voices}/${MAX_TRACKS} voices`:'';
@@ -182,7 +191,7 @@ export function mountMaker(root,hooks){
   else if(act==='seq'){t.seq='x . . . x . . . x . x . . . . .';t.note=NOTE_FOR[trackKind(t).r?.family]||'C4';t.step=.25;open[i]='notes';rebuild();renderTracks();}
   else if(act==='unseq'){for(const f of ['seq','note','step','from','to','gate','loop'])delete t[f];rebuild();renderTracks();}
  });
- $('#mkTracks').addEventListener('input',e=>{if(e.target.dataset.act!=='level')return;song.tracks[+e.target.closest('.mk-card').dataset.i].level=Number(e.target.value);rebuild();});
+ $('#mkTracks').addEventListener('input',e=>{if(e.target.dataset.act!=='level')return;const i=+e.target.closest('.mk-card').dataset.i;song.tracks[i].level=Number(e.target.value);rebuild(false);const ct=composition?.tracks.length===song.tracks.length?composition.tracks[i]:null;if(ct)goLive({ids:ct.pair?[ct.id+'L',ct.id+'R']:[ct.id],key:'level',value:ct.level});});
  function showUndo(name){root.querySelector('.mk-undo')?.remove();const b=document.createElement('button');b.type='button';b.className='mk-undo';b.textContent=`Removed ${name} · Undo`;b.onclick=()=>{if(undo){song.tracks.splice(undo.i,0,undo.t);undo=null;rebuild();renderTracks();}b.remove();};$('#mkTracks').before(b);setTimeout(()=>b.remove(),8000);}
 
  function renderDetails(){
@@ -240,7 +249,7 @@ export function mountMaker(root,hooks){
 
  // ---- Play / share ----
  $('#mkTitle').oninput=()=>{song.title=$('#mkTitle').value;rebuild();};
- $('#mkPlay').onclick=()=>{hooks.unlock();rebuild();if(!composition?.tracks.length){toast('Add a sound first',true);return;}hooks.play(composition,{stay:true});viz.kick();};
+ $('#mkPlay').onclick=()=>{hooks.unlock();rebuild();if(!composition?.tracks.length){toast('Add a sound first',true);return;}playLive(composition);viz.kick();};
  async function link(){const r=recipeFromSong(song);return r?shareUrl(r):songLink(song);}
  $('#mkShare').onclick=async()=>{
   try{const url=await link(),data={title:song.title||'Diddums',text:(song.title||'A Diddums track')+' · made with Diddums',url};
@@ -269,7 +278,7 @@ export function mountMaker(root,hooks){
 
  // ---- Compose ----
  const status=(text,busy=true)=>{$('#mkStatus').hidden=!text;$('#mkStatusText').textContent=text||'';$('#mkStatus').classList.toggle('busy',busy);$('#mkStop').hidden=!busy;$('#mkCompose').disabled=busy&&!!text;};
- function load(next,msg){song=next;open={};$('#mkTitle').value=song.title||'';rebuild();renderTracks();if($('#mkDetailsBox').open)renderDetails();if(msg)toast(msg);}
+ function load(next,msg){song=next;open={};liveId=null;$('#mkTitle').value=song.title||'';rebuild();renderTracks();if($('#mkDetailsBox').open)renderDetails();if(msg)toast(msg);}
  function promptText(){const p=$('#mkPrompt').value.trim();if(!p){$('#mkPrompt').focus();toast('Describe the music first',true);return null;}return p;}
  $('#mkCompose').onclick=async()=>{
   hooks.unlock();const p=promptText();if(!p)return;
@@ -280,12 +289,12 @@ export function mountMaker(root,hooks){
    const r=await composeWithClaude({apiKey:settings.key,model:settings.model,prompt:p,base,example:exampleSong(hooks.example()),signal:abort.signal,
     onProgress:({phase,chars})=>status(phase==='loading'?'Loading the Claude SDK…':`${phase==='repairing'?'Fixing details':'Claude is composing'}… ${chars?chars.toLocaleString()+' characters':'thinking'}`)});
    r.song.prompt=p;load(r.song);status(r.problems.length?'Composed, with a few parts Diddums could not use (listed below).':'',false);
-   if(composition?.tracks.length)hooks.play(composition,{stay:true});
+   if(composition?.tracks.length)playLive(composition);
   }catch(e){status(e.message,false);}
   finally{abort=null;}
  };
  $('#mkStop').onclick=()=>abort?.abort();
- $('#mkSketch').onclick=()=>{hooks.unlock();const p=promptText();if(!p)return;const s=songFromRecipe(recipeFromPrompt(p));s.description=`Offline keyword sketch of “${p}”.`;load(s,'Quick sketch made without AI');if(composition?.tracks.length)hooks.play(composition,{stay:true});};
+ $('#mkSketch').onclick=()=>{hooks.unlock();const p=promptText();if(!p)return;const s=songFromRecipe(recipeFromPrompt(p));s.description=`Offline keyword sketch of “${p}”.`;load(s,'Quick sketch made without AI');if(composition?.tracks.length)playLive(composition);};
  $('#mkViaApp').onclick=async()=>{
   const p=promptText();if(!p)return;lastChat=chatPrompt(p,$('#mkRefine').checked?song:null,exampleSong(hooks.example()));
   $('#mkApp').hidden=false;$('#mkShareText').hidden=!navigator.share;
@@ -295,7 +304,7 @@ export function mountMaker(root,hooks){
  $('#mkCopyAgain').onclick=async()=>{try{await navigator.clipboard.writeText(lastChat);toast('Prompt copied');}catch{toast('Copy failed',true);}};
  $('#mkShareText').onclick=async()=>{try{await navigator.share({text:lastChat});}catch{}};
  $('#mkFromClipboard').onclick=async()=>{try{$('#mkReply').value=await navigator.clipboard.readText();}catch{toast('Long-press the box and choose Paste',true);}};
- $('#mkUseReply').onclick=()=>{hooks.unlock();try{const r=songFromReply($('#mkReply').value);r.song.prompt=r.song.prompt||$('#mkPrompt').value.trim()||undefined;load(r.song,r.problems.length?'Loaded, with a few problems listed below':'Loaded the song');$('#mkApp').hidden=true;$('#mkReply').value='';if(composition?.tracks.length)hooks.play(composition,{stay:true});}catch(e){toast(e.message,true);}};
+ $('#mkUseReply').onclick=()=>{hooks.unlock();try{const r=songFromReply($('#mkReply').value);r.song.prompt=r.song.prompt||$('#mkPrompt').value.trim()||undefined;load(r.song,r.problems.length?'Loaded, with a few problems listed below':'Loaded the song');$('#mkApp').hidden=true;$('#mkReply').value='';if(composition?.tracks.length)playLive(composition);}catch(e){toast(e.message,true);}};
  $('#mkIdeas').onclick=e=>{const b=e.target.closest('[data-idea]');if(!b)return;$('#mkPrompt').value=b.dataset.idea;$('#mkRefine').checked=false;$('#mkPrompt').focus();};
 
  // ---- Settings ----

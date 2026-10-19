@@ -35,10 +35,13 @@ class JigStudio extends AudioWorkletProcessor {
  wrapLoop(frame){if(!this.loop)return;for(const t of this.tracks)for(const v of t.voices)if(v.gate){this.logEvent('noteOff',t,v,frame,'loop-boundary');v.gate=0;v.offAt=frame;}this.position=this.loop.start;this.eventIndex=0;while(this.eventIndex<this.session.events.length&&this.session.events[this.eventIndex].frame<this.position)this.eventIndex++;this.ended=false;this.logEvent('loop',null,null,frame,`bar ${this.loop.startBar+1}`);}
  control(d){if(d.id==='out'){if(d.key==='level')this.master=clamp(d.value,0,1);return;}if(d.id==='energy'){this.energy=clamp(d.value,.3,1.5);return;}if(d.id==='drums'){this.drumsLevel=clamp(d.value,0,1.5);return;}if(d.id==='room'||d.id==='echo'){const keys={room:'room',damp:'damp',wet:'wet',echo:'echo',feedback:'feedback',delayBeats:'delayBeats'};if(keys[d.key])this.space[d.key]=clamp(d.value,0,d.key==='delayBeats'?2:.94);return;}
   const t=this.byId.get(d.id);if(!t)return;if(d.key==='solo'){this.solo=d.value?t.id:null;return;}if(d.key==='mute')t.mute=!!d.value;
-  else if(d.key==='level'||d.key==='send')t[d.key]=clamp(d.value,0,1.5);
-  else if(d.key==='pan')t.pan=clamp(d.value,-1,1);
-  else if(d.key==='colour'){t.colour=clamp(d.value,0,1);t.overrideColour=true;for(const v of t.voices){v.colour=t.colour;v.colourPath=null;v.trajectory=null;v.automationStart=0;}}
-  else if(d.key==='life'){t.life=clamp(d.value,.03,8);t.overrideLife=true;for(const v of t.voices)v.life=t.life;}
+  // A fader sets the track's base level, which a level automation curve multiplies; any other control
+  // the person moves takes over from that parameter's automation curve for the rest of this session.
+  else if(d.key==='level'){t.baseLevel=clamp(d.value,0,1.5);if(!t.automation?.level)t.level=t.baseLevel;}
+  else if(d.key==='send'){this.releaseAutomation(t,'send');t.send=clamp(d.value,0,1.5);}
+  else if(d.key==='pan'){this.releaseAutomation(t,'pan');t.pan=clamp(d.value,-1,1);}
+  else if(d.key==='colour'){this.releaseAutomation(t,'colour');t.autoColour=undefined;t.colour=clamp(d.value,0,1);t.overrideColour=true;for(const v of t.voices){v.colour=t.colour;v.colourPath=null;v.trajectory=null;v.automationStart=0;}}
+  else if(d.key==='life'){this.releaseAutomation(t,'life');t.autoLife=undefined;t.life=clamp(d.value,.03,8);t.overrideLife=true;for(const v of t.voices)v.life=t.life;}
   else if(d.key==='freq'&&t.id.startsWith('d:'))t.freq=clamp(d.value,24,12000);
  }
  replacePattern(d){const module=new WebAssembly.Module(new Uint8Array(d.bytes));this.bank.set(d.id,{module,hash:d.hash,debug:d.debug});for(const t of this.tracks)if(t.pattern===d.id)for(let i=0;i<t.voices.length;i++){const old=t.voices[i],v=this.instantiate(d.id,old.id);Object.assign(v,{noteNumber:old.noteNumber,scoreId:old.scoreId,eventSource:old.eventSource,syllable:old.syllable,speechPart:old.speechPart,freq:old.freq,velocity:old.velocity,gate:old.gate,active:old.active,offAt:old.offAt,tailAt:old.tailAt,startAt:old.startAt,colour:old.colour,colourPath:old.colourPath,trajectory:old.trajectory,automationStart:old.automationStart,life:old.life});t.voices[i]=v;}if(d.id==='chamber')this.room=[this.instantiate(d.id,'room#0'),this.instantiate(d.id,'room#1')];this.probeStats.clear();this.clearTrace();this.port.postMessage({type:'replaced',id:d.id,hash:d.hash});}
@@ -47,6 +50,7 @@ class JigStudio extends AudioWorkletProcessor {
   this.clearTrace();this.probeStats.clear();this.ended=false;this.part=null;
  }
  // Score-time automation: flat [frame,value,…] curves compiled by timeline.js, evaluated once per render segment.
+ releaseAutomation(t,key){if(t.automation?.[key]){t.automation={...t.automation};delete t.automation[key];}}
  autoAt(p,f){if(f<=p[0])return p[1];for(let i=2;i<p.length;i+=2)if(f<p[i]){const f0=p[i-2],v0=p[i-1];return v0+(p[i+1]-v0)*(f-f0)/Math.max(1,p[i]-f0);}return p[p.length-1];}
  applyAutomation(){const pos=this.position;for(const t of this.tracks){const a=t.automation;if(!a)continue;if(a.level)t.level=clamp(t.baseLevel*this.autoAt(a.level,pos),0,1.5);if(a.pan)t.pan=clamp(this.autoAt(a.pan,pos),-1,1);if(a.send)t.send=clamp(this.autoAt(a.send,pos),0,1.5);if(a.colour)t.autoColour=clamp(this.autoAt(a.colour,pos),0,1);if(a.life)t.autoLife=clamp(this.autoAt(a.life,pos),.03,8);if(a.tune)t.tune=clamp(this.autoAt(a.tune,pos),-48,48);}
   const g=this.session.automation;if(!g)return;if(g.master)this.autoMaster=clamp(this.autoAt(g.master,pos),0,1.5);for(const k of ['room','damp','wet','echo'])if(g[k])this.space[k]=clamp(this.autoAt(g[k],pos),0,.94);}

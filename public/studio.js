@@ -342,7 +342,9 @@ for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>setTab(b.da
 // Called from Labs button handlers (inside a click): play through the iOS silent switch like a media app.
 function unlockAudio(){try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch{}}
 const maker=mountMaker($('#makeMount'),{initial:urlSongPiece?.song||(urlRecipe?songFromRecipe(urlRecipe):null),example:()=>compositionById.firstcontact,analyser:()=>analyser,unlock:unlockAudio,notify:(m,e)=>notify(m,!!e,e?6000:2600),songOfCurrent:()=>songFromComposition(piece),
- play:(c,opts={})=>{registerComposition(c,!opts.stay);if(!opts.stay)setTab('listen');return playPiece(c.id);}});
+ play:async(c,opts={})=>{registerComposition(c,!opts.stay);if(!opts.stay)setTab('listen');await playPiece(c.id);if(opts.bar>0&&audio&&loadedId===c.id)audio.port.postMessage({type:'seek',bar:Math.min(c.bars-1,opts.bar)});},
+ isPlaying:id=>playing&&loadedId===id,bar:()=>latest?.bar??0,
+ control:({ids,key,value})=>{for(const id of ids)audio?.port.postMessage({type:'control',id,key,value});}});
 
 $('#browse').onclick=()=>{$('#collectionDialog').showModal();renderCollection()};$('#closeCollection').onclick=()=>$('#collectionDialog').close();$('#searchCollection').oninput=renderCollection;$('#collectionDialog').addEventListener('click',e=>{if(e.target===$('#collectionDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
 $('#play').onclick=togglePlay;$('#prevPiece').onclick=()=>{const i=compositions.indexOf(piece);playPiece(compositions[(i+compositions.length-1)%compositions.length].id);};$('#nextPiece').onclick=()=>{const i=compositions.indexOf(piece);playPiece(compositions[(i+1)%compositions.length].id);};$('#nextSection').onclick=()=>{const i=piece.sections.findIndex(s=>s.name===(latest?.section||piece.sections[0].name));seekSection((i+1)%piece.sections.length);};$('#upGraph').onclick=()=>{if(definitionId){leaveDefinition();setTab('patterns');return;}route.pop();renderView();};
