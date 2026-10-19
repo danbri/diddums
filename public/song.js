@@ -101,7 +101,7 @@ export function resolveSound(id){
  if(patterns[id])return {preset:null,family:id};
  return null;
 }
-const defaultRoleFor=family=>sounds.find(s=>s.pattern===family)?.role||'lead';
+const defaultRoleFor=family=>sounds.find(s=>s.pattern===family)?.role||patterns[family]?.role||'lead';
 const slug=s=>String(s||'track').replace(/[^A-Za-z0-9]/g,'').slice(0,24)||'track';
 
 // Expand a Song into a composition. Problems with individual fields are collected in `warnings`

@@ -32,7 +32,7 @@ export async function startAdaptive({composition,plan,state={},onBar=()=>{},onLe
  const node=new AudioWorkletNode(ctx,'diddums-studio',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2]});
  const analyser=ctx.createAnalyser();analyser.fftSize=2048;node.connect(analyser);node.connect(ctx.destination);
  const needed=[...new Set([...composition.tracks.map(t=>t.pattern),...drumKit.map(d=>d.pattern),'chamber'])];
- const modules=await Promise.all(needed.map(id=>loadLeanKernel(id,patterns[id].source)));
+ const modules=await Promise.all(needed.map(async id=>{const m=await loadLeanKernel(id,patterns[id].source);if(!patterns[id].source)patterns[id].source=m.source;return m;}));
 
  // Voice pools are fixed at load, so size them from a dense worst case (every layer at full energy), capped:
  // the worklet steals the oldest voice when a pool is full, and small pools keep Wasm memory bounded.

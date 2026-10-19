@@ -19,7 +19,7 @@ function spectrum(y,at){const N=4096,re=new Float64Array(N),im=new Float64Array(
  return {centroid:tot?cen/tot:0,flatness:cnt?Math.exp(logSum/cnt)/(lin/cnt+1e-12):0,fp:fp.map(v=>Math.max(-6,v-mx))};}
 function frames(y,hop=480){const out=[];for(let i=0;i+hop<=y.length;i+=hop){let s=0;for(let j=0;j<hop;j++)s+=y[i+j]*y[i+j];out.push(Math.sqrt(s/hop));}return out;}
 function analyse(bytes,opts){
- const y=renderKernel(bytes,{sr:SR,seconds:2.4,gateOn:.6,velocity:.9,...opts});
+ const y=renderKernel(bytes,{sr:SR,seconds:2.4,gateOn:.6,velocity:.9,...opts});// opts may override length, gate and velocity
  let peak=0,sum=0,bad=false;for(const v of y){if(!Number.isFinite(v)){bad=true;break;}peak=Math.max(peak,Math.abs(v));sum+=v;}
  if(bad)return {bad:'non-finite output'};
  const fr=frames(y),mx=Math.max(...fr),iMax=fr.indexOf(mx),dc=Math.abs(sum/y.length);
@@ -37,8 +37,12 @@ for(const f of families){
  if(mid.tail>.2){reject(f,'note does not end');continue;}
  const lo=analyse(bytes,{freq:110,colour:.5}),hi=analyse(bytes,{freq:660,colour:.5}),dark=analyse(bytes,{freq:262,colour:.1}),bright=analyse(bytes,{freq:262,colour:.9});
  if([lo,hi,dark,bright].some(a=>a.bad||a.tail>.2)){reject(f,'unstable at other settings');continue;}
- const level=Math.min(3,Math.max(.15,.2/Math.max(mid.maxRms,lo.maxRms,hi.maxRms)),.95/Math.max(mid.peak,lo.peak,hi.peak,bright.peak));
- kept.push({...f,level,features:{attack:mid.attack,decay:mid.decay,sustain:mid.sustain,centroid:mid.centroid,flatness:mid.flatness,colourRange:bright.centroid/(dark.centroid||1)},fp:[...lo.fp,...mid.fp,...hi.fp,mid.attack*20,Math.log(1+mid.decay)*4,mid.sustain*4]});
+ // Loudness from short and long held notes (slow-attack sounds are still rising after 0.6 s), and
+ // whether the program still speaks at an ordinary playing strength (some reed models need high pressure).
+ const held=analyse(bytes,{freq:262,colour:.5,seconds:4.6,gateOn:4}),soft=analyse(bytes,{freq:262,colour:.5,velocity:.6});
+ const level=Math.min(3,Math.max(.15,.2/Math.max(mid.maxRms,lo.maxRms,hi.maxRms,held.maxRms||0)),.95/Math.max(mid.peak,lo.peak,hi.peak,bright.peak,held.peak||0));
+ const quiet=(soft.maxRms||0)/mid.maxRms<.3;
+ kept.push({...f,level,quiet,features:{attack:mid.attack,decay:mid.decay,sustain:mid.sustain,centroid:mid.centroid,flatness:mid.flatness,colourRange:bright.centroid/(dark.centroid||1)},fp:[...lo.fp,...mid.fp,...hi.fp,mid.attack*20,Math.log(1+mid.decay)*4,mid.sustain*4]});
 }
 // Near-duplicates: greedy, in generation order, by distance between fingerprints.
 const dist=(a,b)=>{let s=0;for(let i=0;i<a.length;i++)s+=(a[i]-b[i])**2;return Math.sqrt(s/a.length);};

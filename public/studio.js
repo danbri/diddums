@@ -82,7 +82,7 @@ const sourceFor=id=>patterns[id]?.source;
 const editorSourceFor=id=>sourceEdits[id]??sourceFor(id);
 async function compilePattern(id){
  const source=sourceFor(id),old=compiled.get(id);if(old?.source===source)return old;
- const result=await loadLeanKernel(id,source);compiled.set(id,result);return result;
+ const result=await loadLeanKernel(id,source);if(patterns[id]&&!patterns[id].source)patterns[id].source=result.source;compiled.set(id,result);return result;
 }
 function neededPatterns(c){return [...new Set([...c.tracks.map(t=>t.pattern),...drumKit.map(d=>d.pattern),'chamber'])];}
 let runtimeReady=null;
@@ -401,6 +401,6 @@ music.setSession(session);
 releaseEquivalenceGate().then(g=>{$('#browserLeanGate').textContent=g.exact?'RELEASE-EQUIVALENT LEAN GATE · PASS · exact native/browser toolchain identity':'RELEASE-EQUIVALENT LEAN GATE · BLOCKED · '+g.reason+' Native '+g.native.version+(g.native.commit?' @ '+g.native.commit.slice(0,12):' · commit not recorded')+' · browser '+g.browser.reportedLean+' @ '+g.browser.forkCommit.slice(0,12);$('#browserLeanGate').classList.toggle('error',!g.exact);}).catch(e=>{$('#browserLeanGate').textContent='RELEASE-EQUIVALENT LEAN GATE · ERROR · '+e.message;});
 renderPiece();renderView();renderPatterns();taste.setComposition(piece);$('#sourceText').value=editorSourceFor(sourceId);$('#sourcePattern').value=sourceId;loadSystem();updateTransport();$('#status').classList.remove('show');
 // Preload one pinned native-Lean family; there is intentionally no browser DSP compiler fallback.
-if(patterns[urlParams.get('pattern')]){setTab('patterns');openDefinition(urlParams.get('pattern'));}
+{const pid=urlParams.get('pattern');if(patterns[pid]){setTab('patterns');(patterns[pid].source?Promise.resolve():compilePattern(pid)).then(()=>openDefinition(pid)).catch(e=>notify(e.message,true));}}
 compilePattern('roundBass').then(showCompiler).catch(e=>{$('#compilerStatus').textContent=e.message;});
 const diddumsApi={get state(){return{...diagnostics(),loading,selected:selectedNode?.id,collectionCount:compositions.length,patternCount:Object.keys(patterns).length};},get lastProof(){return lastCompositionProof;},renderProof:()=>renderCompositionProof(false),get sampleSws(){return sampleSws?.diagnostics?.()||null;},get latest(){return latest;},get session(){return session;},get audio(){return audio;},get context(){return ctx;},play:playPiece,seek:seekSection,openDrums:()=>openNode({open:'drums'}),openPattern:openSource,compile:compilePattern,compositions,patterns,makeSession,exportSource:sourceFor};window.diddums=diddumsApi;

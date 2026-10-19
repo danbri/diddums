@@ -260,6 +260,10 @@ Events follow the same logic at the scale of a beat:
 
 **Choices** (cautious or brave, kind or cruel) work best as both an event and a lingering stance. At the moment of choice, play an event: a cautious choice resolves (root, soft, long), a brave one leaps (fifth to octave, accented, perhaps a one-bar fill). Then add a stance value to the state, decaying over the next 8–16 bars, which biases the plan: brave adds energy and a forward layer such as an arpeggio or brass; cautious removes drums and widens the space. For longer arcs, keep a running *morale* (successes add, mistakes subtract, both decay slowly) and let it choose between progressions, so a run of mistakes darkens the harmony gradually rather than in one jump.
 
+## More instruments
+
+Beyond the instruments above there are 1011 more LeanDSP instruments generated from synthesis archetypes (Mallets & bells, Plucked strings, Bowed strings, Winds, Reeds, FM tones, Synths, Organs, Wavefolders, Voices, Drums & percussion, Textures, Chip, Drones, Ring & metallic, Generative, Resonators). The full list, with how each sounds and the part it plays by default, is at https://danbri.github.io/diddums/skill/INSTRUMENTS.md. Use any of those ids as `sound`. Read that list when the request needs a specific timbre (a sitar, a clarinet, a gong, a chip-tune pulse) that the sounds above do not cover.
+
 ## Sources
 
 The DSP source of every instrument is public: `https://danbri.github.io/diddums/lean/patterns/<instrument id>.lean` (for example https://danbri.github.io/diddums/lean/patterns/felt.lean), and https://danbri.github.io/diddums/?pattern=<instrument id> opens its definition in the app.

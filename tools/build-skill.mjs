@@ -9,6 +9,13 @@ const root=path.join(path.dirname(fileURLToPath(import.meta.url)),'..','public')
 const {songGuide,exampleSong}=await import(path.join(root,'ai.js'));
 const {compositionById}=await import(path.join(root,'collection.js'));
 const SITE='https://danbri.github.io/diddums/';
+const {GENERATED}=await import(path.join(root,'families.js'));
+const genCats=[...new Set(GENERATED.map(g=>g[2]))];
+const instruments=`# Diddums instruments: the generated families
+
+${GENERATED.length} LeanDSP instrument programs generated from synthesis archetypes (modal, waveguide, FM, subtractive, additive, wavefolding, formant, noise, chip and others), screened by rendering, and built by the native Lean 4.34 toolchain. Each is its own program, not a preset of another. Use any id below as a track's \`sound\`; without \`seq\` it plays the default part shown. Sources: ${SITE}lean/families/src/<id>.lean
+
+`+genCats.map(c=>`## ${c}\n\n`+GENERATED.filter(g=>g[2]===c).map(([id,label,,s,role])=>`- \`${id}\` — ${label}. ${s}. Default part: ${role}.`).join('\n')).join('\n\n')+'\n';
 const guide=songGuide(exampleSong(compositionById.firstcontact)).replace(/\n\nReturn one Song JSON object\.$/,'');
 const skill=`---
 name: diddums-song
@@ -90,12 +97,17 @@ Events follow the same logic at the scale of a beat:
 
 **Choices** (cautious or brave, kind or cruel) work best as both an event and a lingering stance. At the moment of choice, play an event: a cautious choice resolves (root, soft, long), a brave one leaps (fifth to octave, accented, perhaps a one-bar fill). Then add a stance value to the state, decaying over the next 8–16 bars, which biases the plan: brave adds energy and a forward layer such as an arpeggio or brass; cautious removes drums and widens the space. For longer arcs, keep a running *morale* (successes add, mistakes subtract, both decay slowly) and let it choose between progressions, so a run of mistakes darkens the harmony gradually rather than in one jump.
 
+## More instruments
+
+Beyond the instruments above there are ${GENERATED.length} more LeanDSP instruments generated from synthesis archetypes (${genCats.join(', ')}). The full list, with how each sounds and the part it plays by default, is at ${SITE}skill/INSTRUMENTS.md. Use any of those ids as \`sound\`. Read that list when the request needs a specific timbre (a sitar, a clarinet, a gong, a chip-tune pulse) that the sounds above do not cover.
+
 ## Sources
 
 The DSP source of every instrument is public: \`${SITE}lean/patterns/<instrument id>.lean\` (for example ${SITE}lean/patterns/felt.lean), and ${SITE}?pattern=<instrument id> opens its definition in the app.
 `;
 fs.mkdirSync(path.join(root,'skill'),{recursive:true});
 fs.writeFileSync(path.join(root,'skill','SKILL.md'),skill);
+fs.writeFileSync(path.join(root,'skill','INSTRUMENTS.md'),instruments);
 fs.writeFileSync(path.join(root,'llms.txt'),`# Diddums
 
 > A browser music workstation. Every sound is synthesised live by small DSP programs. Pieces are JSON "Songs" that can be opened from a link.
@@ -103,6 +115,7 @@ fs.writeFileSync(path.join(root,'llms.txt'),`# Diddums
 - [Diddums song skill](${SITE}skill/SKILL.md): how to compose a Song and turn it into a playable ${SITE}?song=… link. Provider-neutral; usable by any LLM or agent.
 - [Example song](${SITE}?piece=lowlight): Low-Light, a two-minute role-based piece.
 - [Example sound design](${SITE}?piece=firstcontact): First Contact, 70 seconds.
+- [Generated instruments](${SITE}skill/INSTRUMENTS.md): ${GENERATED.length} more LeanDSP instrument programs, by category.
 - [Adaptive game music demo](${SITE}game.html): an endless score re-arranged from game state, with in-key event sounds.
 - [Source](https://github.com/danbri/diddums)
 `);

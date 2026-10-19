@@ -79,6 +79,20 @@ Labs can open a Standard MIDI File as the working song: each channel and General
 
 `game.html` is a playable demo of `adaptive.js`: an endless score written two bars ahead from game state (`set()`, applied at the next bar line), with in-key event sounds on the next 16th note (`hit()`) and immediate mix changes (`control()`). The skill page explains the API and a systematic mapping from game meaning to music.
 
+## Generated instrument families
+
+Beyond the 27 hand-written instruments, `tools/families` generates LeanDSP instrument programs from synthesis archetypes (modal, waveguide strings and tubes, reeds, FM, subtractive, additive organ, wavefolding, formant voices, drums, noise textures, chip, beating drones, ring modulation, comb resonators, note hoppers, seeded bells):
+
+```sh
+cd tools/families && npm install
+node screen.mjs          # compile (JS draft compiler), render, reject duds, set loudness, dedupe, describe
+node build-shards.mjs    # native Lean 4.34 build in shards of 40, with axiom audits (needs elan/lake)
+node publish.mjs         # public/families.js, readable sources, index hash to pin in lean-client.js
+node ../build-skill.mjs  # skill/INSTRUMENTS.md
+```
+
+The JS draft compiler is used only for screening; its kernels were compared with the native ones and are bit-identical. Published kernels come from the native build. The browser loads a shard only when one of its families is used, verifying the pinned index hash, the shard hash and each family's source, WAT and Wasm hashes.
+
 ## Timelines, automation and stereo pairs
 
 Compositions can be written against the clock as well as the bar grid (`public/timeline.js`). `?piece=firstcontact` is a worked example.

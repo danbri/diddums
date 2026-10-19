@@ -1,0 +1,1065 @@
+# Diddums instruments: the generated families
+
+1011 LeanDSP instrument programs generated from synthesis archetypes (modal, waveguide, FM, subtractive, additive, wavefolding, formant, noise, chip and others), screened by rendering, and built by the native Lean 4.34 toolchain. Each is its own program, not a preset of another. Use any id below as a track's `sound`; without `seq` it plays the default part shown. Sources: https://danbri.github.io/diddums/lean/families/src/<id>.lean
+
+## Mallets & bells
+
+- `modalWoodBarSoftShort` — wood bar · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBarSoftRing` — wood bar · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBarMediumShort` — wood bar · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBarMediumRing` — wood bar · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBarHardShort` — wood bar · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBarHardRing` — wood bar · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalMarimbaBarSoftShort` — marimba bar · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalMarimbaBarMediumShort` — marimba bar · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalMarimbaBarMediumRing` — marimba bar · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalMarimbaBarHardShort` — marimba bar · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalMarimbaBarHardRing` — marimba bar · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalVibeBarSoftShort` — vibe bar · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalVibeBarMediumShort` — vibe bar · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalVibeBarMediumRing` — vibe bar · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalVibeBarHardShort` — vibe bar · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalVibeBarHardRing` — vibe bar · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalGlassBarSoftShort` — glass bar · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalGlassBarSoftRing` — glass bar · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalGlassBarMediumShort` — glass bar · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalGlassBarMediumRing` — glass bar · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalGlassBarHardShort` — glass bar · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalGlassBarHardRing` — glass bar · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSteelBarSoftShort` — steel bar · soft strike, damped highs. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `modalSteelBarSoftRing` — steel bar · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSteelBarMediumShort` — steel bar · medium strike, damped highs. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `modalSteelBarMediumRing` — steel bar · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSteelBarHardShort` — steel bar · hard strike, damped highs. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `modalSteelBarHardRing` — steel bar · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalChurchBellSoftShort` — church bell · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 0.9 s. Default part: arp.
+- `modalChurchBellSoftRing` — church bell · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 0.9 s. Default part: arp.
+- `modalChurchBellMediumShort` — church bell · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 0.9 s. Default part: arp.
+- `modalChurchBellMediumRing` — church bell · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 0.9 s. Default part: arp.
+- `modalChurchBellHardShort` — church bell · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 0.9 s. Default part: arp.
+- `modalChurchBellHardRing` — church bell · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 0.9 s. Default part: arp.
+- `modalHandBellSoftShort` — hand bell · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalHandBellSoftRing` — hand bell · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalHandBellMediumShort` — hand bell · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalHandBellMediumRing` — hand bell · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalHandBellHardShort` — hand bell · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalHandBellHardRing` — hand bell · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalTubularBellSoftShort` — tubular bell · soft strike, damped highs. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `modalTubularBellSoftRing` — tubular bell · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalTubularBellMediumShort` — tubular bell · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalTubularBellMediumRing` — tubular bell · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalTubularBellHardShort` — tubular bell · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalTubularBellHardRing` — tubular bell · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalPlateSoftShort` — plate · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalPlateSoftRing` — plate · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalPlateMediumShort` — plate · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalPlateMediumRing` — plate · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalPlateHardShort` — plate · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalPlateHardRing` — plate · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalMembraneSoftShort` — membrane · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalMembraneSoftRing` — membrane · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalMembraneMediumShort` — membrane · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalMembraneMediumRing` — membrane · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalMembraneHardShort` — membrane · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalMembraneHardRing` — membrane · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalGongSoftShort` — gong · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalGongSoftRing` — gong · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalGongMediumShort` — gong · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalGongMediumRing` — gong · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalGongHardShort` — gong · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalGongHardRing` — gong · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `modalKalimbaSoftShort` — kalimba · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalKalimbaMediumShort` — kalimba · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalKalimbaHardShort` — kalimba · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalKalimbaHardRing` — kalimba · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSteelPanSoftShort` — steel pan · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSteelPanSoftRing` — steel pan · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSteelPanMediumShort` — steel pan · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSteelPanMediumRing` — steel pan · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSteelPanHardShort` — steel pan · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSteelPanHardRing` — steel pan · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCrystalSoftShort` — crystal · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCrystalSoftRing` — crystal · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCrystalMediumShort` — crystal · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCrystalMediumRing` — crystal · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCrystalHardShort` — crystal · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCrystalHardRing` — crystal · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalTineSoftShort` — tine · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalTineMediumShort` — tine · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalTineHardShort` — tine · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalTineHardRing` — tine · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCowbellSoftShort` — cowbell · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCowbellSoftRing` — cowbell · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCowbellMediumShort` — cowbell · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCowbellMediumRing` — cowbell · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCowbellHardShort` — cowbell · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalCowbellHardRing` — cowbell · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBlockSoftShort` — wood block · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBlockSoftRing` — wood block · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBlockMediumShort` — wood block · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBlockMediumRing` — wood block · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBlockHardShort` — wood block · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalWoodBlockHardRing` — wood block · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSingingBowlSoftShort` — singing bowl · soft strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSingingBowlSoftRing` — singing bowl · soft strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSingingBowlMediumShort` — singing bowl · medium strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSingingBowlMediumRing` — singing bowl · medium strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSingingBowlHardShort` — singing bowl · hard strike, damped highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `modalSingingBowlHardRing` — singing bowl · hard strike, ringing highs. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell01` — seeded bell 1 · partials 1, 3.596, 6.56, 7.877. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell02` — seeded bell 2 · partials 1, 2.165, 2.382, 6.184. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell03` — seeded bell 3 · partials 1, 3.887, 7.734. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell04` — seeded bell 4 · partials 1, 5.392, 6.302. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell05` — seeded bell 5 · partials 1, 3.859, 4.871, 5.055, 6.897. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell06` — seeded bell 6 · partials 1, 1.403, 3.44, 4.302, 4.679. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell07` — seeded bell 7 · partials 1, 2.008, 2.908, 4.302. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell08` — seeded bell 8 · partials 1, 3.926, 4.413, 7.577. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell09` — seeded bell 9 · partials 1, 5.918, 6.146. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell10` — seeded bell 10 · partials 1, 4.714, 7.423. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell11` — seeded bell 11 · partials 1, 1.929, 2.797, 3.283, 6.516. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell12` — seeded bell 12 · partials 1, 1.852, 2.421, 3.434, 6.959. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell13` — seeded bell 13 · partials 1, 2.045, 4.939, 7.421. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell14` — seeded bell 14 · partials 1, 1.669, 5.989, 6.444. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell15` — seeded bell 15 · partials 1, 4.558, 7.949. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell16` — seeded bell 16 · partials 1, 2.454, 3.127. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell17` — seeded bell 17 · partials 1, 1.695, 2.174, 3.96, 7.54. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell18` — seeded bell 18 · partials 1, 2.617, 5.465, 7.164, 7.264. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell19` — seeded bell 19 · partials 1, 5.833, 6.787, 6.97. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell20` — seeded bell 20 · partials 1, 1.475, 4.401, 6.411. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell21` — seeded bell 21 · partials 1, 2.97, 2.98. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell22` — seeded bell 22 · partials 1, 1.539, 4.485. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell23` — seeded bell 23 · partials 1, 4.832, 5.282, 5.991, 7.108. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell24` — seeded bell 24 · partials 1, 4.906, 5.275, 5.676, 7.496. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell25` — seeded bell 25 · partials 1, 2.001, 4.245, 4.53. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell26` — seeded bell 26 · partials 1, 2.814, 3.506, 4.154. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell27` — seeded bell 27 · partials 1, 1.382, 5.011. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell28` — seeded bell 28 · partials 1, 6.516, 6.951. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell29` — seeded bell 29 · partials 1, 3.025, 5.52, 7.489, 8.022. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell30` — seeded bell 30 · partials 1, 2.527, 2.649, 4.088, 7.932. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell31` — seeded bell 31 · partials 1, 2.272, 2.657, 4.032. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell32` — seeded bell 32 · partials 1, 1.226, 1.896, 5.537. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell33` — seeded bell 33 · partials 1, 6.795, 7.042. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell34` — seeded bell 34 · partials 1, 1.548, 5.363. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell35` — seeded bell 35 · partials 1, 3.053, 3.147, 3.932, 7.767. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `bell36` — seeded bell 36 · partials 1, 2.501, 3.59, 4.558, 7.391. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell37` — seeded bell 37 · partials 1, 6.063, 7.015, 8.069. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell38` — seeded bell 38 · partials 1, 6.638, 6.639, 7.568. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `bell39` — seeded bell 39 · partials 1, 2.073, 5.207. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell40` — seeded bell 40 · partials 1, 3.579, 3.776. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell41` — seeded bell 41 · partials 1, 2.344, 5.084, 5.51, 5.804. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell42` — seeded bell 42 · partials 1, 5.134, 6.247, 6.589, 7.913. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell43` — seeded bell 43 · partials 1, 4.757, 6.482, 8.094. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell44` — seeded bell 44 · partials 1, 2.599, 4.381, 5.05. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell45` — seeded bell 45 · partials 1, 3.619, 4.104. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell46` — seeded bell 46 · partials 1, 2.188, 5.61. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell47` — seeded bell 47 · partials 1, 1.462, 3.252, 7.115, 7.756. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell48` — seeded bell 48 · partials 1, 1.62, 1.905, 2.876, 6.325. Struck or plucked, ringing · pitched · dark · fades in about 1.0 s. Default part: arp.
+- `bell49` — seeded bell 49 · partials 1, 2.348, 2.5, 3.125, 4.894. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell50` — seeded bell 50 · partials 1, 2.123, 3.463, 4.63. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell51` — seeded bell 51 · partials 1, 1.747, 2.031, 6.135. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell52` — seeded bell 52 · partials 1, 7.6, 7.641. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell53` — seeded bell 53 · partials 1, 2.146, 6.169. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell54` — seeded bell 54 · partials 1, 3.651, 4.562, 4.737, 7.618. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell55` — seeded bell 55 · partials 1, 3.306, 5.005, 5.156, 7.242. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `bell56` — seeded bell 56 · partials 1, 1.875, 6.661, 6.866. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell57` — seeded bell 57 · partials 1, 6.49, 7.443, 8.167. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `bell58` — seeded bell 58 · partials 1, 2.672, 6.012. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell59` — seeded bell 59 · partials 1, 4.177, 4.581. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `bell60` — seeded bell 60 · partials 1, 3.15, 5.361, 5.682, 7.22. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+
+## Plucked strings
+
+- `pluckNoneSoftDark` — plucked string · bare, soft pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckNoneSoftMetal` — plucked string · bare, soft pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckNoneBrightDark` — plucked string · bare, bright pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckNoneBrightMetal` — plucked string · bare, bright pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckMandolinSoftDark` — plucked string · mandolin body, soft pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckMandolinSoftMetal` — plucked string · mandolin body, soft pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckMandolinBrightDark` — plucked string · mandolin body, bright pick, dark decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckMandolinBrightMetal` — plucked string · mandolin body, bright pick, metal decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckOudSoftDark` — plucked string · oud body, soft pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckOudSoftMetal` — plucked string · oud body, soft pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckOudBrightDark` — plucked string · oud body, bright pick, dark decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckOudBrightMetal` — plucked string · oud body, bright pick, metal decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckDulcimerSoftDark` — plucked string · dulcimer body, soft pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckDulcimerSoftMetal` — plucked string · dulcimer body, soft pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckDulcimerBrightDark` — plucked string · dulcimer body, bright pick, dark decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckDulcimerBrightMetal` — plucked string · dulcimer body, bright pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckGuitarSoftDark` — plucked string · guitar body, soft pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckGuitarSoftMetal` — plucked string · guitar body, soft pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckGuitarBrightDark` — plucked string · guitar body, bright pick, dark decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckGuitarBrightMetal` — plucked string · guitar body, bright pick, metal decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckHarpSoftDark` — plucked string · harp body, soft pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckHarpSoftMetal` — plucked string · harp body, soft pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckHarpBrightDark` — plucked string · harp body, bright pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckHarpBrightMetal` — plucked string · harp body, bright pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckBanjoSoftOpen` — plucked string · banjo body, soft pick, open decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckBanjoBrightDark` — plucked string · banjo body, bright pick, dark decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckBanjoBrightMetal` — plucked string · banjo body, bright pick, metal decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckSitarSoftDark` — plucked string · sitar body, soft pick, dark decay. Very short hit · pitched · dark · fades in about 0.1 s. Default part: arp.
+- `pluckSitarSoftOpen` — plucked string · sitar body, soft pick, open decay. Very short hit · pitched · dark · fades in about 0.1 s. Default part: arp.
+- `pluckSitarSoftMetal` — plucked string · sitar body, soft pick, metal decay. Very short hit · pitched · dark · fades in about 0.1 s. Default part: arp.
+- `pluckSitarBrightDark` — plucked string · sitar body, bright pick, dark decay. Very short hit · pitched · dark · fades in about 0.1 s. Default part: arp.
+- `pluckSitarBrightMetal` — plucked string · sitar body, bright pick, metal decay. Very short hit · pitched · dark · fades in about 0.1 s. Default part: arp.
+- `pluckKotoBrightOpen` — plucked string · koto body, bright pick, open decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckLuteSoftDark` — plucked string · lute body, soft pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckLuteSoftMetal` — plucked string · lute body, soft pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckLuteBrightDark` — plucked string · lute body, bright pick, dark decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckLuteBrightMetal` — plucked string · lute body, bright pick, metal decay. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `pluckClavSoftDark` — plucked string · clav body, soft pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckClavSoftMetal` — plucked string · clav body, soft pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.0 s. Default part: arp.
+- `pluckClavBrightDark` — plucked string · clav body, bright pick, dark decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `pluckClavBrightMetal` — plucked string · clav body, bright pick, metal decay. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+
+## Bowed strings
+
+- `bowedViolinSmoothStill` — bowed violin · smooth bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolinSmoothWarm` — bowed violin · smooth bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolinSmoothWide` — bowed violin · smooth bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolinAiryStill` — bowed violin · airy bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolinAiryWarm` — bowed violin · airy bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolinAiryWide` — bowed violin · airy bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolinGrittyStill` — bowed violin · gritty bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolinGrittyWarm` — bowed violin · gritty bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolinGrittyWide` — bowed violin · gritty bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolaSmoothStill` — bowed viola · smooth bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolaSmoothWarm` — bowed viola · smooth bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolaSmoothWide` — bowed viola · smooth bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolaAiryStill` — bowed viola · airy bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolaAiryWarm` — bowed viola · airy bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolaAiryWide` — bowed viola · airy bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolaGrittyStill` — bowed viola · gritty bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolaGrittyWarm` — bowed viola · gritty bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedViolaGrittyWide` — bowed viola · gritty bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedCelloSmoothStill` — bowed cello · smooth bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedCelloSmoothWarm` — bowed cello · smooth bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedCelloSmoothWide` — bowed cello · smooth bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedCelloAiryStill` — bowed cello · airy bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedCelloAiryWarm` — bowed cello · airy bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedCelloAiryWide` — bowed cello · airy bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedCelloGrittyStill` — bowed cello · gritty bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedCelloGrittyWarm` — bowed cello · gritty bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedCelloGrittyWide` — bowed cello · gritty bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedBassSmoothStill` — bowed bass · smooth bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedBassSmoothWide` — bowed bass · smooth bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedBassAiryStill` — bowed bass · airy bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedBassAiryWarm` — bowed bass · airy bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedBassAiryWide` — bowed bass · airy bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedBassGrittyStill` — bowed bass · gritty bow, still vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedBassGrittyWarm` — bowed bass · gritty bow, warm vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedBassGrittyWide` — bowed bass · gritty bow, wide vibrato. Slow swell, held · pitched · dark. Default part: long.
+- `bowedFiddleSmoothStill` — bowed fiddle · smooth bow, still vibrato. Held · pitched · dark. Default part: long.
+- `bowedFiddleSmoothWarm` — bowed fiddle · smooth bow, warm vibrato. Held · pitched · dark. Default part: long.
+- `bowedFiddleSmoothWide` — bowed fiddle · smooth bow, wide vibrato. Held · pitched · dark. Default part: long.
+- `bowedFiddleAiryStill` — bowed fiddle · airy bow, still vibrato. Held · pitched · dark. Default part: long.
+- `bowedFiddleAiryWide` — bowed fiddle · airy bow, wide vibrato. Held · pitched · dark. Default part: long.
+- `bowedFiddleGrittyStill` — bowed fiddle · gritty bow, still vibrato. Held · pitched · dark. Default part: long.
+- `bowedFiddleGrittyWarm` — bowed fiddle · gritty bow, warm vibrato. Held · pitched · dark. Default part: long.
+- `bowedFiddleGrittyWide` — bowed fiddle · gritty bow, wide vibrato. Held · pitched · dark. Default part: long.
+
+## Winds
+
+- `blownFlutePureLow` — flute · pure, low register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownFlutePureHigh` — flute · pure, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownFluteBreathyLow` — flute · breathy, low register. Held · pitched · very bright. Default part: lead.
+- `blownFluteBreathyHigh` — flute · breathy, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.7 s. Default part: lead.
+- `blownFluteWindyLow` — flute · windy, low register. Held · pitched · very bright. Default part: lead.
+- `blownFluteWindyHigh` — flute · windy, high register. Held · pitched · very bright. Default part: lead.
+- `blownRecorderPureLow` — recorder · pure, low register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownRecorderPureHigh` — recorder · pure, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownRecorderBreathyLow` — recorder · breathy, low register. Held · pitched · very bright. Default part: lead.
+- `blownRecorderBreathyHigh` — recorder · breathy, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.7 s. Default part: lead.
+- `blownPanPureLow` — pan · pure, low register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownPanPureHigh` — pan · pure, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownPanBreathyLow` — pan · breathy, low register. Held · pitched · very bright. Default part: lead.
+- `blownPanBreathyHigh` — pan · breathy, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.8 s. Default part: lead.
+- `blownPanWindyLow` — pan · windy, low register. Held · pitched · very bright. Default part: lead.
+- `blownPanWindyHigh` — pan · windy, high register. Held · pitched · very bright. Default part: lead.
+- `blownShakuhachiPureLow` — shakuhachi · pure, low register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownShakuhachiPureHigh` — shakuhachi · pure, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.5 s. Default part: lead.
+- `blownShakuhachiBreathyLow` — shakuhachi · breathy, low register. Held · pitched · very bright. Default part: lead.
+- `blownShakuhachiBreathyHigh` — shakuhachi · breathy, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.8 s. Default part: lead.
+- `blownShakuhachiWindyLow` — shakuhachi · windy, low register. Slow swell, held · pitched · bright. Default part: lead.
+- `blownShakuhachiWindyHigh` — shakuhachi · windy, high register. Held · pitched · very bright. Default part: lead.
+- `blownOcarinaPureLow` — ocarina · pure, low register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownOcarinaPureHigh` — ocarina · pure, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownOcarinaBreathyLow` — ocarina · breathy, low register. Held · pitched · very bright. Default part: lead.
+- `blownOcarinaBreathyHigh` — ocarina · breathy, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.6 s. Default part: lead.
+- `blownOcarinaWindyLow` — ocarina · windy, low register. Held · pitched · very bright. Default part: lead.
+- `blownOcarinaWindyHigh` — ocarina · windy, high register. Held · pitched · very bright. Default part: lead.
+- `blownBottlePureHigh` — bottle · pure, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.3 s. Default part: lead.
+- `blownBottleBreathyHigh` — bottle · breathy, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.6 s. Default part: lead.
+- `blownWhistlePureLow` — whistle · pure, low register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownWhistlePureHigh` — whistle · pure, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.4 s. Default part: lead.
+- `blownWhistleBreathyHigh` — whistle · breathy, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.7 s. Default part: lead.
+- `blownWhistleWindyLow` — whistle · windy, low register. Held · pitched · very bright. Default part: lead.
+- `blownFifePureLow` — fife · pure, low register. Struck or plucked, ringing · pitched · very bright · fades in about 1.7 s. Default part: lead.
+- `blownFifePureHigh` — fife · pure, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.6 s. Default part: lead.
+- `blownFifeBreathyLow` — fife · breathy, low register. Swelling, decaying · pitched · bright · fades in about 0.8 s. Default part: lead.
+- `blownFifeBreathyHigh` — fife · breathy, high register. Struck or plucked, ringing · pitched · very bright · fades in about 1.9 s. Default part: lead.
+- `blownFifeWindyLow` — fife · windy, low register. Slow swell, held · pitched · bright. Default part: lead.
+- `blownFifeWindyHigh` — fife · windy, high register. Held · pitched · very bright. Default part: lead.
+
+## Reeds
+
+- `reedClarinetSoftStill` — clarinet · soft reed, still. Slow swell, held · pitched · very bright. Default part: lead.
+- `reedClarinetSoftVibrato` — clarinet · soft reed, vibrato. Slow swell, held · pitched · very bright. Default part: lead.
+- `reedClarinetBrassyStill` — clarinet · brassy reed, still. Swelling, decaying · pitched · dark · fades in about 0.1 s. Default part: lead.
+- `reedChalumeauSoftStill` — chalumeau · soft reed, still. Slow swell, held · pitched · bright. Default part: lead.
+- `reedChalumeauBrassyStill` — chalumeau · brassy reed, still. Swelling, decaying · pitched · dark · fades in about 0.1 s. Default part: lead.
+- `reedOboeSoftStill` — oboe · soft reed, still. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedOboeSoftVibrato` — oboe · soft reed, vibrato. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedOboeBrassyStill` — oboe · brassy reed, still. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedOboeBrassyVibrato` — oboe · brassy reed, vibrato. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedSaxReedyStill` — sax · reedy reed, still. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedSaxReedyVibrato` — sax · reedy reed, vibrato. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedBassoonSoftStill` — bassoon · soft reed, still. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedBassoonSoftVibrato` — bassoon · soft reed, vibrato. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedBassoonBrassyStill` — bassoon · brassy reed, still. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedBassoonBrassyVibrato` — bassoon · brassy reed, vibrato. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: lead.
+- `reedHarmoniumSoftStill` — harmonium · soft reed, still. Slow swell, held · pitched · very bright. Default part: lead.
+- `reedHarmoniumSoftVibrato` — harmonium · soft reed, vibrato. Slow swell, held · pitched · very bright. Default part: lead.
+- `reedAccordionSoftStill` — accordion · soft reed, still. Slow swell, held · pitched · very bright. Default part: lead.
+- `reedAccordionSoftVibrato` — accordion · soft reed, vibrato. Slow swell, held · pitched · very bright. Default part: lead.
+- `reedAccordionBrassyStill` — accordion · brassy reed, still. Swelling, decaying · pitched · dark · fades in about 0.1 s. Default part: lead.
+- `reedMelodicaSoftVibrato` — melodica · soft reed, vibrato. Slow swell, held · pitched · very bright. Default part: lead.
+
+## FM tones
+
+- `fm1x1Pluck` — FM 1:1 · pluck. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `fm1x1PluckFb` — FM 1:1 · pluck, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `fm1x1Pad` — FM 1:1 · pad. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x1PadFb` — FM 1:1 · pad, feedback. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x1Bass` — FM 1:1 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x1BassFb` — FM 1:1 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x2Pluck` — FM 1:2 · pluck. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm1x2PluckFb` — FM 1:2 · pluck, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.1 s. Default part: arp.
+- `fm1x2Pad` — FM 1:2 · pad. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x2PadFb` — FM 1:2 · pad, feedback. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x2Bass` — FM 1:2 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x2BassFb` — FM 1:2 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x3Pluck` — FM 1:3 · pluck. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm1x3PluckFb` — FM 1:3 · pluck, feedback. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm1x3Pad` — FM 1:3 · pad. Slow swell, held · pitched · warm. Default part: pad.
+- `fm1x3PadFb` — FM 1:3 · pad, feedback. Slow swell, held · pitched · warm. Default part: pad.
+- `fm1x3Bass` — FM 1:3 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x3BassFb` — FM 1:3 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x3p5Pluck` — FM 1:3.5 · pluck. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm1x3p5PluckFb` — FM 1:3.5 · pluck, feedback. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm1x3p5Pad` — FM 1:3.5 · pad. Slow swell, held · pitched · warm. Default part: pad.
+- `fm1x3p5PadFb` — FM 1:3.5 · pad, feedback. Slow swell, held · pitched · warm. Default part: pad.
+- `fm1x3p5Bass` — FM 1:3.5 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x3p5BassFb` — FM 1:3.5 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm2x1Pluck` — FM 2:1 · pluck. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm2x1PluckFb` — FM 2:1 · pluck, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `fm2x1Pad` — FM 2:1 · pad. Slow swell, held · pitched · dark. Default part: pad.
+- `fm2x1PadFb` — FM 2:1 · pad, feedback. Slow swell, held · pitched · dark. Default part: pad.
+- `fm2x1Bass` — FM 2:1 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm2x1BassFb` — FM 2:1 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x1p414Pluck` — FM 1:1.414 · pluck. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `fm1x1p414PluckFb` — FM 1:1.414 · pluck, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `fm1x1p414Pad` — FM 1:1.414 · pad. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x1p414PadFb` — FM 1:1.414 · pad, feedback. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x1p414Bass` — FM 1:1.414 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x1p414BassFb` — FM 1:1.414 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x4Pluck` — FM 1:4 · pluck. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm1x4PluckFb` — FM 1:4 · pluck, feedback. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm1x4Pad` — FM 1:4 · pad. Slow swell, held · pitched · warm. Default part: pad.
+- `fm1x4PadFb` — FM 1:4 · pad, feedback. Slow swell, held · pitched · warm. Default part: pad.
+- `fm1x4Bass` — FM 1:4 · bass. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: bass.
+- `fm1x4BassFb` — FM 1:4 · bass, feedback. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: bass.
+- `fm1x5Pluck` — FM 1:5 · pluck. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm1x5PluckFb` — FM 1:5 · pluck, feedback. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm1x5Pad` — FM 1:5 · pad. Slow swell, held · pitched · bright. Default part: pad.
+- `fm1x5PadFb` — FM 1:5 · pad, feedback. Slow swell, held · pitched · bright. Default part: pad.
+- `fm1x7Pluck` — FM 1:7 · pluck. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm1x7PluckFb` — FM 1:7 · pluck, feedback. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm1x7Pad` — FM 1:7 · pad. Slow swell, held · pitched · bright. Default part: pad.
+- `fm1x7PadFb` — FM 1:7 · pad, feedback. Slow swell, held · pitched · bright. Default part: pad.
+- `fm1x0p5Pad` — FM 1:0.5 · pad. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x0p5PadFb` — FM 1:0.5 · pad, feedback. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x0p5Bass` — FM 1:0.5 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x0p5BassFb` — FM 1:0.5 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm3x1Pluck` — FM 3:1 · pluck. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm3x1PluckFb` — FM 3:1 · pluck, feedback. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm3x1Pad` — FM 3:1 · pad. Slow swell, held · pitched · warm. Default part: pad.
+- `fm3x1PadFb` — FM 3:1 · pad, feedback. Slow swell, held · pitched · warm. Default part: pad.
+- `fm3x1Bass` — FM 3:1 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm3x1BassFb` — FM 3:1 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x2p756Pluck` — FM 1:2.756 · pluck. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm1x2p756PluckFb` — FM 1:2.756 · pluck, feedback. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm1x2p756Pad` — FM 1:2.756 · pad. Slow swell, held · pitched · warm. Default part: pad.
+- `fm1x2p756PadFb` — FM 1:2.756 · pad, feedback. Slow swell, held · pitched · warm. Default part: pad.
+- `fm1x2p756Bass` — FM 1:2.756 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x2p756BassFb` — FM 1:2.756 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x6p1Pluck` — FM 1:6.1 · pluck. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm1x6p1PluckFb` — FM 1:6.1 · pluck, feedback. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm1x6p1Pad` — FM 1:6.1 · pad. Slow swell, held · pitched · bright. Default part: pad.
+- `fm1x6p1PadFb` — FM 1:6.1 · pad, feedback. Slow swell, held · pitched · bright. Default part: pad.
+- `fm1x1p5Pluck` — FM 1:1.5 · pluck. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `fm1x1p5PluckFb` — FM 1:1.5 · pluck, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `fm1x1p5Pad` — FM 1:1.5 · pad. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x1p5PadFb` — FM 1:1.5 · pad, feedback. Slow swell, held · pitched · dark. Default part: pad.
+- `fm1x1p5Bass` — FM 1:1.5 · bass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x1p5BassFb` — FM 1:1.5 · bass, feedback. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: bass.
+- `fm1x8Pluck` — FM 1:8 · pluck. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm1x8PluckFb` — FM 1:8 · pluck, feedback. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm1x8Pad` — FM 1:8 · pad. Slow swell, held · pitched · bright. Default part: pad.
+- `fm1x8PadFb` — FM 1:8 · pad, feedback. Slow swell, held · pitched · bright. Default part: pad.
+- `fm1x11Pluck` — FM 1:11 · pluck. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: arp.
+- `fm1x11PluckFb` — FM 1:11 · pluck, feedback. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: arp.
+- `fm1x11Pad` — FM 1:11 · pad. Slow swell, held · pitched · very bright. Default part: pad.
+- `fm1x11PadFb` — FM 1:11 · pad, feedback. Slow swell, held · pitched · very bright. Default part: pad.
+- `fm3stack1x1Strike` — 3-operator FM · stack, ratios 1:1:1, strike. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm3stack1x1Swell` — 3-operator FM · stack, ratios 1:1:1, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3stack1x1Organ` — 3-operator FM · stack, ratios 1:1:1, organ. Held · pitched · dark. Default part: arp.
+- `fm3branch1x1Strike` — 3-operator FM · branch, ratios 1:1:1, strike. Struck or plucked, ringing · pitched · warm · fades in about 1.1 s. Default part: arp.
+- `fm3branch1x1Swell` — 3-operator FM · branch, ratios 1:1:1, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3branch1x1Organ` — 3-operator FM · branch, ratios 1:1:1, organ. Held · pitched · dark. Default part: arp.
+- `fm3stack2x1Strike` — 3-operator FM · stack, ratios 1:2:1, strike. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm3stack2x1Swell` — 3-operator FM · stack, ratios 1:2:1, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3stack2x1Organ` — 3-operator FM · stack, ratios 1:2:1, organ. Held · pitched · warm. Default part: arp.
+- `fm3branch2x1Strike` — 3-operator FM · branch, ratios 1:2:1, strike. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm3branch2x1Swell` — 3-operator FM · branch, ratios 1:2:1, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3branch2x1Organ` — 3-operator FM · branch, ratios 1:2:1, organ. Held · pitched · warm. Default part: arp.
+- `fm3stack1x3Strike` — 3-operator FM · stack, ratios 1:1:3, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm3stack1x3Swell` — 3-operator FM · stack, ratios 1:1:3, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3stack1x3Organ` — 3-operator FM · stack, ratios 1:1:3, organ. Held · pitched · warm. Default part: arp.
+- `fm3branch1x3Strike` — 3-operator FM · branch, ratios 1:1:3, strike. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm3branch1x3Swell` — 3-operator FM · branch, ratios 1:1:3, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3branch1x3Organ` — 3-operator FM · branch, ratios 1:1:3, organ. Held · pitched · warm. Default part: arp.
+- `fm3stack3x7Strike` — 3-operator FM · stack, ratios 1:3:7, strike. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: arp.
+- `fm3stack3x7Swell` — 3-operator FM · stack, ratios 1:3:7, swell. Slow swell, held · pitched · warm. Default part: arp.
+- `fm3stack3x7Organ` — 3-operator FM · stack, ratios 1:3:7, organ. Held · pitched · bright. Default part: arp.
+- `fm3branch3x7Strike` — 3-operator FM · branch, ratios 1:3:7, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm3branch3x7Swell` — 3-operator FM · branch, ratios 1:3:7, swell. Slow swell, held · pitched · warm. Default part: arp.
+- `fm3branch3x7Organ` — 3-operator FM · branch, ratios 1:3:7, organ. Held · pitched · warm. Default part: arp.
+- `fm3stack2x5Strike` — 3-operator FM · stack, ratios 1:2:5, strike. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: arp.
+- `fm3stack2x5Swell` — 3-operator FM · stack, ratios 1:2:5, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3stack2x5Organ` — 3-operator FM · stack, ratios 1:2:5, organ. Held · pitched · warm. Default part: arp.
+- `fm3branch2x5Strike` — 3-operator FM · branch, ratios 1:2:5, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.3 s. Default part: arp.
+- `fm3branch2x5Swell` — 3-operator FM · branch, ratios 1:2:5, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3branch2x5Organ` — 3-operator FM · branch, ratios 1:2:5, organ. Held · pitched · warm. Default part: arp.
+- `fm3stack1p41x2p82Strike` — 3-operator FM · stack, ratios 1:1.41:2.82, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm3stack1p41x2p82Swell` — 3-operator FM · stack, ratios 1:1.41:2.82, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3stack1p41x2p82Organ` — 3-operator FM · stack, ratios 1:1.41:2.82, organ. Held · pitched · warm. Default part: arp.
+- `fm3branch1p41x2p82Strike` — 3-operator FM · branch, ratios 1:1.41:2.82, strike. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm3branch1p41x2p82Swell` — 3-operator FM · branch, ratios 1:1.41:2.82, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3branch1p41x2p82Organ` — 3-operator FM · branch, ratios 1:1.41:2.82, organ. Held · pitched · dark. Default part: arp.
+- `fm3stack0p5x1Strike` — 3-operator FM · stack, ratios 1:0.5:1, strike. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `fm3stack0p5x1Swell` — 3-operator FM · stack, ratios 1:0.5:1, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3stack0p5x1Organ` — 3-operator FM · stack, ratios 1:0.5:1, organ. Held · pitched · dark. Default part: arp.
+- `fm3branch0p5x1Strike` — 3-operator FM · branch, ratios 1:0.5:1, strike. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `fm3branch0p5x1Swell` — 3-operator FM · branch, ratios 1:0.5:1, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3branch0p5x1Organ` — 3-operator FM · branch, ratios 1:0.5:1, organ. Held · pitched · dark. Default part: arp.
+- `fm3stack4x1Strike` — 3-operator FM · stack, ratios 1:4:1, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm3stack4x1Swell` — 3-operator FM · stack, ratios 1:4:1, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3stack4x1Organ` — 3-operator FM · stack, ratios 1:4:1, organ. Held · pitched · warm. Default part: arp.
+- `fm3branch4x1Strike` — 3-operator FM · branch, ratios 1:4:1, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm3branch4x1Swell` — 3-operator FM · branch, ratios 1:4:1, swell. Slow swell, held · pitched · warm. Default part: arp.
+- `fm3branch4x1Organ` — 3-operator FM · branch, ratios 1:4:1, organ. Held · pitched · warm. Default part: arp.
+- `fm3stack1x14Strike` — 3-operator FM · stack, ratios 1:1:14, strike. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: arp.
+- `fm3stack1x14Swell` — 3-operator FM · stack, ratios 1:1:14, swell. Slow swell, held · pitched · bright. Default part: arp.
+- `fm3stack1x14Organ` — 3-operator FM · stack, ratios 1:1:14, organ. Held · pitched · very bright. Default part: arp.
+- `fm3branch1x14Strike` — 3-operator FM · branch, ratios 1:1:14, strike. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: arp.
+- `fm3branch1x14Swell` — 3-operator FM · branch, ratios 1:1:14, swell. Slow swell, held · pitched · bright. Default part: arp.
+- `fm3branch1x14Organ` — 3-operator FM · branch, ratios 1:1:14, organ. Held · pitched · bright. Default part: arp.
+- `fm3stack3p5x1p5Strike` — 3-operator FM · stack, ratios 1:3.5:1.5, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.1 s. Default part: arp.
+- `fm3stack3p5x1p5Swell` — 3-operator FM · stack, ratios 1:3.5:1.5, swell. Slow swell, held · pitched · warm. Default part: arp.
+- `fm3stack3p5x1p5Organ` — 3-operator FM · stack, ratios 1:3.5:1.5, organ. Held · pitched · warm. Default part: arp.
+- `fm3branch3p5x1p5Strike` — 3-operator FM · branch, ratios 1:3.5:1.5, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `fm3branch3p5x1p5Swell` — 3-operator FM · branch, ratios 1:3.5:1.5, swell. Slow swell, held · pitched · dark. Default part: arp.
+- `fm3branch3p5x1p5Organ` — 3-operator FM · branch, ratios 1:3.5:1.5, organ. Held · pitched · warm. Default part: arp.
+
+## Synths
+
+- `subSawBassLp` — subtractive saw · bass, low-pass. Held · pitched · dark. Default part: bass.
+- `subSawBassBp` — subtractive saw · bass, band-pass. Slow swell, held · pitched · dark. Default part: bass.
+- `subSawLeadLp` — subtractive saw · lead, low-pass. Held · pitched · dark. Default part: lead.
+- `subSawLeadBp` — subtractive saw · lead, band-pass. Slow swell, held · pitched · warm. Default part: lead.
+- `subSawLeadHp` — subtractive saw · lead, high-pass. Slow swell, held · pitched · bright. Default part: lead.
+- `subSawPadLp` — subtractive saw · pad, low-pass. Slow swell, held · pitched · dark. Default part: pad.
+- `subSawPadBp` — subtractive saw · pad, band-pass. Slow swell, held · pitched · warm. Default part: pad.
+- `subSawPadHp` — subtractive saw · pad, high-pass. Slow swell, held · pitched · bright. Default part: pad.
+- `subSawPluckLp` — subtractive saw · pluck, low-pass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `subSawPluckBp` — subtractive saw · pluck, band-pass. Struck or plucked, ringing · pitched · bright · fades in about 1.3 s. Default part: arp.
+- `subSawPluckHp` — subtractive saw · pluck, high-pass. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `subSawBrassLp` — subtractive saw · brass, low-pass. Slow swell, held · pitched · dark. Default part: stabs.
+- `subSawBrassBp` — subtractive saw · brass, band-pass. Slow swell, held · pitched · warm. Default part: stabs.
+- `subSawBrassHp` — subtractive saw · brass, high-pass. Slow swell, held · pitched · bright. Default part: stabs.
+- `subSquareBassLp` — subtractive square · bass, low-pass. Held · pitched · dark. Default part: bass.
+- `subSquareBassBp` — subtractive square · bass, band-pass. Slow swell, held · pitched · dark. Default part: bass.
+- `subSquareLeadLp` — subtractive square · lead, low-pass. Held · pitched · dark. Default part: lead.
+- `subSquareLeadBp` — subtractive square · lead, band-pass. Slow swell, held · pitched · warm. Default part: lead.
+- `subSquareLeadHp` — subtractive square · lead, high-pass. Slow swell, held · pitched · bright. Default part: lead.
+- `subSquarePadLp` — subtractive square · pad, low-pass. Slow swell, held · pitched · dark. Default part: pad.
+- `subSquarePadBp` — subtractive square · pad, band-pass. Slow swell, held · pitched · warm. Default part: pad.
+- `subSquarePadHp` — subtractive square · pad, high-pass. Slow swell, held · pitched · very bright. Default part: pad.
+- `subSquarePluckLp` — subtractive square · pluck, low-pass. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: arp.
+- `subSquarePluckBp` — subtractive square · pluck, band-pass. Struck or plucked, ringing · pitched · bright · fades in about 1.3 s. Default part: arp.
+- `subSquarePluckHp` — subtractive square · pluck, high-pass. Struck or plucked, ringing · pitched · bright · fades in about 1.3 s. Default part: arp.
+- `subSquareBrassLp` — subtractive square · brass, low-pass. Slow swell, held · pitched · dark. Default part: stabs.
+- `subSquareBrassBp` — subtractive square · brass, band-pass. Slow swell, held · pitched · warm. Default part: stabs.
+- `subSquareBrassHp` — subtractive square · brass, high-pass. Slow swell, held · pitched · bright. Default part: stabs.
+- `subPulseBassLp` — subtractive pulse · bass, low-pass. Held · pitched · dark. Default part: bass.
+- `subPulseBassBp` — subtractive pulse · bass, band-pass. Slow swell, held · pitched · dark. Default part: bass.
+- `subPulseLeadLp` — subtractive pulse · lead, low-pass. Held · pitched · dark. Default part: lead.
+- `subPulseLeadBp` — subtractive pulse · lead, band-pass. Slow swell, held · pitched · warm. Default part: lead.
+- `subPulseLeadHp` — subtractive pulse · lead, high-pass. Held · pitched · bright. Default part: lead.
+- `subPulsePadLp` — subtractive pulse · pad, low-pass. Slow swell, held · pitched · dark. Default part: pad.
+- `subPulsePadBp` — subtractive pulse · pad, band-pass. Slow swell, held · pitched · warm. Default part: pad.
+- `subPulsePadHp` — subtractive pulse · pad, high-pass. Slow swell, held · pitched · very bright. Default part: pad.
+- `subPulsePluckLp` — subtractive pulse · pluck, low-pass. Struck or plucked, ringing · pitched · warm · fades in about 1.3 s. Default part: arp.
+- `subPulsePluckBp` — subtractive pulse · pluck, band-pass. Struck or plucked, ringing · pitched · bright · fades in about 1.3 s. Default part: arp.
+- `subPulsePluckHp` — subtractive pulse · pluck, high-pass. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: arp.
+- `subPulseBrassLp` — subtractive pulse · brass, low-pass. Slow swell, held · pitched · dark. Default part: stabs.
+- `subPulseBrassBp` — subtractive pulse · brass, band-pass. Slow swell, held · pitched · warm. Default part: stabs.
+- `subPulseBrassHp` — subtractive pulse · brass, high-pass. Slow swell, held · pitched · bright. Default part: stabs.
+- `subTriBassLp` — subtractive tri · bass, low-pass. Held · pitched · dark. Default part: bass.
+- `subTriBassBp` — subtractive tri · bass, band-pass. Slow swell, held · pitched · dark. Default part: bass.
+- `subTriLeadLp` — subtractive tri · lead, low-pass. Held · pitched · dark. Default part: lead.
+- `subTriLeadBp` — subtractive tri · lead, band-pass. Slow swell, held · pitched · dark. Default part: lead.
+- `subTriLeadHp` — subtractive tri · lead, high-pass. Slow swell, held · pitched · warm. Default part: lead.
+- `subTriPadLp` — subtractive tri · pad, low-pass. Slow swell, held · pitched · dark. Default part: pad.
+- `subTriPadHp` — subtractive tri · pad, high-pass. Slow swell, held · pitched · warm. Default part: pad.
+- `subTriPluckLp` — subtractive tri · pluck, low-pass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `subTriPluckBp` — subtractive tri · pluck, band-pass. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: arp.
+- `subTriPluckHp` — subtractive tri · pluck, high-pass. Struck or plucked, ringing · pitched · bright · fades in about 1.1 s. Default part: arp.
+- `subTriBrassLp` — subtractive tri · brass, low-pass. Slow swell, held · pitched · dark. Default part: stabs.
+- `subTriBrassBp` — subtractive tri · brass, band-pass. Slow swell, held · pitched · dark. Default part: stabs.
+- `subTriBrassHp` — subtractive tri · brass, high-pass. Slow swell, held · pitched · warm. Default part: stabs.
+- `subSyncBassLp` — subtractive sync · bass, low-pass. Held · pitched · dark. Default part: bass.
+- `subSyncBassBp` — subtractive sync · bass, band-pass. Slow swell, held · pitched · dark. Default part: bass.
+- `subSyncLeadLp` — subtractive sync · lead, low-pass. Held · pitched · warm. Default part: lead.
+- `subSyncLeadBp` — subtractive sync · lead, band-pass. Slow swell, held · pitched · warm. Default part: lead.
+- `subSyncLeadHp` — subtractive sync · lead, high-pass. Slow swell, held · pitched · warm. Default part: lead.
+- `subSyncPadLp` — subtractive sync · pad, low-pass. Swelling, decaying · pitched · warm · fades in about 1.1 s. Default part: pad.
+- `subSyncPadBp` — subtractive sync · pad, band-pass. Swelling, decaying · pitched · warm · fades in about 1.1 s. Default part: pad.
+- `subSyncPadHp` — subtractive sync · pad, high-pass. Swelling, decaying · pitched · warm · fades in about 1.1 s. Default part: pad.
+- `subSyncPluckLp` — subtractive sync · pluck, low-pass. Struck or plucked, ringing · pitched · warm · fades in about 1.3 s. Default part: arp.
+- `subSyncPluckBp` — subtractive sync · pluck, band-pass. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `subSyncPluckHp` — subtractive sync · pluck, high-pass. Swelling, decaying · pitched · warm · fades in about 1.2 s. Default part: arp.
+- `subSyncBrassLp` — subtractive sync · brass, low-pass. Slow swell, held · pitched · warm. Default part: stabs.
+- `subSyncBrassBp` — subtractive sync · brass, band-pass. Slow swell, held · pitched · warm. Default part: stabs.
+- `subSyncBrassHp` — subtractive sync · brass, high-pass. Slow swell, held · pitched · warm. Default part: stabs.
+
+## Organs
+
+- `organFullPlainStill` — drawbar organ · full registration. Held · pitched · warm. Default part: long.
+- `organFullPlainTremolo` — drawbar organ · full registration, tremolo. Held · pitched · warm. Default part: long.
+- `organFullPlainChorale` — drawbar organ · full registration, chorale. Held · pitched · warm. Default part: long.
+- `organFullPercStill` — drawbar organ · full registration, percussion. Held · pitched · warm. Default part: long.
+- `organJazzPlainStill` — drawbar organ · jazz registration. Held · pitched · dark. Default part: long.
+- `organJazzPlainTremolo` — drawbar organ · jazz registration, tremolo. Held · pitched · dark. Default part: long.
+- `organJazzPlainChorale` — drawbar organ · jazz registration, chorale. Held · pitched · dark. Default part: long.
+- `organJazzPercStill` — drawbar organ · jazz registration, percussion. Held · pitched · dark. Default part: long.
+- `organJazzPercTremolo` — drawbar organ · jazz registration, percussion, tremolo. Held · pitched · dark. Default part: long.
+- `organJazzPercChorale` — drawbar organ · jazz registration, percussion, chorale. Held · pitched · dark. Default part: long.
+- `organGospelPlainStill` — drawbar organ · gospel registration. Held · pitched · warm. Default part: long.
+- `organGospelPlainTremolo` — drawbar organ · gospel registration, tremolo. Held · pitched · warm. Default part: long.
+- `organGospelPlainChorale` — drawbar organ · gospel registration, chorale. Held · pitched · warm. Default part: long.
+- `organGospelPercStill` — drawbar organ · gospel registration, percussion. Held · pitched · warm. Default part: long.
+- `organGospelPercTremolo` — drawbar organ · gospel registration, percussion, tremolo. Held · pitched · warm. Default part: long.
+- `organGospelPercChorale` — drawbar organ · gospel registration, percussion, chorale. Held · pitched · warm. Default part: long.
+- `organFlutePlainStill` — drawbar organ · flute registration. Held · pitched · dark. Default part: long.
+- `organFlutePlainTremolo` — drawbar organ · flute registration, tremolo. Held · pitched · dark. Default part: long.
+- `organFlutePlainChorale` — drawbar organ · flute registration, chorale. Held · pitched · dark. Default part: long.
+- `organFlutePercStill` — drawbar organ · flute registration, percussion. Held · pitched · dark. Default part: long.
+- `organFlutePercChorale` — drawbar organ · flute registration, percussion, chorale. Held · pitched · dark. Default part: long.
+- `organReedPlainStill` — drawbar organ · reed registration. Held · pitched · dark. Default part: long.
+- `organReedPlainTremolo` — drawbar organ · reed registration, tremolo. Held · pitched · dark. Default part: long.
+- `organReedPlainChorale` — drawbar organ · reed registration, chorale. Held · pitched · dark. Default part: long.
+- `organReedPercStill` — drawbar organ · reed registration, percussion. Held · pitched · dark. Default part: long.
+- `organReedPercTremolo` — drawbar organ · reed registration, percussion, tremolo. Held · pitched · dark. Default part: long.
+- `organReedPercChorale` — drawbar organ · reed registration, percussion, chorale. Held · pitched · dark. Default part: long.
+- `organTheatrePlainStill` — drawbar organ · theatre registration. Held · pitched · dark. Default part: long.
+- `organTheatrePlainTremolo` — drawbar organ · theatre registration, tremolo. Held · pitched · dark. Default part: long.
+- `organTheatrePlainChorale` — drawbar organ · theatre registration, chorale. Held · pitched · dark. Default part: long.
+- `organTheatrePercStill` — drawbar organ · theatre registration, percussion. Held · pitched · dark. Default part: long.
+- `organTheatrePercTremolo` — drawbar organ · theatre registration, percussion, tremolo. Held · pitched · dark. Default part: long.
+- `organTheatrePercChorale` — drawbar organ · theatre registration, percussion, chorale. Held · pitched · dark. Default part: long.
+- `organMellowPlainStill` — drawbar organ · mellow registration. Held · pitched · dark. Default part: long.
+- `organMellowPlainTremolo` — drawbar organ · mellow registration, tremolo. Held · pitched · dark. Default part: long.
+- `organMellowPlainChorale` — drawbar organ · mellow registration, chorale. Held · pitched · dark. Default part: long.
+- `organMellowPercStill` — drawbar organ · mellow registration, percussion. Held · pitched · dark. Default part: long.
+- `organMellowPercChorale` — drawbar organ · mellow registration, percussion, chorale. Held · pitched · dark. Default part: long.
+- `organBrightPlainStill` — drawbar organ · bright registration. Held · pitched · warm. Default part: long.
+- `organBrightPlainTremolo` — drawbar organ · bright registration, tremolo. Held · pitched · warm. Default part: long.
+- `organBrightPlainChorale` — drawbar organ · bright registration, chorale. Held · pitched · warm. Default part: long.
+- `organBrightPercStill` — drawbar organ · bright registration, percussion. Held · pitched · warm. Default part: long.
+- `organBrightPercTremolo` — drawbar organ · bright registration, percussion, tremolo. Held · pitched · warm. Default part: long.
+- `organBrightPercChorale` — drawbar organ · bright registration, percussion, chorale. Held · pitched · warm. Default part: long.
+- `organChurchPlainStill` — drawbar organ · church registration. Held · pitched · dark. Default part: long.
+- `organChurchPlainTremolo` — drawbar organ · church registration, tremolo. Held · pitched · dark. Default part: long.
+- `organChurchPlainChorale` — drawbar organ · church registration, chorale. Held · pitched · dark. Default part: long.
+- `organChurchPercStill` — drawbar organ · church registration, percussion. Held · pitched · dark. Default part: long.
+- `organChurchPercTremolo` — drawbar organ · church registration, percussion, tremolo. Held · pitched · dark. Default part: long.
+- `organChurchPercChorale` — drawbar organ · church registration, percussion, chorale. Held · pitched · dark. Default part: long.
+- `organBassPlainStill` — drawbar organ · bass registration. Held · pitched · dark. Default part: long.
+- `organBassPlainTremolo` — drawbar organ · bass registration, tremolo. Held · pitched · dark. Default part: long.
+- `organBassPlainChorale` — drawbar organ · bass registration, chorale. Held · pitched · dark. Default part: long.
+- `organBassPercStill` — drawbar organ · bass registration, percussion. Held · pitched · dark. Default part: long.
+- `organBassPercTremolo` — drawbar organ · bass registration, percussion, tremolo. Held · pitched · dark. Default part: long.
+- `organBassPercChorale` — drawbar organ · bass registration, percussion, chorale. Held · pitched · dark. Default part: long.
+
+## Wavefolders
+
+- `foldSinePluck2Even` — wavefolder · sine, pluck, 2× fold. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: lead.
+- `foldSinePluck2Odd` — wavefolder · sine, pluck, 2× fold, offset. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldSinePluck4Even` — wavefolder · sine, pluck, 4× fold. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldSinePluck4Odd` — wavefolder · sine, pluck, 4× fold, offset. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldSinePluck7Even` — wavefolder · sine, pluck, 7× fold. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldSinePluck7Odd` — wavefolder · sine, pluck, 7× fold, offset. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldSineSwell2Even` — wavefolder · sine, swell, 2× fold. Slow swell, held · pitched · warm. Default part: lead.
+- `foldSineSwell2Odd` — wavefolder · sine, swell, 2× fold, offset. Slow swell, held · pitched · warm. Default part: lead.
+- `foldSineSwell4Even` — wavefolder · sine, swell, 4× fold. Slow swell, held · pitched · warm. Default part: lead.
+- `foldSineSwell4Odd` — wavefolder · sine, swell, 4× fold, offset. Slow swell, held · pitched · warm. Default part: lead.
+- `foldSineSwell7Even` — wavefolder · sine, swell, 7× fold. Slow swell, held · pitched · warm. Default part: lead.
+- `foldSineSwell7Odd` — wavefolder · sine, swell, 7× fold, offset. Slow swell, held · pitched · bright. Default part: lead.
+- `foldSineGong2Even` — wavefolder · sine, gong, 2× fold. Struck or plucked, ringing · pitched · warm · fades in about 1.3 s. Default part: lead.
+- `foldSineGong2Odd` — wavefolder · sine, gong, 2× fold, offset. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldSineGong4Even` — wavefolder · sine, gong, 4× fold. Struck or plucked, ringing · pitched · warm · fades in about 1.3 s. Default part: lead.
+- `foldSineGong4Odd` — wavefolder · sine, gong, 4× fold, offset. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldSineGong7Even` — wavefolder · sine, gong, 7× fold. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: lead.
+- `foldSineGong7Odd` — wavefolder · sine, gong, 7× fold, offset. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: lead.
+- `foldSineBass2Even` — wavefolder · sine, bass, 2× fold. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: lead.
+- `foldSineBass2Odd` — wavefolder · sine, bass, 2× fold, offset. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldSineBass4Even` — wavefolder · sine, bass, 4× fold. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldSineBass4Odd` — wavefolder · sine, bass, 4× fold, offset. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldSineBass7Even` — wavefolder · sine, bass, 7× fold. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldSineBass7Odd` — wavefolder · sine, bass, 7× fold, offset. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriPluck2Even` — wavefolder · tri, pluck, 2× fold. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriPluck2Odd` — wavefolder · tri, pluck, 2× fold, offset. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriPluck4Even` — wavefolder · tri, pluck, 4× fold. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldTriPluck4Odd` — wavefolder · tri, pluck, 4× fold, offset. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldTriPluck7Even` — wavefolder · tri, pluck, 7× fold. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldTriPluck7Odd` — wavefolder · tri, pluck, 7× fold, offset. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldTriSwell2Even` — wavefolder · tri, swell, 2× fold. Slow swell, held · pitched · dark. Default part: lead.
+- `foldTriSwell2Odd` — wavefolder · tri, swell, 2× fold, offset. Slow swell, held · pitched · dark. Default part: lead.
+- `foldTriSwell4Even` — wavefolder · tri, swell, 4× fold. Slow swell, held · pitched · warm. Default part: lead.
+- `foldTriSwell4Odd` — wavefolder · tri, swell, 4× fold, offset. Slow swell, held · pitched · warm. Default part: lead.
+- `foldTriSwell7Even` — wavefolder · tri, swell, 7× fold. Slow swell, held · pitched · bright. Default part: lead.
+- `foldTriSwell7Odd` — wavefolder · tri, swell, 7× fold, offset. Slow swell, held · pitched · warm. Default part: lead.
+- `foldTriGong2Even` — wavefolder · tri, gong, 2× fold. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriGong2Odd` — wavefolder · tri, gong, 2× fold, offset. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriGong4Even` — wavefolder · tri, gong, 4× fold. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldTriGong4Odd` — wavefolder · tri, gong, 4× fold, offset. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldTriGong7Even` — wavefolder · tri, gong, 7× fold. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldTriGong7Odd` — wavefolder · tri, gong, 7× fold, offset. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `foldTriBass2Even` — wavefolder · tri, bass, 2× fold. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriBass2Odd` — wavefolder · tri, bass, 2× fold, offset. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriBass4Even` — wavefolder · tri, bass, 4× fold. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriBass4Odd` — wavefolder · tri, bass, 4× fold, offset. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriBass7Even` — wavefolder · tri, bass, 7× fold. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `foldTriBass7Odd` — wavefolder · tri, bass, 7× fold, offset. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+
+## Voices
+
+- `voiceABassClean` — sung “a” · bass, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceABassBreathy` — sung “a” · bass, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceATenorClean` — sung “a” · tenor, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceATenorBreathy` — sung “a” · tenor, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAAltoClean` — sung “a” · alto, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAAltoBreathy` — sung “a” · alto, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceASopranoClean` — sung “a” · soprano, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceASopranoBreathy` — sung “a” · soprano, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAChildClean` — sung “a” · child, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAChildBreathy` — sung “a” · child, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceEBassClean` — sung “e” · bass, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceEBassBreathy` — sung “e” · bass, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceETenorClean` — sung “e” · tenor, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceETenorBreathy` — sung “e” · tenor, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceEAltoClean` — sung “e” · alto, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceEAltoBreathy` — sung “e” · alto, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceESopranoClean` — sung “e” · soprano, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceESopranoBreathy` — sung “e” · soprano, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceEChildClean` — sung “e” · child, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceEChildBreathy` — sung “e” · child, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceIBassClean` — sung “i” · bass, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceIBassBreathy` — sung “i” · bass, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceITenorClean` — sung “i” · tenor, clean. Held · pitched · dark. Default part: lead.
+- `voiceITenorBreathy` — sung “i” · tenor, breathy. Held · pitched · dark. Default part: lead.
+- `voiceIAltoClean` — sung “i” · alto, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceIAltoBreathy` — sung “i” · alto, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceISopranoClean` — sung “i” · soprano, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceISopranoBreathy` — sung “i” · soprano, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceIChildClean` — sung “i” · child, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceIChildBreathy` — sung “i” · child, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceOBassClean` — sung “o” · bass, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceOBassBreathy` — sung “o” · bass, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceOTenorClean` — sung “o” · tenor, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceOTenorBreathy` — sung “o” · tenor, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceOAltoClean` — sung “o” · alto, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceOAltoBreathy` — sung “o” · alto, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceOSopranoClean` — sung “o” · soprano, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceOSopranoBreathy` — sung “o” · soprano, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceOChildClean` — sung “o” · child, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceOChildBreathy` — sung “o” · child, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceUBassClean` — sung “u” · bass, clean. Held · pitched · dark. Default part: lead.
+- `voiceUBassBreathy` — sung “u” · bass, breathy. Held · pitched · dark. Default part: lead.
+- `voiceUTenorClean` — sung “u” · tenor, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceUTenorBreathy` — sung “u” · tenor, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceUAltoClean` — sung “u” · alto, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceUAltoBreathy` — sung “u” · alto, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceUSopranoClean` — sung “u” · soprano, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceUSopranoBreathy` — sung “u” · soprano, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceUChildClean` — sung “u” · child, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceUChildBreathy` — sung “u” · child, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAaBassClean` — sung “aa” · bass, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceAaBassBreathy` — sung “aa” · bass, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceAaTenorClean` — sung “aa” · tenor, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAaTenorBreathy` — sung “aa” · tenor, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAaAltoClean` — sung “aa” · alto, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAaAltoBreathy` — sung “aa” · alto, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAaSopranoClean` — sung “aa” · soprano, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAaSopranoBreathy` — sung “aa” · soprano, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAaChildClean` — sung “aa” · child, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceAaChildBreathy` — sung “aa” · child, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceEeBassClean` — sung “ee” · bass, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceEeBassBreathy` — sung “ee” · bass, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceEeTenorClean` — sung “ee” · tenor, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceEeTenorBreathy` — sung “ee” · tenor, breathy. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceEeAltoClean` — sung “ee” · alto, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceEeAltoBreathy` — sung “ee” · alto, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceEeSopranoClean` — sung “ee” · soprano, clean. Slow swell, held · pitched · dark. Default part: lead.
+- `voiceEeSopranoBreathy` — sung “ee” · soprano, breathy. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceEeChildClean` — sung “ee” · child, clean. Slow swell, held · pitched · warm. Default part: lead.
+- `voiceEeChildBreathy` — sung “ee” · child, breathy. Slow swell, held · pitched · warm. Default part: lead.
+
+## Drums & percussion
+
+- `kick45s4SoftTight` — kick drum · 45 Hz, 4× sweep, soft, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `kick45s4ClickyTight` — kick drum · 45 Hz, 4× sweep, clicky, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `kick50s6SoftTight` — kick drum · 50 Hz, 6× sweep, soft, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick50s6PunchyTight` — kick drum · 50 Hz, 6× sweep, punchy, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick50s6ClickyTight` — kick drum · 50 Hz, 6× sweep, clicky, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `kick55s3SoftTight` — kick drum · 55 Hz, 3× sweep, soft, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `kick55s3ClickyTight` — kick drum · 55 Hz, 3× sweep, clicky, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `kick60s8SoftTight` — kick drum · 60 Hz, 8× sweep, soft, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick60s8PunchyTight` — kick drum · 60 Hz, 8× sweep, punchy, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick60s8ClickyTight` — kick drum · 60 Hz, 8× sweep, clicky, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick40s10SoftTight` — kick drum · 40 Hz, 10× sweep, soft, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick40s10PunchyTight` — kick drum · 40 Hz, 10× sweep, punchy, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick40s10ClickyTight` — kick drum · 40 Hz, 10× sweep, clicky, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick35s5SoftTight` — kick drum · 35 Hz, 5× sweep, soft, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick35s5PunchyTight` — kick drum · 35 Hz, 5× sweep, punchy, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick35s5ClickyTight` — kick drum · 35 Hz, 5× sweep, clicky, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick70s3SoftTight` — kick drum · 70 Hz, 3× sweep, soft, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick70s3PunchyTight` — kick drum · 70 Hz, 3× sweep, punchy, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `kick70s3ClickyTight` — kick drum · 70 Hz, 3× sweep, clicky, tight. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `snare150DryPlain` — snare · 150 Hz shell, dry wires. Struck or plucked, ringing · pitched · very bright · fades in about 1.3 s. Default part: euclid.
+- `snare150DryRim` — snare · 150 Hz shell, dry wires, rim. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare150CrispPlain` — snare · 150 Hz shell, crisp wires. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare150CrispRim` — snare · 150 Hz shell, crisp wires, rim. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare150LoosePlain` — snare · 150 Hz shell, loose wires. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare150LooseRim` — snare · 150 Hz shell, loose wires, rim. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare190DryPlain` — snare · 190 Hz shell, dry wires. Struck or plucked, ringing · pitched · very bright · fades in about 1.3 s. Default part: euclid.
+- `snare190DryRim` — snare · 190 Hz shell, dry wires, rim. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare190CrispPlain` — snare · 190 Hz shell, crisp wires. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare190CrispRim` — snare · 190 Hz shell, crisp wires, rim. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare190LoosePlain` — snare · 190 Hz shell, loose wires. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare190LooseRim` — snare · 190 Hz shell, loose wires, rim. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare240DryPlain` — snare · 240 Hz shell, dry wires. Struck or plucked, ringing · pitched · very bright · fades in about 1.3 s. Default part: euclid.
+- `snare240DryRim` — snare · 240 Hz shell, dry wires, rim. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare240CrispPlain` — snare · 240 Hz shell, crisp wires. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare240CrispRim` — snare · 240 Hz shell, crisp wires, rim. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare240LoosePlain` — snare · 240 Hz shell, loose wires. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `snare240LooseRim` — snare · 240 Hz shell, loose wires, rim. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `metalClosedHatDark` — metallic closed hat · dark. Struck or plucked, ringing · pitched · very bright · fades in about 1.1 s. Default part: euclid.
+- `metalClosedHatBright` — metallic closed hat · bright. Struck or plucked, ringing · pitched · very bright · fades in about 1.1 s. Default part: euclid.
+- `metalClosedHatTrashy` — metallic closed hat · trashy. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `metalCowbellDark` — metallic cowbell · dark. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: euclid.
+- `metalCowbellBright` — metallic cowbell · bright. Struck or plucked, ringing · pitched · warm · fades in about 1.4 s. Default part: euclid.
+- `metalCowbellTrashy` — metallic cowbell · trashy. Struck or plucked, ringing · pitched · warm · fades in about 1.4 s. Default part: euclid.
+- `metalShakerDark` — metallic shaker · dark. Struck or plucked, ringing · pitched · very bright · fades in about 1.3 s. Default part: euclid.
+- `handCongaOpen` — conga · open hit. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `handCongaMuted` — conga · muted hit. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `handCongaSlap` — conga · slap hit. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `handTablaOpen` — tabla · open hit. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `handTablaMuted` — tabla · muted hit. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `handTablaSlap` — tabla · slap hit. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `handTalkingDrumOpen` — talking drum · open hit. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `handTalkingDrumMuted` — talking drum · muted hit. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `handTalkingDrumSlap` — talking drum · slap hit. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: euclid.
+- `hitClapDry` — clap · dry. Struck or plucked, ringing · pitched · bright · fades in about 1.1 s. Default part: euclid.
+- `hitSnapDry` — snap · dry. Struck or plucked, ringing · pitched · very bright · fades in about 1.3 s. Default part: euclid.
+- `hitRimshotDry` — rimshot · dry. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: euclid.
+- `hitClickDry` — click · dry. Struck or plucked, ringing · pitched · very bright · fades in about 1.3 s. Default part: euclid.
+- `hitStickDry` — stick · dry. Struck or plucked, ringing · pitched · very bright · fades in about 1.3 s. Default part: euclid.
+- `hitWoodClickDry` — wood click · dry. Struck or plucked, ringing · pitched · bright · fades in about 1.3 s. Default part: euclid.
+- `ksDrum0p1DarkTight` — Karplus-Strong drum · blend 0.1, dark, tight. Very short hit · pitched with noise · bright · fades in about 0.0 s. Default part: euclid.
+- `ksDrum0p1BrightTight` — Karplus-Strong drum · blend 0.1, bright, tight. Very short hit · noisy · very bright · fades in about 0.0 s. Default part: euclid.
+- `ksDrum0p3DarkTight` — Karplus-Strong drum · blend 0.3, dark, tight. Very short hit · pitched with noise · bright · fades in about 0.0 s. Default part: euclid.
+- `ksDrum0p3BrightTight` — Karplus-Strong drum · blend 0.3, bright, tight. Very short hit · noisy · very bright · fades in about 0.0 s. Default part: euclid.
+- `ksDrum0p5DarkTight` — Karplus-Strong drum · blend 0.5, dark, tight. Very short hit · pitched with noise · bright · fades in about 0.0 s. Default part: euclid.
+- `ksDrum0p5BrightTight` — Karplus-Strong drum · blend 0.5, bright, tight. Very short hit · pitched with noise · very bright · fades in about 0.0 s. Default part: euclid.
+- `ksDrum0p7DarkTight` — Karplus-Strong drum · blend 0.7, dark, tight. Very short hit · pitched · warm · fades in about 0.1 s. Default part: euclid.
+- `ksDrum0p7BrightTight` — Karplus-Strong drum · blend 0.7, bright, tight. Very short hit · pitched with noise · bright · fades in about 0.1 s. Default part: euclid.
+- `ksDrum0p9DarkTight` — Karplus-Strong drum · blend 0.9, dark, tight. Very short hit · pitched · warm · fades in about 0.1 s. Default part: euclid.
+- `ksDrum0p9BrightTight` — Karplus-Strong drum · blend 0.9, bright, tight. Very short hit · pitched · warm · fades in about 0.1 s. Default part: euclid.
+
+## Textures
+
+- `noiseWindStillNarrow` — wind · still, narrow band. Slow swell, held · pitched · dark. Default part: air.
+- `noiseWindStillWide` — wind · still, wide band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseWindSlowNarrow` — wind · slow, narrow band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseWindSlowWide` — wind · slow, wide band. Slow swell, held · pitched · bright. Default part: air.
+- `noiseWindGustyNarrow` — wind · gusty, narrow band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseSeaStillNarrow` — sea · still, narrow band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseSeaStillWide` — sea · still, wide band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseSeaSlowNarrow` — sea · slow, narrow band. Slow swell, held · pitched · dark. Default part: air.
+- `noiseSeaSlowWide` — sea · slow, wide band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseSeaGustyNarrow` — sea · gusty, narrow band. Slow swell, held · pitched · dark. Default part: air.
+- `noiseRainStillNarrow` — rain · still, narrow band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseRainStillWide` — rain · still, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseRainSlowNarrow` — rain · slow, narrow band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseRainSlowWide` — rain · slow, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseRainGustyNarrow` — rain · gusty, narrow band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseSteamStillNarrow` — steam · still, narrow band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseSteamStillWide` — steam · still, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseSteamSlowNarrow` — steam · slow, narrow band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseSteamSlowWide` — steam · slow, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseSteamGustyNarrow` — steam · gusty, narrow band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseSteamGustyWide` — steam · gusty, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseFireStillNarrow` — fire · still, narrow band. Slow swell, held · pitched · bright. Default part: air.
+- `noiseFireStillWide` — fire · still, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseFireSlowNarrow` — fire · slow, narrow band. Slow swell, held · pitched · bright. Default part: air.
+- `noiseFireSlowWide` — fire · slow, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseFireGustyWide` — fire · gusty, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseHissStillNarrow` — hiss · still, narrow band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseHissSlowNarrow` — hiss · slow, narrow band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseHissSlowWide` — hiss · slow, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseHissGustyNarrow` — hiss · gusty, narrow band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseHissGustyWide` — hiss · gusty, wide band. Slow swell, held · pitched · very bright. Default part: air.
+- `noiseStormStillNarrow` — storm · still, narrow band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseStormStillWide` — storm · still, wide band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseStormSlowNarrow` — storm · slow, narrow band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseStormSlowWide` — storm · slow, wide band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseStormGustyNarrow` — storm · gusty, narrow band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseStormGustyWide` — storm · gusty, wide band. Slow swell, held · pitched · warm. Default part: air.
+- `noiseRumbleStillNarrow` — rumble · still, narrow band. Slow swell, held · pitched · dark. Default part: air.
+- `noiseRumbleStillWide` — rumble · still, wide band. Slow swell, held · pitched · dark. Default part: air.
+- `noiseRumbleSlowNarrow` — rumble · slow, narrow band. Slow swell, held · pitched · dark. Default part: air.
+- `noiseRumbleSlowWide` — rumble · slow, wide band. Slow swell, held · pitched · dark. Default part: air.
+- `noiseRumbleGustyNarrow` — rumble · gusty, narrow band. Slow swell, held · pitched · dark. Default part: air.
+
+## Chip
+
+- `chipPulse12BlipPlain` — chip pulse 12 · blip. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `chipPulse12BlipVibrato` — chip pulse 12 · blip, vibrato. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `chipPulse12BlipSlideUp` — chip pulse 12 · blip, slide up. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipPulse12BlipSlideDown` — chip pulse 12 · blip, slide down. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `chipPulse12NotePlain` — chip pulse 12 · note. Held · pitched · warm. Default part: lead.
+- `chipPulse12NoteVibrato` — chip pulse 12 · note, vibrato. Held · pitched · warm. Default part: lead.
+- `chipPulse12NoteSlideUp` — chip pulse 12 · note, slide up. Held · pitched · dark. Default part: lead.
+- `chipPulse12NoteSlideDown` — chip pulse 12 · note, slide down. Held · pitched · warm. Default part: lead.
+- `chipPulse12SwellPlain` — chip pulse 12 · swell. Slow swell, held · pitched · warm. Default part: lead.
+- `chipPulse12SwellVibrato` — chip pulse 12 · swell, vibrato. Slow swell, held · pitched · warm. Default part: lead.
+- `chipPulse12SwellSlideUp` — chip pulse 12 · swell, slide up. Slow swell, held · pitched · warm. Default part: lead.
+- `chipPulse12SwellSlideDown` — chip pulse 12 · swell, slide down. Slow swell, held · pitched · warm. Default part: lead.
+- `chipPulse25BlipPlain` — chip pulse 25 · blip. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `chipPulse25BlipVibrato` — chip pulse 25 · blip, vibrato. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `chipPulse25BlipSlideUp` — chip pulse 25 · blip, slide up. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipPulse25BlipSlideDown` — chip pulse 25 · blip, slide down. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `chipPulse25NotePlain` — chip pulse 25 · note. Held · pitched · warm. Default part: lead.
+- `chipPulse25NoteVibrato` — chip pulse 25 · note, vibrato. Held · pitched · warm. Default part: lead.
+- `chipPulse25NoteSlideUp` — chip pulse 25 · note, slide up. Held · pitched · dark. Default part: lead.
+- `chipPulse25NoteSlideDown` — chip pulse 25 · note, slide down. Held · pitched · warm. Default part: lead.
+- `chipPulse25SwellPlain` — chip pulse 25 · swell. Slow swell, held · pitched · warm. Default part: lead.
+- `chipPulse25SwellVibrato` — chip pulse 25 · swell, vibrato. Slow swell, held · pitched · warm. Default part: lead.
+- `chipPulse25SwellSlideUp` — chip pulse 25 · swell, slide up. Slow swell, held · pitched · warm. Default part: lead.
+- `chipPulse25SwellSlideDown` — chip pulse 25 · swell, slide down. Slow swell, held · pitched · warm. Default part: lead.
+- `chipPulse50BlipPlain` — chip pulse 50 · blip. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipPulse50BlipVibrato` — chip pulse 50 · blip, vibrato. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipPulse50BlipSlideUp` — chip pulse 50 · blip, slide up. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipPulse50BlipSlideDown` — chip pulse 50 · blip, slide down. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `chipPulse50NotePlain` — chip pulse 50 · note. Held · pitched · dark. Default part: lead.
+- `chipPulse50NoteVibrato` — chip pulse 50 · note, vibrato. Held · pitched · dark. Default part: lead.
+- `chipPulse50NoteSlideUp` — chip pulse 50 · note, slide up. Held · pitched · dark. Default part: lead.
+- `chipPulse50NoteSlideDown` — chip pulse 50 · note, slide down. Held · pitched · warm. Default part: lead.
+- `chipPulse50SwellPlain` — chip pulse 50 · swell. Slow swell, held · pitched · dark. Default part: lead.
+- `chipPulse50SwellVibrato` — chip pulse 50 · swell, vibrato. Slow swell, held · pitched · dark. Default part: lead.
+- `chipPulse50SwellSlideUp` — chip pulse 50 · swell, slide up. Slow swell, held · pitched · dark. Default part: lead.
+- `chipPulse50SwellSlideDown` — chip pulse 50 · swell, slide down. Slow swell, held · pitched · dark. Default part: lead.
+- `chipTriangle4bitBlipPlain` — chip triangle 4-bit · blip. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipTriangle4bitBlipVibrato` — chip triangle 4-bit · blip, vibrato. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipTriangle4bitBlipSlideUp` — chip triangle 4-bit · blip, slide up. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipTriangle4bitBlipSlideDown` — chip triangle 4-bit · blip, slide down. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipTriangle4bitNotePlain` — chip triangle 4-bit · note. Held · pitched · dark. Default part: lead.
+- `chipTriangle4bitNoteVibrato` — chip triangle 4-bit · note, vibrato. Held · pitched · dark. Default part: lead.
+- `chipTriangle4bitNoteSlideUp` — chip triangle 4-bit · note, slide up. Held · pitched · dark. Default part: lead.
+- `chipTriangle4bitNoteSlideDown` — chip triangle 4-bit · note, slide down. Held · pitched · dark. Default part: lead.
+- `chipTriangle4bitSwellPlain` — chip triangle 4-bit · swell. Slow swell, held · pitched · dark. Default part: lead.
+- `chipTriangle4bitSwellVibrato` — chip triangle 4-bit · swell, vibrato. Slow swell, held · pitched · dark. Default part: lead.
+- `chipTriangle4bitSwellSlideUp` — chip triangle 4-bit · swell, slide up. Slow swell, held · pitched · dark. Default part: lead.
+- `chipTriangle4bitSwellSlideDown` — chip triangle 4-bit · swell, slide down. Slow swell, held · pitched · dark. Default part: lead.
+- `chipNoiseShortBlipPlain` — chip noiseShort · blip. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: lead.
+- `chipNoiseShortBlipVibrato` — chip noiseShort · blip, vibrato. Struck or plucked, ringing · pitched · warm · fades in about 1.2 s. Default part: lead.
+- `chipNoiseShortBlipSlideUp` — chip noiseShort · blip, slide up. Struck or plucked, ringing · pitched with noise · dark · fades in about 1.3 s. Default part: lead.
+- `chipNoiseShortBlipSlideDown` — chip noiseShort · blip, slide down. Struck or plucked, ringing · pitched · warm · fades in about 1.3 s. Default part: lead.
+- `chipNoiseShortNotePlain` — chip noiseShort · note. Held · pitched · dark. Default part: lead.
+- `chipNoiseShortNoteVibrato` — chip noiseShort · note, vibrato. Held · pitched · warm. Default part: lead.
+- `chipNoiseShortNoteSlideUp` — chip noiseShort · note, slide up. Held · pitched · warm. Default part: lead.
+- `chipNoiseShortNoteSlideDown` — chip noiseShort · note, slide down. Slow swell, held · pitched · warm. Default part: lead.
+- `chipNoiseShortSwellPlain` — chip noiseShort · swell. Slow swell, held · pitched · dark. Default part: lead.
+- `chipNoiseShortSwellVibrato` — chip noiseShort · swell, vibrato. Slow swell, held · pitched · warm. Default part: lead.
+- `chipNoiseShortSwellSlideUp` — chip noiseShort · swell, slide up. Slow swell, held · pitched · warm. Default part: lead.
+- `chipNoiseShortSwellSlideDown` — chip noiseShort · swell, slide down. Slow swell, held · pitched · warm. Default part: lead.
+- `chipNoiseLongBlipPlain` — chip noiseLong · blip. Struck or plucked, ringing · pitched · bright · fades in about 1.2 s. Default part: lead.
+- `chipNoiseLongBlipVibrato` — chip noiseLong · blip, vibrato. Struck or plucked, ringing · pitched with noise · very bright · fades in about 1.2 s. Default part: lead.
+- `chipNoiseLongBlipSlideUp` — chip noiseLong · blip, slide up. Struck or plucked, ringing · pitched with noise · very bright · fades in about 1.2 s. Default part: lead.
+- `chipNoiseLongBlipSlideDown` — chip noiseLong · blip, slide down. Struck or plucked, ringing · pitched with noise · very bright · fades in about 1.2 s. Default part: lead.
+- `chipNoiseLongNotePlain` — chip noiseLong · note. Held · pitched · bright. Default part: lead.
+- `chipNoiseLongNoteVibrato` — chip noiseLong · note, vibrato. Held · pitched with noise · very bright. Default part: lead.
+- `chipNoiseLongNoteSlideUp` — chip noiseLong · note, slide up. Held · pitched with noise · very bright. Default part: lead.
+- `chipNoiseLongNoteSlideDown` — chip noiseLong · note, slide down. Slow swell, held · pitched with noise · very bright. Default part: lead.
+- `chipNoiseLongSwellPlain` — chip noiseLong · swell. Slow swell, held · pitched · bright. Default part: lead.
+- `chipNoiseLongSwellVibrato` — chip noiseLong · swell, vibrato. Slow swell, held · pitched with noise · very bright. Default part: lead.
+- `chipNoiseLongSwellSlideUp` — chip noiseLong · swell, slide up. Slow swell, held · pitched with noise · very bright. Default part: lead.
+- `chipNoiseLongSwellSlideDown` — chip noiseLong · swell, slide down. Slow swell, held · pitched with noise · very bright. Default part: lead.
+
+## Drones
+
+- `beat0p32SineUnison` — beating drone · 2 tones 0.3 Hz apart, sine. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p32SineOctave` — beating drone · 2 tones 0.3 Hz apart, sine, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p32SoftUnison` — beating drone · 2 tones 0.3 Hz apart, soft. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p32SoftOctave` — beating drone · 2 tones 0.3 Hz apart, soft, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p32ReedUnison` — beating drone · 2 tones 0.3 Hz apart, reed. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p32ReedOctave` — beating drone · 2 tones 0.3 Hz apart, reed, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p33SineUnison` — beating drone · 3 tones 0.3 Hz apart, sine. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p33SineOctave` — beating drone · 3 tones 0.3 Hz apart, sine, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p33SoftUnison` — beating drone · 3 tones 0.3 Hz apart, soft. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p33SoftOctave` — beating drone · 3 tones 0.3 Hz apart, soft, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p33ReedUnison` — beating drone · 3 tones 0.3 Hz apart, reed. Slow swell, held · pitched · dark. Default part: drone.
+- `beat0p33ReedOctave` — beating drone · 3 tones 0.3 Hz apart, reed, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat12SineUnison` — beating drone · 2 tones 1 Hz apart, sine. Swelling, decaying · pitched · dark · fades in about 1.3 s. Default part: drone.
+- `beat12SineOctave` — beating drone · 2 tones 1 Hz apart, sine, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat12SoftUnison` — beating drone · 2 tones 1 Hz apart, soft. Swelling, decaying · pitched · dark · fades in about 1.3 s. Default part: drone.
+- `beat12SoftOctave` — beating drone · 2 tones 1 Hz apart, soft, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat12ReedUnison` — beating drone · 2 tones 1 Hz apart, reed. Swelling, decaying · pitched · warm · fades in about 1.1 s. Default part: drone.
+- `beat12ReedOctave` — beating drone · 2 tones 1 Hz apart, reed, with octave. Slow swell, held · pitched · warm. Default part: drone.
+- `beat13SineUnison` — beating drone · 3 tones 1 Hz apart, sine. Slow swell, held · pitched · dark. Default part: drone.
+- `beat13SineOctave` — beating drone · 3 tones 1 Hz apart, sine, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat13SoftUnison` — beating drone · 3 tones 1 Hz apart, soft. Slow swell, held · pitched · dark. Default part: drone.
+- `beat13SoftOctave` — beating drone · 3 tones 1 Hz apart, soft, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat13ReedUnison` — beating drone · 3 tones 1 Hz apart, reed. Slow swell, held · pitched · warm. Default part: drone.
+- `beat13ReedOctave` — beating drone · 3 tones 1 Hz apart, reed, with octave. Slow swell, held · pitched · warm. Default part: drone.
+- `beat2p52SineUnison` — beating drone · 2 tones 2.5 Hz apart, sine. Slow swell, held · pitched · dark. Default part: drone.
+- `beat2p52SineOctave` — beating drone · 2 tones 2.5 Hz apart, sine, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat2p52SoftUnison` — beating drone · 2 tones 2.5 Hz apart, soft. Slow swell, held · pitched · dark. Default part: drone.
+- `beat2p52SoftOctave` — beating drone · 2 tones 2.5 Hz apart, soft, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat2p52ReedUnison` — beating drone · 2 tones 2.5 Hz apart, reed. Slow swell, held · pitched · warm. Default part: drone.
+- `beat2p52ReedOctave` — beating drone · 2 tones 2.5 Hz apart, reed, with octave. Slow swell, held · pitched · warm. Default part: drone.
+- `beat2p53SineUnison` — beating drone · 3 tones 2.5 Hz apart, sine. Slow swell, held · pitched · dark. Default part: drone.
+- `beat2p53SineOctave` — beating drone · 3 tones 2.5 Hz apart, sine, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat2p53SoftUnison` — beating drone · 3 tones 2.5 Hz apart, soft. Slow swell, held · pitched · dark. Default part: drone.
+- `beat2p53SoftOctave` — beating drone · 3 tones 2.5 Hz apart, soft, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat2p53ReedUnison` — beating drone · 3 tones 2.5 Hz apart, reed. Slow swell, held · pitched · dark. Default part: drone.
+- `beat2p53ReedOctave` — beating drone · 3 tones 2.5 Hz apart, reed, with octave. Slow swell, held · pitched · warm. Default part: drone.
+- `beat62SineUnison` — beating drone · 2 tones 6 Hz apart, sine. Slow swell, held · pitched · dark. Default part: drone.
+- `beat62SineOctave` — beating drone · 2 tones 6 Hz apart, sine, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat62SoftUnison` — beating drone · 2 tones 6 Hz apart, soft. Slow swell, held · pitched · dark. Default part: drone.
+- `beat62SoftOctave` — beating drone · 2 tones 6 Hz apart, soft, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat62ReedUnison` — beating drone · 2 tones 6 Hz apart, reed. Slow swell, held · pitched · dark. Default part: drone.
+- `beat62ReedOctave` — beating drone · 2 tones 6 Hz apart, reed, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat63SineUnison` — beating drone · 3 tones 6 Hz apart, sine. Slow swell, held · pitched · dark. Default part: drone.
+- `beat63SineOctave` — beating drone · 3 tones 6 Hz apart, sine, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat63SoftUnison` — beating drone · 3 tones 6 Hz apart, soft. Slow swell, held · pitched · dark. Default part: drone.
+- `beat63SoftOctave` — beating drone · 3 tones 6 Hz apart, soft, with octave. Slow swell, held · pitched · dark. Default part: drone.
+- `beat63ReedUnison` — beating drone · 3 tones 6 Hz apart, reed. Slow swell, held · pitched · dark. Default part: drone.
+- `beat63ReedOctave` — beating drone · 3 tones 6 Hz apart, reed, with octave. Slow swell, held · pitched · dark. Default part: drone.
+
+## Ring & metallic
+
+- `ringRatio1p5StrikeSine` — ring modulator · 1.5× carrier, strike, sine. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringRatio1p5StrikeTri` — ring modulator · 1.5× carrier, strike, tri. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringRatio1p5HeldSine` — ring modulator · 1.5× carrier, held, sine. Held · pitched · dark. Default part: sparse.
+- `ringRatio1p5HeldTri` — ring modulator · 1.5× carrier, held, tri. Held · pitched · dark. Default part: sparse.
+- `ringRatio1p5SwellSine` — ring modulator · 1.5× carrier, swell, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio1p5SwellTri` — ring modulator · 1.5× carrier, swell, tri. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio2p01StrikeSine` — ring modulator · 2.01× carrier, strike, sine. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringRatio2p01StrikeTri` — ring modulator · 2.01× carrier, strike, tri. Struck or plucked, ringing · pitched · dark · fades in about 1.3 s. Default part: sparse.
+- `ringRatio2p01HeldSine` — ring modulator · 2.01× carrier, held, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio2p01HeldTri` — ring modulator · 2.01× carrier, held, tri. Held · pitched · dark. Default part: sparse.
+- `ringRatio2p01SwellSine` — ring modulator · 2.01× carrier, swell, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio2p01SwellTri` — ring modulator · 2.01× carrier, swell, tri. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio3p7StrikeSine` — ring modulator · 3.7× carrier, strike, sine. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringRatio3p7StrikeTri` — ring modulator · 3.7× carrier, strike, tri. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringRatio3p7HeldSine` — ring modulator · 3.7× carrier, held, sine. Held · pitched · dark. Default part: sparse.
+- `ringRatio3p7HeldTri` — ring modulator · 3.7× carrier, held, tri. Held · pitched · dark. Default part: sparse.
+- `ringRatio3p7SwellSine` — ring modulator · 3.7× carrier, swell, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio3p7SwellTri` — ring modulator · 3.7× carrier, swell, tri. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio0p51StrikeSine` — ring modulator · 0.51× carrier, strike, sine. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringRatio0p51StrikeTri` — ring modulator · 0.51× carrier, strike, tri. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringRatio0p51HeldSine` — ring modulator · 0.51× carrier, held, sine. Held · pitched · dark. Default part: sparse.
+- `ringRatio0p51HeldTri` — ring modulator · 0.51× carrier, held, tri. Held · pitched · dark. Default part: sparse.
+- `ringRatio0p51SwellSine` — ring modulator · 0.51× carrier, swell, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio0p51SwellTri` — ring modulator · 0.51× carrier, swell, tri. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio7p3StrikeSine` — ring modulator · 7.3× carrier, strike, sine. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringRatio7p3StrikeTri` — ring modulator · 7.3× carrier, strike, tri. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringRatio7p3HeldSine` — ring modulator · 7.3× carrier, held, sine. Held · pitched · dark. Default part: sparse.
+- `ringRatio7p3HeldTri` — ring modulator · 7.3× carrier, held, tri. Held · pitched · dark. Default part: sparse.
+- `ringRatio7p3SwellSine` — ring modulator · 7.3× carrier, swell, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringRatio7p3SwellTri` — ring modulator · 7.3× carrier, swell, tri. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringFixed30StrikeSine` — ring modulator · 30 Hz, strike, sine. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringFixed30StrikeTri` — ring modulator · 30 Hz, strike, tri. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringFixed30HeldSine` — ring modulator · 30 Hz, held, sine. Held · pitched · dark. Default part: sparse.
+- `ringFixed30HeldTri` — ring modulator · 30 Hz, held, tri. Held · pitched · dark. Default part: sparse.
+- `ringFixed30SwellSine` — ring modulator · 30 Hz, swell, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringFixed30SwellTri` — ring modulator · 30 Hz, swell, tri. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringFixed110StrikeSine` — ring modulator · 110 Hz, strike, sine. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringFixed110StrikeTri` — ring modulator · 110 Hz, strike, tri. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringFixed110HeldSine` — ring modulator · 110 Hz, held, sine. Held · pitched · dark. Default part: sparse.
+- `ringFixed110HeldTri` — ring modulator · 110 Hz, held, tri. Held · pitched · dark. Default part: sparse.
+- `ringFixed110SwellSine` — ring modulator · 110 Hz, swell, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringFixed110SwellTri` — ring modulator · 110 Hz, swell, tri. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringFixed440StrikeSine` — ring modulator · 440 Hz, strike, sine. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringFixed440StrikeTri` — ring modulator · 440 Hz, strike, tri. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringFixed440HeldSine` — ring modulator · 440 Hz, held, sine. Held · pitched · dark. Default part: sparse.
+- `ringFixed440HeldTri` — ring modulator · 440 Hz, held, tri. Held · pitched · dark. Default part: sparse.
+- `ringFixed440SwellSine` — ring modulator · 440 Hz, swell, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringFixed440SwellTri` — ring modulator · 440 Hz, swell, tri. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringFixed1300StrikeSine` — ring modulator · 1300 Hz, strike, sine. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringFixed1300StrikeTri` — ring modulator · 1300 Hz, strike, tri. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: sparse.
+- `ringFixed1300HeldSine` — ring modulator · 1300 Hz, held, sine. Held · pitched · dark. Default part: sparse.
+- `ringFixed1300HeldTri` — ring modulator · 1300 Hz, held, tri. Held · pitched · dark. Default part: sparse.
+- `ringFixed1300SwellSine` — ring modulator · 1300 Hz, swell, sine. Slow swell, held · pitched · dark. Default part: sparse.
+- `ringFixed1300SwellTri` — ring modulator · 1300 Hz, swell, tri. Slow swell, held · pitched · dark. Default part: sparse.
+
+## Generative
+
+- `hopPentatonic4Sine` — note hopper · pentatonic steps, 4 hops per second, sine. Slow swell, held · pitched · dark. Default part: drone.
+- `hopPentatonic4Pluck` — note hopper · pentatonic steps, 4 hops per second, pluck. Slow swell, held · pitched · dark. Default part: drone.
+- `hopPentatonic8Sine` — note hopper · pentatonic steps, 8 hops per second, sine. Slow swell, held · pitched · dark. Default part: drone.
+- `hopPentatonic8Pluck` — note hopper · pentatonic steps, 8 hops per second, pluck. Slow swell, held · pitched · dark. Default part: drone.
+- `hopPentatonic13Sine` — note hopper · pentatonic steps, 13 hops per second, sine. Held · pitched · dark. Default part: drone.
+- `hopPentatonic13Pluck` — note hopper · pentatonic steps, 13 hops per second, pluck. Swelling, decaying · pitched · dark · fades in about 1.5 s. Default part: drone.
+
+## Resonators
+
+- `comb0p9HissHeld` — comb resonator · feedback 0.9, hiss, held. Held · pitched · very bright. Default part: air.
+- `comb0p9HissSwell` — comb resonator · feedback 0.9, hiss, swell. Slow swell, held · pitched · very bright. Default part: air.
+- `comb0p9HissStrike` — comb resonator · feedback 0.9, hiss, strike. Struck or plucked, ringing · pitched · very bright · fades in about 1.2 s. Default part: air.
+- `comb0p9CrackleHeld` — comb resonator · feedback 0.9, crackle, held. Slow swell, held · pitched · bright. Default part: air.
+- `comb0p9CrackleSwell` — comb resonator · feedback 0.9, crackle, swell. Slow swell, held · pitched · bright. Default part: air.
+- `comb0p9CrackleStrike` — comb resonator · feedback 0.9, crackle, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.1 s. Default part: air.
+- `comb0p9RumbleHeld` — comb resonator · feedback 0.9, rumble, held. Struck or plucked, ringing · pitched · dark · fades in about 1.8 s. Default part: air.
+- `comb0p9RumbleSwell` — comb resonator · feedback 0.9, rumble, swell. Swelling, decaying · pitched · dark · fades in about 1.9 s. Default part: air.
+- `comb0p9RumbleStrike` — comb resonator · feedback 0.9, rumble, strike. Struck or plucked, ringing · pitched · dark · fades in about 1.2 s. Default part: air.
+- `comb0p97HissHeld` — comb resonator · feedback 0.97, hiss, held. Held · pitched · bright. Default part: air.
+- `comb0p97HissSwell` — comb resonator · feedback 0.97, hiss, swell. Slow swell, held · pitched · very bright. Default part: air.
+- `comb0p97HissStrike` — comb resonator · feedback 0.97, hiss, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.3 s. Default part: air.
+- `comb0p97CrackleHeld` — comb resonator · feedback 0.97, crackle, held. Slow swell, held · pitched · warm. Default part: air.
+- `comb0p97CrackleSwell` — comb resonator · feedback 0.97, crackle, swell. Slow swell, held · pitched · warm. Default part: air.
+- `comb0p97CrackleStrike` — comb resonator · feedback 0.97, crackle, strike. Struck or plucked, ringing · pitched · bright · fades in about 1.3 s. Default part: air.
+- `comb0p97RumbleHeld` — comb resonator · feedback 0.97, rumble, held. Struck or plucked, ringing · pitched · dark · fades in about 2.1 s. Default part: air.
+- `comb0p97RumbleSwell` — comb resonator · feedback 0.97, rumble, swell. Struck or plucked, ringing · pitched · dark · fades in about 2.2 s. Default part: air.
+- `comb0p97RumbleStrike` — comb resonator · feedback 0.97, rumble, strike. Struck or plucked, ringing · pitched · dark · fades in about 1.5 s. Default part: air.
+- `comb0p995HissHeld` — comb resonator · feedback 0.995, hiss, held. Held · pitched · bright. Default part: air.
+- `comb0p995HissSwell` — comb resonator · feedback 0.995, hiss, swell. Slow swell, held · pitched · bright. Default part: air.
+- `comb0p995HissStrike` — comb resonator · feedback 0.995, hiss, strike. Struck or plucked, ringing · pitched · bright · fades in about 2.1 s. Default part: air.
+- `comb0p995CrackleSwell` — comb resonator · feedback 0.995, crackle, swell. Slow swell, held · pitched · warm. Default part: air.
+- `comb0p995CrackleStrike` — comb resonator · feedback 0.995, crackle, strike. Held · pitched · warm. Default part: air.
+- `comb0p995RumbleHeld` — comb resonator · feedback 0.995, rumble, held. Struck or plucked, ringing · pitched · dark · fades in about 2.4 s. Default part: air.
+- `comb0p995RumbleSwell` — comb resonator · feedback 0.995, rumble, swell. Struck or plucked, ringing · pitched · dark · fades in about 2.3 s. Default part: air.
+- `comb0p995RumbleStrike` — comb resonator · feedback 0.995, rumble, strike. Struck or plucked, ringing · pitched · dark · fades in about 2.2 s. Default part: air.

@@ -9,8 +9,20 @@ export function leanCatalog(){
  if(!catalogPromise)catalogPromise=(async()=>{const r=await fetch(assetUrl('lean/catalog.json'));if(!r.ok)throw new Error('Native Lean catalog unavailable: '+r.status);const bytes=await r.arrayBuffer();if(await sha(bytes)!==EXPECTED_CATALOG)throw new Error('Native catalog integrity mismatch; reload after the release finishes.');const c=JSON.parse(new TextDecoder().decode(bytes));if(c.schema!=='leandsp-native-catalog/1'||c.leanVersion!=='4.34.0')throw new Error('Unsupported native Lean build');return c;})().catch(e=>{catalogPromise=null;throw e;});
  return catalogPromise;
 }
+// Generated families live in catalog shards listed by a pinned index; a shard is fetched on first use.
+const EXPECTED_FAMILY_INDEX='04af3df206b6562f13b285bd508ee097fdb6256f90c4e02424128364cdc5406a';
+let familyIndexPromise=null;const shardPromises=new Map();
+async function familyIndex(){
+ if(!familyIndexPromise)familyIndexPromise=(async()=>{const r=await fetch(assetUrl('lean/families/index.json'));if(!r.ok)throw new Error('Family index unavailable: '+r.status);const bytes=await r.arrayBuffer();if(await sha(bytes)!==EXPECTED_FAMILY_INDEX)throw new Error('Family index integrity mismatch; reload after the release finishes.');return JSON.parse(new TextDecoder().decode(bytes));})().catch(e=>{familyIndexPromise=null;throw e;});
+ return familyIndexPromise;
+}
+async function familyShard(file){
+ if(!shardPromises.has(file))shardPromises.set(file,(async()=>{const idx=await familyIndex(),entry=idx.shards.find(s=>s.file===file);if(!entry)throw new Error('Unknown family shard '+file);const r=await fetch(assetUrl('lean/families/'+file));if(!r.ok)throw new Error('Family shard unavailable: '+r.status);const bytes=await r.arrayBuffer();if(await sha(bytes)!==entry.sha256)throw new Error('Family shard integrity mismatch: '+file);return JSON.parse(new TextDecoder().decode(bytes));})().catch(e=>{shardPromises.delete(file);throw e;}));
+ return shardPromises.get(file);
+}
 export async function loadLeanKernel(id,source){
- const catalog=await leanCatalog(),p=catalog.patterns[id];if(!p)throw new Error('No Lean-built family for '+id);
+ const catalog=await leanCatalog();let p=catalog.patterns[id];
+ if(!p){const idx=await familyIndex(),file=idx.families[id];if(!file)throw new Error('No Lean-built family for '+id);p=(await familyShard(file)).patterns[id];if(!p)throw new Error('Family '+id+' missing from '+file);if(source==null)source=p.source;}
  const sourceHash=await textHash(normalized(source));if(sourceHash!==p.sourceHash){const e=new Error('This source differs from the pinned native-Lean build. Export the Lean project and run its native build; the last hash-matched sound is unchanged.');e.requiresLeanBuild=true;throw e;}
  const bytes=Uint8Array.from(atob(p.wasmBase64),c=>c.charCodeAt(0));
  if(await sha(bytes)!==p.wasmHash||await textHash(p.wat)!==p.watHash)throw new Error('Native artifact integrity failed for '+id);

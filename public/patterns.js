@@ -1,3 +1,4 @@
+import {GENERATED} from './families.js';
 // JigDAW pattern library. Original, inspectable LeanDSP source.
 // These declarations are mirrored in the pinned native Lean 4 build; the active runtime executes only hash-matched native-build artifacts. Lean proofs are produced offline, not re-run by the browser.
 const voiceHead=(name,life=1)=>`dsp ${name} where
@@ -583,6 +584,10 @@ add('radioSnow','Radio snow','Texture',"Shortwave static: band-limited noise, sp
     set fadeB := fract(fadeB + 0.037 / sr)
     set whistle := fract(whistle + freq / sr)
     return softsign((band * 1.6 * fading + spark * colour + tone * fading) * amplitude) * 0.55`,['band-pass noise', 'crackle', 'fading']);
+// Generated families (tools/families): built by the same native Lean toolchain, loaded from catalog
+// shards on first use. They are non-enumerable, so lists of the core patterns (the Patterns tab, the
+// Workbench menu, the AI guide) stay as they are while any song can use them by id.
+for(const [id,label,category,sounds,role] of GENERATED)Object.defineProperty(bank,id,{enumerable:false,value:{id,label:label[0].toUpperCase()+label.slice(1),family:category,about:`Generated LeanDSP instrument. ${sounds}.`,sounds,role,source:null,tags:[category],generated:true,implementation:'LeanDSP native Lean build (generated family) → typed Wasm subset → Wasm',certification:'CertifiedProgram recorded by the pinned native Lean build of its catalog shard; the browser verifies the shard index, shard, source, WAT and Wasm hashes'}});
 export const patterns=bank;
 export const drumKit=[
   {id:'bd',label:'Kick',pattern:'kick',freq:52,colour:.35,life:.5,level:.80,pan:0},

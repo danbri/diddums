@@ -10,6 +10,8 @@ import {formatDuration} from './collection.js';
 import {SHOWCASE} from './showcase.js';
 import {siteUrl} from './site-url.js';
 import {songFromMidi} from './midi-import.js';
+import {GENERATED} from './families.js';
+const GEN_CATS=[...new Set(GENERATED.map(g=>g[2]))];
 import {midiFile} from './music-model.js';
 import {makeSession} from './score.js';
 
@@ -19,7 +21,7 @@ const IDEAS=['A heartbeat that becomes a Sputnik beacon, then silence, then sona
 const TONICS=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'],METERS=['4/4','3/4','5/4','6/8','7/8'];
 const RANGE={level:[0,1.2],pan:[-1,1],send:[0,1],colour:[0,1],life:[.03,6],tune:[-12,12],master:[0,1.2],room:[0,.94],damp:[0,.94],wet:[0,.94],echo:[0,.94]};
 const KEY_LABEL={level:'Volume',pan:'Pan',send:'Space',colour:'Tone',life:'Decay',tune:'Pitch',master:'Master',room:'Room size',damp:'Damping',wet:'Reverb',echo:'Echo'};
-const roleLabel={bass:'bass line',drone:'drone',pad:'chords',long:'held chords',keys:'chord rhythm',stabs:'stabs',arp:'arpeggio',sequence:'step sequence',lead:'melody',sparse:'sparse melody',answer:'answers',air:'texture',continuous:'endless tone',speechVowel:'voice',speechConsonant:'consonants',timeline:'timed notes'};
+const roleLabel={bass:'bass line',drone:'drone',pad:'chords',long:'held chords',keys:'chord rhythm',stabs:'stabs',arp:'arpeggio',sequence:'step sequence',lead:'melody',sparse:'sparse melody',answer:'answers',air:'texture',continuous:'endless tone',speechVowel:'voice',speechConsonant:'consonants',ostinato:'isorhythm',euclid:'euclidean rhythm',phase:'phasing',canon:'canon',tintinnabuli:'tintinnabuli',cloud:'cloud',timeline:'timed notes'};
 const NOTE_FOR={roundBass:'C2',acidBass:'C2',heartbeat:'A1',orbitBlip:'B5',sonar:'C5',phantomRoot:'E2',kick:'C1',tom:'C2',hat:'C7'};
 
 // ---- Finger-drawn automation: draw on the canvas, the curve becomes compact "value@seconds" text. ----
@@ -103,7 +105,8 @@ export function mountMaker(root,hooks){
  <dialog id="mkLibrary" class="mk-sheet" aria-label="Sound library">
   <div class="mk-sheet-head"><b id="mkLibTitle">Add a sound</b><button type="button" class="mk-icon" data-close aria-label="Close">✕</button></div>
   <input id="mkLibSearch" type="search" placeholder="Search ${sounds.length} sounds…" aria-label="Search sounds">
-  <div class="mk-cats" id="mkCats"><button type="button" data-cat="" class="on">All</button>${soundCategories.map(c=>`<button type="button" data-cat="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+  <div class="mk-libmode" role="group" aria-label="Library"><button type="button" data-libmode="presets" aria-pressed="true">Presets (${sounds.length})</button><button type="button" data-libmode="instruments" aria-pressed="false">Instruments (${GENERATED.length})</button></div>
+  <div class="mk-cats" id="mkCats"></div>
   <div id="mkLibList" class="mk-lib"></div>
  </dialog>
  <dialog id="mkSettingsDialog" class="mk-sheet" aria-label="AI settings">
@@ -147,7 +150,7 @@ export function mountMaker(root,hooks){
  }
  const dur=()=>Math.max(4,composition?.seconds||60);
  const marks=()=>composition?composition.sections.slice(1).map(s=>s.start*composition.meter[0]*4/composition.meter[1]*60/composition.bpm):[];
- function trackKind(t){const r=resolveSound(t.sound),role=t.seq?'timeline':t.role||r?.preset?.role||'lead';return {r,role,name:t.label||r?.preset?.label||patterns[r?.family]?.label||t.sound};}
+ function trackKind(t){const r=resolveSound(t.sound),role=t.seq?'timeline':t.role||r?.preset?.role||patterns[r?.family]?.role||'lead';return {r,role,name:t.label||r?.preset?.label||patterns[r?.family]?.label||t.sound};}
 
  function renderTracks(){
   const list=song.tracks||[];
@@ -232,19 +235,28 @@ export function mountMaker(root,hooks){
  $('#mkDetailsBox').ontoggle=()=>{if($('#mkDetailsBox').open)renderDetails();};
 
  // ---- Sound library sheet ----
- function openLibrary(){$('#mkLibTitle').textContent=replacing!=null?'Change sound':'Add a sound';renderLibrary();$('#mkLibrary').showModal();}
+ function openLibrary(){$('#mkLibTitle').textContent=replacing!=null?'Change sound':'Add a sound';renderCats();renderLibrary();$('#mkLibrary').showModal();}
+ let libMode='presets';
+ function renderCats(){const cats=libMode==='presets'?soundCategories:GEN_CATS;if(cat&&!cats.includes(cat))cat='';$('#mkCats').innerHTML=`<button type="button" data-cat="" class="${cat?'':'on'}">All</button>`+cats.map(c=>`<button type="button" data-cat="${esc(c)}" class="${c===cat?'on':''}">${esc(c)}</button>`).join('');}
+ // The generated LeanDSP families: each is its own synthesis program, not a preset of another.
+ function renderInstruments(q){
+  const list=GENERATED.filter(([id,label,c,s])=>(!cat||c===cat)&&(!q||[id,label,c,s].join(' ').toLowerCase().includes(q))),shown=list.slice(0,150);
+  $('#mkLibList').innerHTML=shown.map(([id,label,c,s])=>`<div class="mk-tile"><button type="button" class="mk-tile-add" data-sound="${id}"><b>${esc(label[0].toUpperCase()+label.slice(1))}</b><small>${esc(s)}</small></button><button type="button" class="mk-icon" data-hear="${id}" aria-label="Preview ${esc(label)}">▶</button><p class="mk-tile-src">${esc(c)} · <code>${id}</code> · <a href="lean/families/src/${id}.lean" target="_blank" rel="noopener">LeanDSP source</a></p></div>`).join('')+(list.length>shown.length?`<p class="mk-hint">Showing ${shown.length} of ${list.length}. Search to narrow down.</p>`:'')||'<p>No matching instruments.</p>';
+ }
  function renderLibrary(){
-  const q=$('#mkLibSearch').value.toLowerCase(),list=sounds.filter(s=>(!cat||s.category===cat)&&(!q||[s.label,s.id,s.category,s.scene,s.about,patterns[s.pattern].label,familySound[s.pattern]].join(' ').toLowerCase().includes(q)));
+  const q0=$('#mkLibSearch').value.toLowerCase();if(libMode==='instruments'){renderInstruments(q0);return;}
+  const q=q0,list=sounds.filter(s=>(!cat||s.category===cat)&&(!q||[s.label,s.id,s.category,s.scene,s.about,patterns[s.pattern].label,familySound[s.pattern]].join(' ').toLowerCase().includes(q)));
   $('#mkLibList').innerHTML=list.map(s=>`<div class="mk-tile"><button type="button" class="mk-tile-add" data-sound="${s.id}"><b>${esc(s.label)}</b><small>${esc(s.about)}</small></button><button type="button" class="mk-icon" data-hear="${s.id}" aria-label="Preview ${esc(s.label)}">▶</button><p class="mk-tile-src"><b>${esc(patterns[s.pattern].label)}</b> · ${esc(familySound[s.pattern]||'')} · <a href="lean/patterns/${s.pattern}.lean" target="_blank" rel="noopener">LeanDSP source</a> · <a href="?pattern=${s.pattern}" target="_blank" rel="noopener">definition</a></p></div>`).join('')||'<p>No matching sounds.</p>';
  }
  $('#mkLibSearch').oninput=renderLibrary;
+ root.querySelector('.mk-libmode').onclick=e=>{const b=e.target.closest('[data-libmode]');if(!b)return;libMode=b.dataset.libmode;root.querySelectorAll('[data-libmode]').forEach(x=>x.setAttribute('aria-pressed',x===b));$('#mkLibSearch').placeholder=libMode==='presets'?`Search ${sounds.length} sounds…`:`Search ${GENERATED.length} instruments…`;renderCats();renderLibrary();};
  $('#mkCats').onclick=e=>{const b=e.target.closest('[data-cat]');if(!b)return;cat=b.dataset.cat;$('#mkCats').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));renderLibrary();};
  $('#mkLibList').onclick=e=>{
   const hear=e.target.closest('[data-hear]');if(hear){hooks.unlock();preview({sound:hear.dataset.hear});return;}
   const add=e.target.closest('[data-sound]');if(!add)return;const id=add.dataset.sound;
   if(replacing!=null){const t=song.tracks[replacing];t.sound=id;delete t.label;delete t.role;replacing=null;}
   else{song.tracks=song.tracks||[];song.tracks.push({sound:id});const comp=soundById[id]?.companion;if(comp&&!song.tracks.some(t=>t.sound===comp))song.tracks.push({sound:comp});}
-  $('#mkLibrary').close();rebuild();renderTracks();toast('Added '+soundById[id].label);
+  $('#mkLibrary').close();rebuild();renderTracks();toast('Added '+(soundById[id]?.label||patterns[id]?.label||id));
  };
  $('#mkAdd').onclick=()=>{replacing=null;openLibrary();};
  root.querySelectorAll('dialog [data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
