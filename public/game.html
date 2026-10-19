@@ -15,6 +15,7 @@ main{max-width:980px}
 .gm-row input{width:100%}
 .gm-row output{font:13px var(--mono);color:#d5c29d;text-align:right}
 .gm-start{width:100%;min-height:60px;font-size:18px;font-weight:700;color:#062325;background:#91dfd4;border:0;border-radius:14px}
+.gm-start:hover,.gm-start:focus{color:#062325;background:#a5ebe1}
 .gm-auto{display:flex;align-items:center;gap:8px;min-height:48px;font-size:14px;color:#cfe7e4}
 .gm-status{font:12px var(--mono);color:#93acbd;margin:8px 0}
 .gm-status b{color:#c9fffa}
@@ -31,29 +32,27 @@ main{max-width:980px}
 <header class="app-header"><a class="brand" href="./" aria-label="Diddums home"><span class="jigsaw" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Diddums</a><nav aria-label="Workspace"><a href="./" style="padding:9px">← Studio</a></nav></header>
 <main>
 <div class="section-heading"><span class="eyebrow">LABS · ADAPTIVE MUSIC DEMO</span><h1>Music that follows the game.</h1>
-<p>One endless piece, written a couple of bars ahead from the game's state. Sneaking, exploring and fighting change which parts play, the drum pattern, the energy and the chords, from the next bar line. Low health brings in a heartbeat straight away. Everything is synthesised live by the same LeanDSP instruments as the rest of Diddums.</p></div>
+<p>Collect the cyan orbs without being caught. Patrols notice you inside their circle and give chase; the gold orb lets you knock them out for seven seconds. Clearing a level changes key and adds a patrol. The score is one endless piece written a couple of bars ahead from how much danger you are in, your health and your power, and every pickup, alarm, hit and knockout answers within a sixteenth note, in key.</p></div>
 <div class="gm-grid">
  <section class="gm-card">
-  <canvas id="arena" aria-label="Game view: your character and the enemies"></canvas>
-  <p class="gm-note">Drag in the field to move. Enemies close in when they notice you; in Fight mode they come straight for you and cost health on contact.</p>
+  <canvas id="arena" aria-label="Game: you are the cyan dot"></canvas>
+  <p class="gm-note">Move with arrow keys or WASD, or hold a finger or the mouse where you want to go. Autopilot plays by itself so you can just listen.</p>
  </section>
  <section class="gm-card">
   <button type="button" id="start" class="gm-start">▶ Start music</button>
-  <div class="gm-modes" role="group" aria-label="Mode"><button type="button" data-mode="sneak">Sneak</button><button type="button" data-mode="explore" aria-pressed="true">Explore</button><button type="button" data-mode="fight">Fight</button></div>
-  <label class="gm-row">Enemies<input id="enemies" type="range" min="0" max="12" step="1" value="2"><output id="enemiesOut">2</output></label>
-  <label class="gm-row">Health<input id="health" type="range" min="0" max="100" step="1" value="100"><output id="healthOut">100</output></label>
-  <label class="gm-auto"><input type="checkbox" id="auto" checked> Autopilot: play a scripted game by itself</label>
-  <div class="gm-status" id="status">Press Start. Changes land on the next bar line.</div>
+  <label class="gm-auto"><input type="checkbox" id="auto" checked> Autopilot</label>
+  <div class="gm-status" id="meters">Threat 0% · Health 100%</div>
+  <div class="gm-status" id="status">Press Start. Arrangement changes land on the next bar line.</div>
   <div class="gm-layers" id="layers"></div>
   <pre id="log" aria-live="polite"></pre>
  </section>
 </div>
-<details class="gm-card" style="margin-top:16px"><summary>How a game drives it</summary>
-<p class="gm-note">The page uses <code>adaptive.js</code>. A game calls <code>music.set({mode, enemies, health})</code> whenever its state changes; a plan function maps that state to an arrangement. Nothing else is needed.</p>
+<details class="gm-card" style="margin-top:16px"><summary>What drives what</summary>
+<p class="gm-note"><b>Threat</b> (patrols chasing you, and how close the nearest is) brings parts in one by one: drone and plucks when unseen; sub bass and a sparse kit when watched; arpeggio, acid bass, saw lead and harder drums as the hunt builds. <b>Health</b> changes the music itself: below half the bell melody and saw lead drop out; near death the chords turn to a flat-second dread progression with a halftime beat, the pad gives way to a drone, and a heartbeat grows louder. <b>Power</b> switches to a heroic progression and house beat. <b>Level</b> changes key.</p>
+<p class="gm-note">Events use <code>music.hit()</code>: notes are chosen from the chord playing at that moment and placed on the next 16th note (0.15 s at 100 bpm). Pickups climb the chord as an arpeggio when collected quickly; being spotted sounds a sonar ping on the beat; a hit is a low timpani; a knockout is a beacon blip; levels and game over get short phrases.</p>
 <pre>const music = await startAdaptive({composition, plan});
-music.set({mode: 'fight', enemies: 7});   // re-arranged from the next bar
-music.control('heart', 'level', 0.9);      // mix changes act at once</pre>
-<p class="gm-note">The plan used here: Sneak is drumless with a low drone and sparse plucks; Explore adds chords, a bell melody and a broken beat as enemies appear; Fight switches to an acid bass, brass stabs, arpeggio, saw lead and an industrial kit, on a harder chord progression. More enemies mean more energy (louder, busier parts).</p></details>
+music.set({threat: 0.7, health: 0.3});               // re-arranged from the next bar
+music.hit('chime', {tones: [0, 1, 2], spread: 1});   // root, third, fifth on the next 16ths</pre></details>
 </main>
 <script type="module" src="game.js"></script>
 </body></html>

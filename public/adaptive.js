@@ -19,7 +19,7 @@ function periodBars(c){const n=2*c.harmony.length;return n*8/gcd(n,8);}
 export function planEvents(base,plan,start,count,sr){
  const P=periodBars({harmony:plan.harmony||base.harmony}),phase=start%P,shift=start-phase,bars=phase+count+2;
  const layers=new Set(plan.layers);
- const c={...base,id:base.id+'-live',rhythm:plan.rhythm||'none',harmony:plan.harmony||base.harmony,bars,
+ const c={...base,id:base.id+'-live',rhythm:plan.rhythm||'none',harmony:plan.harmony||base.harmony,melody:plan.melody||base.melody,bass:plan.bass||base.bass,bars,
   tracks:base.tracks.filter(t=>layers.has(t.id)),sections:[{name:plan.name||'Live',start:0,bars,energy:plan.energy??.6,roles:ALL_ROLES}]};
  const s=makeSession(c,sr),beatFrames=sr*60/base.bpm,shiftFrames=Math.round(shift*s.beats*beatFrames);
  return s.events.filter(e=>e.bar>=phase&&e.bar<phase+count).map(e=>({...e,id:e.id+'@'+start,bar:e.bar+shift,frame:e.frame+shiftFrames,nominalBeat:e.nominalBeat+shift*s.beats}));
@@ -39,10 +39,11 @@ export async function startAdaptive({composition,plan,state={},onBar=()=>{},onLe
  let current=plan(state),events=planEvents(composition,current,0,lookahead,sr),until=lookahead;
  const session={...worst,id:composition.id+'-live',bars:ENDLESS_BARS,durationFrames:Number.MAX_SAFE_INTEGER/4,
   sections:[{name:current.name||'Live',start:0,bars:ENDLESS_BARS,energy:current.energy??.6,roles:ALL_ROLES}],
-  tracks:worst.tracks.map(t=>({...t,pool:Math.min(24,t.poolRequired+2),poolRequired:Math.min(24,t.poolRequired+2),automation:null})),automation:null,events};
+  tracks:worst.tracks.map(t=>({...t,pool:Math.min(24,Math.max(4,t.poolRequired+2)),poolRequired:Math.min(24,Math.max(4,t.poolRequired+2)),automation:null})),automation:null,events};
  const barFrames=session.beats*60/composition.bpm*sr;
  let position=0,lastBar=-1,generation=1;
- node.port.onmessage=e=>{const d=e.data;if(d.type==='telemetry'){position=d.position;onLevels(d.measurements||{});}else if(d.type==='error')console.error('Diddums worklet:',d.message);};
+ let heardAt=0;
+ node.port.onmessage=e=>{const d=e.data;if(d.type==='telemetry'){position=d.position;heardAt=ctx.currentTime;onLevels(d.measurements||{});}else if(d.type==='error')console.error('Diddums worklet:',d.message);};
  node.port.postMessage({type:'load',session,modules:modules.map(m=>({id:m.id,bytes:m.bytes,hash:m.hash,debug:m.debug})),generation,play:true});
  node.port.postMessage({type:'control',id:'out',key:'level',value:.7});
 
@@ -59,6 +60,22 @@ export async function startAdaptive({composition,plan,state={},onBar=()=>{},onLe
   set(next){state={...state,...next};const p=plan(state);if(JSON.stringify(p)===JSON.stringify(current))return current;current=p;
    const from=bar()+1;events=events.filter(e=>e.bar<from);until=from;extend();events.sort((x,y)=>x.frame-y.frame);send();return current;},
   control(id,key,value){node.port.postMessage({type:'control',id,key,value});},
+  // Musical response to an event, heard within one grid step: notes are chord tones of the chord now
+  // playing (index 0 = root, 1 = third, 2 = fifth, 3 = seventh, +4 per octave; negative goes down),
+  // placed on the next 16th (grid 1), beat (4) or bar line, `spread` 16ths apart.
+  hit(track,{tones=[0],octave=0,velocity=.9,length=.5,grid=1,spread=1}={}){
+   const t=composition.tracks.find(x=>x.id===track);if(!t)return;
+   const now=position+(ctx.currentTime-heardAt)*sr,step=barFrames/(session.beats*4),slot=step*grid;
+   const first=Math.ceil((now+sr*.03)/slot)*slot,harmony=current.harmony||composition.harmony;
+   tones.forEach((k,i)=>{
+    const frame=Math.round(first+i*spread*step),b=Math.floor(frame/barFrames),chord=harmony[Math.floor(b/2)%harmony.length];
+    const steps=[chord[1],chord[2],chord[3],chord[4]??chord[3]+5],idx=((k%4)+4)%4,oct=Math.floor(k/4);
+    const note=Math.max(0,Math.min(127,chord[0]+24+12*octave+steps[idx]+12*oct+(t.transpose||0)));
+    events.push({id:`hit:${track}:${frame}:${i}`,frame,track,note,velocity,bar:b,step:0,nominalBeat:frame/(barFrames/session.beats),durationBeats:length,duration:Math.round(length*barFrames/session.beats),colour:t.colour,life:t.life,humanizeBeats:0});
+   });
+   events.sort((x,y)=>x.frame-y.frame);send();
+   return (first-now)/sr; // seconds until the first note sounds
+  },
   pause(){node.port.postMessage({type:'play',value:false});},
   resume(){ctx.resume();node.port.postMessage({type:'play',value:true});},
   stop(){clearInterval(timer);node.disconnect();ctx.close();}
