@@ -2,9 +2,11 @@
 // (?prompt=…&bpm=…&key=…&sounds=…) and expands deterministically into an ordinary Diddums composition.
 import {sounds,soundById} from './sounds.js';
 import {patterns} from './patterns.js';
+import {AUTOMATABLE,GLOBAL_AUTOMATABLE,parseCurve} from './timeline.js';
 
 export const RECIPE_SCHEMA='diddums-recipe/1';
-export const MAX_SOUNDS=8; // studio-worklet.js accepts at most 8 tracks per session
+export const MAX_TRACKS=16; // studio-worklet.js accepts at most 16 tracks per session (a stereo pair uses two)
+export const MAX_SOUNDS=12;
 export const rhythms=['none','brush','halftime','broken','shuffle','house','motorik','postpunk','factory','euclid','seven','ritual','suite'];
 export const modes={minor:[0,2,3,5,7,8,10],major:[0,2,4,5,7,9,11],dorian:[0,2,3,5,7,9,10],lydian:[0,2,4,6,7,9,11],phrygian:[0,1,3,5,7,8,10],mixolydian:[0,2,4,5,7,9,10]};
 const progressions={minor:[[1,6,3,7],[1,4,6,5],[1,7,6,7],[1,6,4,5]],major:[[1,5,6,4],[1,4,6,5],[1,6,4,5]],dorian:[[1,4,1,7],[1,2,4,1]],lydian:[[1,2,1,7],[1,2,5,1]],phrygian:[[1,2,1,7],[1,2,7,1]],mixolydian:[[1,7,4,1],[1,4,7,4]]};
@@ -18,12 +20,12 @@ function rng(seed){let s=seed|0||1;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return(
 
 // Prompt themes. Matching is plain keyword lookup, so results are predictable and need no network or model.
 const themes=[
- {id:'space',words:['space','spacey','cosmic','cosmos','galaxy','galactic','star','stars','orbit','planet','nebula','sci-fi','scifi','starship','spaceship','astronaut','interstellar','lunar','moon','mars','void','alien'],sounds:['voidDrone','nebulaPad','starfield','hullHum','commsBeeps','warpAscent'],bpm:[62,76],mode:'minor',room:.92,names:['Launch window','Low orbit','Transmission','Dark side','Deep field','Signal lost'],say:'control this is orbit four we read you'},
- {id:'radio',words:['radio','chatter','comms','transmission','transmissions','mission','control','voices','voice','talk','talking','dispatch','pilot','cockpit','walkie'],sounds:['radioChatter','radioConsonants','secondOperator','squelch'],say:'copy that control we are go for launch'},
+ {id:'space',words:['space','spacey','cosmic','cosmos','galaxy','galactic','star','stars','orbit','planet','nebula','sci-fi','scifi','starship','spaceship','astronaut','interstellar','lunar','moon','mars','void','alien'],sounds:['voidDrone','nebulaPad','starfield','sputnikBeacon','hullHum','warpAscent'],bpm:[62,76],mode:'minor',room:.92,names:['Launch window','Low orbit','Transmission','Dark side','Deep field','Signal lost'],say:'control this is orbit four we read you'},
+ {id:'radio',words:['radio','chatter','comms','transmission','transmissions','mission','control','voices','voice','talk','talking','dispatch','pilot','cockpit','walkie'],sounds:['radioChatter','radioConsonants','radioSnow','secondOperator'],say:'copy that control we are go for launch'},
  {id:'epic',words:['epic','opera','operatic','cinematic','heroic','battle','orchestral','orchestra','trailer','soundtrack','score','grand','majestic'],sounds:['vaultedChoir','stringEnsemble','timpani','epicSub','hornCall'],bpm:[66,84],mode:'minor',room:.88,names:['Overture','Gathering','The vow','Calm before','Ascension','Aftermath']},
  {id:'ambient',words:['ambient','ambiance','ambience','atmosphere','atmospheric','drone','calm','focus','work','working','study','studying','sleep','relax','relaxing','meditation','meditative','chill','background','soundscape','peaceful'],rhythm:'none',bpm:[58,72],room:.86},
  {id:'rain',words:['rain','rainy','storm','stormy','thunder','drizzle','wet'],sounds:['rain','wind','electricPiano'],bpm:[70,86],mode:'minor'},
- {id:'ocean',words:['ocean','sea','underwater','water','waves','tide','tidal','submarine','deep','river','lake'],sounds:['sonarPing','waterDrops','nebulaPad','hullHum'],bpm:[60,72],mode:'lydian',room:.9,names:['Surface','Descent','Reef','Trench','Current','Ebb']},
+ {id:'ocean',words:['ocean','sea','underwater','water','waves','tide','tidal','submarine','deep','river','lake'],sounds:['sonarBlup','waterDrops','nebulaPad','hullHum'],bpm:[60,72],mode:'lydian',room:.9,names:['Surface','Descent','Reef','Trench','Current','Ebb']},
  {id:'city',words:['city','urban','night','noir','neon','street','downtown','late','cafe','coffee','jazz','lofi','lo-fi'],sounds:['electricPiano','subBass','rain','nylonGuitar'],bpm:[78,92],mode:'dorian',rhythm:'brush'},
  {id:'forest',words:['forest','nature','birds','bird','woods','garden','meadow','spring','morning','dawn','sunrise','pastoral'],sounds:['harp','birdCalls','stringEnsemble','feltPiano'],bpm:[72,90],mode:'major',names:['First light','Canopy','Clearing','Stillness','Bloom','Evening']},
  {id:'sacred',words:['cathedral','church','sacred','choir','chant','temple','monastery','hymn','spiritual'],sounds:['vowelChoir','cathedralOrgan','bells','voidDrone'],bpm:[56,66],mode:'dorian',room:.96,rhythm:'none'},
@@ -98,7 +100,7 @@ export function recipeFromPrompt(prompt,given={}){
   for(let i=0;i<6;i++)for(const l of lists)if(l[i]&&!ids.includes(l[i]))ids.push(l[i]);
   if(!ids.length)ids.push('nebulaPad','feltPiano','subBass','rain');
   if(ids.includes('radioChatter')&&!ids.includes('radioConsonants'))ids.splice(ids.indexOf('radioChatter')+1,0,'radioConsonants');
-  out.sounds=ids.slice(0,MAX_SOUNDS).map(id=>({id}));
+  out.sounds=ids.slice(0,8).map(id=>({id}));
  }
  if(out.names==null)out.names=matched.find(t=>t.names)?.names||DEFAULT_NAMES;
  if(out.title==null){const t=String(prompt||'').trim();out.title=t?t[0].toUpperCase()+t.slice(1,60):'Untitled';}
@@ -107,13 +109,17 @@ export function recipeFromPrompt(prompt,given={}){
 }
 
 // --- URL encoding -----------------------------------------------------------
-// sounds=starfield,radioChatter:0.4,tine.keys:0.5   (preset id or pattern.role, optional :level)
-const encodeSound=s=>(s.id||`${s.pattern}.${s.role}`)+(s.level!=null?':'+(+s.level).toFixed(2).replace(/0+$/,'').replace(/\.$/,''):'');
+// sounds=starfield,radioChatter:0.4,tine.keys:0.5,rain^0.9/0.37   (preset id or pattern.role, optional :level,
+// optional ^width[/delay] = stereo pair: two copies at ∓width, the right one `delay` seconds later)
+const short=v=>(+v).toFixed(3).replace(/0+$/,'').replace(/\.$/,'');
+const encodeSound=s=>(s.id||`${s.pattern}.${s.role}`)+(s.level!=null?':'+short(s.level):'')+(s.pair?'^'+short(s.pair.width)+(s.pair.delay?'/'+short(s.pair.delay):''):'');
 function decodeSound(token){
- const [name,level]=token.split(':'),lv=level!=null&&level!==''?num(level,null,0,1.2):null;
- if(soundById[name])return {id:name,...(lv!=null?{level:lv}:{})};
+ const [head,pairText]=token.split('^'),[name,level]=head.split(':'),lv=level!=null&&level!==''?num(level,null,0,1.2):null;
+ const extra={...(lv!=null?{level:lv}:{})};
+ if(pairText!=null){const [w,d]=pairText.split('/');extra.pair={width:num(w,.75,0,1),delay:num(d,.023,0,2)};}
+ if(soundById[name])return {id:name,...extra};
  const [pattern,role]=name.split('.');
- if(patterns[pattern]&&ROLES.includes(role))return {pattern,role,...(lv!=null?{level:lv}:{})};
+ if(patterns[pattern]&&ROLES.includes(role))return {pattern,role,...extra};
  return null;
 }
 const list=v=>String(v).split(/[,\s]+/).filter(Boolean);
@@ -123,6 +129,8 @@ export function recipeFromParams(params){
  const p=params instanceof URLSearchParams?params:new URLSearchParams(params);
  const known=['prompt','title','bpm','key','meter','rhythm','room','sounds','say','minutes','seed','melody','bass','chords','harmony','names'];
  if(!known.some(k=>p.has(k)))return null;
+ // auto.<sound id>.<key>=0@0 1@2.5 … and auto.<master|room|damp|wet|echo>=… (see timeline.js for the curve syntax)
+ const automate={};for(const [k,v] of p){const m=k.match(/^auto\.(?:([A-Za-z0-9]+)\.)?([a-z]+)$/);if(!m)continue;try{parseCurve(v);}catch{continue;}if(m[1]?AUTOMATABLE.includes(m[2]):GLOBAL_AUTOMATABLE.includes(m[2]))(automate[m[1]||'*']||={})[m[2]]=v.slice(0,600);}
  const g={};
  if(p.has('title'))g.title=p.get('title').slice(0,80);
  if(p.has('bpm'))g.bpm=num(p.get('bpm'),80,30,200);
@@ -139,6 +147,7 @@ export function recipeFromParams(params){
  if(p.has('chords'))g.chords=list(p.get('chords')).slice(0,8).map(x=>num(x,1,1,7)|0);
  if(p.has('harmony'))g.harmony=list(p.get('harmony')).slice(0,8).map(c=>c.split('.').map(Number)).filter(c=>c.length>=4&&c.every(Number.isFinite)).map(c=>c.slice(0,5).map((v,i)=>i?clamp(v,0,24):clamp(v,24,60)));
  if(p.has('names'))g.names=p.get('names').split('|').map(s=>s.trim().slice(0,32)).filter(Boolean).slice(0,9);
+ if(Object.keys(automate).length)g.automate=automate;
  return recipeFromPrompt(p.get('prompt')||'',g);
 }
 
@@ -156,9 +165,16 @@ export function recipeToParams(recipe){
  if(recipe.bass)set('bass',recipe.bass.map(v=>v==null?'_':v).join(','));
  if(recipe.names&&recipe.names!==DEFAULT_NAMES)set('names',recipe.names.join('|'));
  set('seed',recipe.seed);
+ for(const [track,keys] of Object.entries(recipe.automate||{}))for(const [k,v] of Object.entries(keys))set(track==='*'?`auto.${k}`:`auto.${track}.${k}`,v);
  return p;
 }
 export function shareUrl(recipe,base=location.href){const u=new URL(base);u.search=recipeToParams(recipe).toString();u.hash='';return u.toString();}
+
+// Track ids a recipe's sounds receive: the preset id (or pattern), numbered from the second copy.
+export function trackIds(list){const seen=new Map();return (list||[]).map(s=>{const base=s.id||s.pattern,n=(seen.get(base)||0)+1;seen.set(base,n);return n>1?base+n:base;});}
+// "level=0@0 1@3; pan=-1@0 1@20" ⇄ {level:'0@0 1@3',pan:'-1@0 1@20'}
+export function parseAutoText(text,keys){const out={};for(const part of String(text||'').split(';').map(x=>x.trim()).filter(Boolean)){const m=part.match(/^([a-z]+)\s*=\s*(.+)$/);if(!m||!keys.includes(m[1]))throw new Error('Use key=curve with key one of '+keys.join(', '));parseCurve(m[2]);out[m[1]]=m[2].trim();}return out;}
+export const formatAutoText=a=>Object.entries(a||{}).map(([k,v])=>`${k}=${v}`).join('; ');
 
 // --- Recipe → composition -----------------------------------------------------
 function chordFor(tonic,scale,degree,r,extended){
@@ -201,13 +217,16 @@ export function compositionFromRecipe(input){
  const shape=sectionShape[ambient?'none':'beat'],names=recipe.names?.length?recipe.names:DEFAULT_NAMES;
  const per=Math.max(2,Math.round(minutes*60/barSeconds/shape.length/2)*2);
  let start=0;const sections=shape.map(([energy,roles],i)=>{const s={name:names[i%names.length]+(i>=names.length?' '+(i+1):''),start,bars:per,energy,roles};start+=per;return s;});
- const used=new Map(),tracks=[];
+ const used=new Map(),tracks=[];let slots=0;
  for(const s of (recipe.sounds||[]).slice(0,MAX_SOUNDS)){
   const preset=s.id?soundById[s.id]:null,base=preset||{id:s.pattern,label:patterns[s.pattern]?.label||s.pattern,pattern:s.pattern,role:s.role,level:.3,colour:.4,life:1.2,pan:0,send:.3};
   if(!base.pattern||!patterns[base.pattern])continue;
   const n=(used.get(base.id)||0)+1;used.set(base.id,n);
   const {category,about,companion,...t}=base;
   const track={...t,id:n>1?`${base.id}${n}`:base.id,label:n>1?`${base.label} ${n}`:base.label,level:s.level??base.level,sound:preset?.id||null};
+  if(recipe.automate?.[track.id])track.automate=recipe.automate[track.id];
+  if(s.pair){if(slots+2>MAX_TRACKS)continue;track.pair={width:num(s.pair.width,.75,0,1),delay:num(s.pair.delay,.023,0,2)};}
+  slots+=s.pair?2:1;if(slots>MAX_TRACKS)break;
   // Transmissions come and go: leave the opening and the quietest movement to the room.
   if(track.role==='speechVowel'||track.role==='speechConsonant')track.excludeSections=[sections[0].name,sections[3].name];
   tracks.push(track);
@@ -222,6 +241,7 @@ export function compositionFromRecipe(input){
   harmony,melody,bass,tracks,
   ...(speechNeeded&&syllables.length?{speech:{text:recipe.say||'',everyBars:Math.max(2,Math.ceil(phraseSteps/stepsPerBar)+1),leadMs:45,syllables}}:{}),
   space:{room:num(recipe.room,.7,0,1),damp:.55,wet:.18+num(recipe.room,.7,0,1)*.32,echo:ambient?.16:.18,delayBeats:ambient?1.5:.75},
+  ...(recipe.automate?.['*']?{automate:recipe.automate['*']}:{}),
   sections,bars:start,recipe,shared:true
  };
 }
@@ -231,5 +251,5 @@ export function recipeFromComposition(c){
  const k=parseKey(c.key);
  return {prompt:'',title:c.title+(c.shared?'':' (remix)'),bpm:c.bpm,key:k?keyName(k.pc,k.mode):undefined,meter:c.meter,rhythm:rhythms.includes(c.rhythm)?c.rhythm:'broken',room:c.space?.room,
   harmony:c.harmony,melody:c.melody,bass:c.bass||null,say:c.speech?.text||undefined,names:c.sections.map(s=>s.name).slice(0,9),seed:c.seed%100000,
-  sounds:c.tracks.map(t=>{const preset=t.sound&&soundById[t.sound]||sounds.find(s=>s.pattern===t.pattern&&s.role===t.role);return preset?{id:preset.id,level:t.level}:{pattern:t.pattern,role:t.role,level:t.level};})};
+  sounds:c.tracks.map(t=>{const preset=t.sound&&soundById[t.sound]||sounds.find(s=>s.pattern===t.pattern&&s.role===t.role)||(t.role==='timeline'?sounds.find(s=>s.pattern===t.pattern):null);return preset?{id:preset.id,level:t.level}:{pattern:t.pattern,role:t.role,level:t.level};})};
 }

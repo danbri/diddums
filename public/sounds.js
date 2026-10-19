@@ -14,12 +14,15 @@ export const sounds=[
  P('warpAscent','Warp ascent','Space & sci-fi','shepard','continuous',.16,.55,6.0,{send:.5,about:'Endlessly rising Shepard/Risset tone for the whole track.'}),
  P('commsBeeps','Comms beeps','Space & sci-fi','pulse','sparse',.22,.5,.14,{transpose:12,pan:.38,send:.22,about:'Short high console beeps.'}),
  P('telemetry','Telemetry','Space & sci-fi','pulse','sequence',.18,.20,.14,{pan:-.36,send:.18,octave:24,gate:.08,humanize:false,sequence:[12,null,null,19,null,12,null,null,24,null,null,null,19,null,null,null],about:'Sparse computer-style data sequence.'}),
+ P('sputnikBeacon','Sputnik beacon','Space & sci-fi','orbitBlip','sequence',.42,.55,.04,{pan:.2,send:.22,octave:24,gate:1,humanize:false,sequence:[12,null,12,null,12,null,12,null],about:'Driven radio beacon tone, on/off like Sputnik 1 (native-Lean OrbitBlip family).'}),
+ P('sonarBlup','Sonar blup','Space & sci-fi','sonar','sparse',.55,.6,1.6,{send:.3,about:'Sonar ping with an upward blup and built-in echo (native-Lean SonarBlup family).'}),
  P('sonarPing','Sonar ping','Space & sci-fi','glass','answer',.18,.08,4.4,{transpose:-12,pan:.28,send:.82,about:'Dark, slow bell pings answering the melody.'}),
  P('solarWind','Solar wind','Space & sci-fi','rain','air',.22,.82,4.2,{send:.46,about:'Bright noise breathing in long swells.'}),
  // Radio & voices
  P('radioChatter','Radio chatter','Radio & voices','sineVox','speechVowel',.34,.5,.6,{pan:-.22,send:.08,companion:'radioConsonants',about:'Sine-wave speech transmissions. Words come from the "say" text.'}),
  P('radioConsonants','Radio consonants','Radio & voices','speechGesture','speechConsonant',.24,.4,.12,{pan:-.18,send:.05,about:'Consonant clicks and hiss that make sine-wave speech intelligible.'}),
  P('secondOperator','Second operator','Radio & voices','sineVox','speechVowel',.22,.5,.7,{pan:.34,send:.14,speechOffsetSteps:6,about:'A second voice repeating the transmission a beat and a half later.'}),
+ P('radioSnow','Radio snow','Radio & voices','radioSnow','air',.55,.5,3.0,{send:.2,about:'Shortwave static with crackle and slow fading (native-Lean RadioSnow family).'}),
  P('squelch','Squelch bursts','Radio & voices','rain','sparse',.32,.97,.22,{transpose:24,pan:-.2,send:.06,about:'Short bursts of bright noise between transmissions.'}),
  P('whistleChoir','Whistle choir','Radio & voices','sineChoir','speechVowel',.20,.5,1.3,{pan:.18,send:.5,about:'Six-sine chorus singing the "say" text.'}),
  P('vowelChoir','Vowel choir','Radio & voices','choir','pad',.34,.5,4.6,{send:.62,about:'Synthetic vowel-like chord voices.'}),
@@ -59,7 +62,7 @@ export const sounds=[
  P('waterDrops','Water drops','Nature & texture','felt','sparse',.20,.1,.4,{transpose:24,pan:-.36,send:.6,about:'Brief high droplets.'}),
  P('tapeAir','Tape air','Nature & texture','rain','air',.16,.5,3.0,{send:.24,about:'Faint hiss bed.'}),
  // Pulse & percussion
- P('heartbeat','Heartbeat','Pulse & percussion','kick','sparse',.40,.3,.4,{transpose:-12,send:.05,about:'Soft low thud on the downbeats.'}),
+ P('heartbeat','Heartbeat','Pulse & percussion','heartbeat','sparse',.85,.42,.5,{transpose:-36,send:.05,about:'Human lub-dub heartbeat on the downbeats (native-Lean HumanHeart family).'}),
  P('clockTicks','Clock ticks','Pulse & percussion','hat','arp',.20,.3,.05,{transpose:36,pan:.24,send:.08,about:'Light metallic ticks.'}),
  P('woodBlocks','Wood blocks','Pulse & percussion','tom','arp',.20,.8,.12,{transpose:12,pan:-.3,send:.18,about:'Tuned rim/block pattern.'}),
  // Illusions

@@ -1,4 +1,5 @@
-import {drumKit} from './patterns.js';
+import {drumKit} from './patterns.js'
+import {expandPairs,timelineNotes,compileAutomation,AUTOMATABLE,GLOBAL_AUTOMATABLE} from './timeline.js';
 export const MAX_EVENTS=32768;
 export const MAX_TRACK_VOICES=24;
 export const framesPerBar=(c,sr)=>Math.round(c.meter[0]*4/c.meter[1]*60/c.bpm*sr);
@@ -34,10 +35,10 @@ export function drumSteps(c,bar){
 export function makeSession(c,sr,overrides={}){
  if(!(sr>=8000&&sr<=192000))throw new Error('Unsupported sample rate');
  const beatFrames=sr*60/c.bpm,beats=c.meter[0]*4/c.meter[1],steps=Math.round(beats*4),rand=random(c.seed),events=[],grids=[];
- const tracks=c.tracks.map(t=>({...t,pool:1,poolRequired:1})),kit=drumKit.map(d=>({...d,...(c.drumKit?.[d.id]||{})}));
+ const tracks=expandPairs(c.tracks).map(t=>({...t,pool:1,poolRequired:1})),kit=drumKit.map(d=>({...d,...(c.drumKit?.[d.id]||{})}));
  const eventIds=new Map(),transposeOf=new Map(tracks.map(t=>[t.id,Math.round(Number(t.transpose)||0)]));
  const emit=(track,bar,step,note,velocity,length,colour,life,meta={})=>{
-  if(!meta.speechPart&&!meta.localPattern&&transposeOf.get(track))note=Math.max(0,Math.min(127,note+transposeOf.get(track)));const swing=(Math.floor(step)%2===1?c.swing:0),jitter=track.startsWith('d:')||meta.speechPart||meta.humanize===false?0:(rand()-.5)*.012;
+  if(!meta.speechPart&&!meta.localPattern&&transposeOf.get(track))note=Math.max(0,Math.min(127,note+transposeOf.get(track)));const swing=(!meta.exact&&Math.floor(step)%2===1?c.swing:0),jitter=track.startsWith('d:')||meta.speechPart||meta.humanize===false?0:(rand()-.5)*.012;
   const nominalBeat=bar*beats+step/4+swing,frame=Math.max(0,Math.round((nominalBeat+jitter)*beatFrames));
   const base=track+'/'+bar+'/'+step+'/'+note,ordinal=eventIds.get(base)||0;eventIds.set(base,ordinal+1);
   events.push({id:base+'/'+ordinal,frame,track,note,bar,step,nominalBeat,humanizeBeats:jitter,velocity:Math.max(.05,Math.min(1,velocity)),durationBeats:length,duration:Math.max(32,Math.round(length*beatFrames)),colour,life,...meta});
@@ -47,7 +48,7 @@ export function makeSession(c,sr,overrides={}){
   const grid=drumSteps(c,bar);grids.push(grid);
   for(const d of kit){const hits=sec.roles.includes('drums')?(overrides['d:'+d.id]||grid[d.id]):[];for(const step of hits){const accent=step%4===0?1:.7;emit('d:'+d.id,bar,step,0,(c.rhythm==='brush'?.45:.75)*accent*(.7+E*.3),.035,d.colour,d.life);}}
   for(const t of tracks){
-   if(!sec.roles.includes(group(t.role))||!trackActive(t,sec))continue;
+   if(t.role==='timeline'||!sec.roles.includes(group(t.role))||!trackActive(t,sec))continue;
    const vel=(.58+.25*E),colour=Math.min(1,t.colour*(.72+.35*E));
    if(overrides[t.id]){const ov=overrides[t.id];if(Array.isArray(ov)){for(const [i,n] of ov.entries())if(n!==null)emit(t.id,bar,i,n,vel,.25,colour,t.life);}else if(ov?.type==='patternCode'&&Array.isArray(ov.notes)&&ov.notes.length){for(let step=0;step<steps;step++){const raw=ov.notes[(bar*steps+step)%ov.notes.length];if(raw===null||raw===undefined)continue;const note=typeof raw==='object'?Number(raw.note):Number(raw),gain=typeof raw==='object'?Math.max(.05,Math.min(1.5,Number(raw.velocity??1))):1;if(Number.isFinite(note))emit(t.id,bar,step,Math.max(0,Math.min(127,note)),vel*gain,.25,colour,t.life,{humanize:false,localPattern:true,patternIndex:(bar*steps+step)%ov.notes.length});}}continue;}
    if(t.role==='continuous'){
@@ -81,6 +82,11 @@ export function makeSession(c,sr,overrides={}){
    }
   }
  }
+ // Seconds-timed tracks are placed once over the whole piece rather than bar by bar.
+ const secondsPerBar=beats*60/c.bpm;
+ for(const t of tracks)if(t.role==='timeline')for(const n of timelineNotes(t,c.bars*secondsPerBar,secondsPerBar)){const beat=n.time*c.bpm/60,bar=Math.floor(beat/beats);emit(t.id,bar,(beat-bar*beats)*4,n.note,n.velocity,n.seconds*c.bpm/60,t.colour,t.life,{humanize:false,exact:true,sequenceIndex:n.index});}
+ // Paired stereo: the right-hand partner of a pair plays `delay` seconds later (Haas width, ping-pong or decorrelated noise).
+ for(const t of tracks)if(t.pairDelay>0){const shift=Math.round(t.pairDelay*sr);for(const e of events)if(e.track===t.id){e.frame+=shift;e.pairDelayFrames=shift;}}
  // Optional score treatment used by the focused A/B lab. It changes gate time only;
  // synthesis release tails and effects remain untouched.
  const boundaryTreatment=c.scoreTreatment?.harmonyBoundary;
@@ -93,8 +99,10 @@ export function makeSession(c,sr,overrides={}){
  // Size each state-isolated voice pool from this score's actual gate+release lifetime.
  // End points sort before starts at the same frame, so a slot can be reused exactly on a boundary.
  for(const t of tracks){const points=[];for(const e of events)if(e.track===t.id){const end=e.frame+e.duration+Math.ceil(sr*Math.max(.08,e.life*1.7));points.push([e.frame,1],[end,-1]);}points.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);let active=0,peak=0;for(const [,d] of points){active+=d;peak=Math.max(peak,active);}t.poolRequired=Math.max(1,peak);if(t.poolRequired>MAX_TRACK_VOICES)throw new Error(`${t.label} needs ${t.poolRequired} voices; bounded pool limit is ${MAX_TRACK_VOICES}`);t.pool=t.poolRequired;}
+ for(const t of tracks)t.automation=compileAutomation(t.automate,AUTOMATABLE,sr,secondsPerBar,t.pairSide==='L');
+ const automation=compileAutomation(c.automate,GLOBAL_AUTOMATABLE,sr,secondsPerBar);
  const durationFrames=Math.round(c.bars*beats*beatFrames);
- return {id:c.id,title:c.title,key:c.key,sampleRate:sr,meter:c.meter,bpm:c.bpm,bars:c.bars,steps,beats,seed:c.seed,tracks,kit,space:{...c.space},sections:c.sections,harmony:c.harmony,events,grids,durationFrames,tailFrames:Math.round(sr*6),maxEvents:MAX_EVENTS};
+ return {id:c.id,title:c.title,key:c.key,sampleRate:sr,meter:c.meter,bpm:c.bpm,bars:c.bars,steps,beats,seed:c.seed,tracks,kit,space:{...c.space},sections:c.sections,harmony:c.harmony,events,grids,automation,durationFrames,tailFrames:Math.round(sr*6),maxEvents:MAX_EVENTS};
 }
 export function runtimeGraph(session){
  const nodes=[{id:'clock',label:'Transport',type:'event',detail:`${session.bpm} BPM · ${session.meter.join('/')}`,backend:'host',open:'arrangement'},

@@ -64,7 +64,31 @@ Explicit parameters override anything derived from `prompt`. The prompt mapping 
 
 ### Sound library
 
-`public/sounds.js` holds 51 named presets (space drones, radio chatter, choirs, timpani, harp, music box, rain, heartbeat…). Each preset uses one of the 23 existing hash-matched LeanDSP instrument families and sets its score role, register (`transpose`) and existing colour/life/level/pan/send controls. No new DSP is added, so the pinned native-Lean catalog and its proof boundary are unchanged. Adding a new instrument family still requires the native Lean build described in `public/lean/README.md`.
+`public/sounds.js` holds 54 named presets (space drones, radio chatter, choirs, timpani, harp, music box, rain, heartbeat…). Each preset uses one of the 23 existing hash-matched LeanDSP instrument families and sets its score role, register (`transpose`) and existing colour/life/level/pan/send controls. No new DSP is added, so the pinned native-Lean catalog and its proof boundary are unchanged. Adding a new instrument family still requires the native Lean build described in `public/lean/README.md`.
+
+## Timelines, automation and stereo pairs
+
+Compositions can be written against the clock as well as the bar grid (`public/timeline.js`). `?piece=firstcontact` is a worked example.
+
+- **Timeline tracks** (`role:'timeline'`) place notes in seconds: `seq:'x@.9 . . x .*7 | A2:2 _'` (x = the track note, `.` rest, `@velocity`, `:length` in steps, `*repeat`), `step` seconds per step, `from`/`to` window. `step` may itself be a curve, so a pattern can accelerate.
+- **Automation** (`automate:{level:'0@0 1@1.2 1@14.7 0@15', pan:'-0.75@15 0.75@30', tune:'0@35 5@50'}`) on any track: `level` (× track level), `pan`, `send`, `colour`, `life`, `tune` (semitones). Composition-level `automate` drives `master`, `room`, `damp`, `wet`, `echo`. Points are `value@seconds` (suffix `b` for bars), linear between points; two points at the same time make a jump. Curves are evaluated in the AudioWorklet at score time, so seeking and proof renders follow them.
+- **Stereo pairs** (`pair:{width:.8, delay:.023, seqR:'…', noteR:'E5', transposeR:7}`) expand one track into `<id>L`/`<id>R` at ∓width; the right side can play its own sequence, note or transposition and is delayed by `delay` seconds. Pan automation on a pair sets the width.
+
+The same features are available in share URLs: `auto.<sound>.<key>=curve`, `auto.master=curve`, and `sounds=radioSnow^0.9/0.37` for a pair. A session may hold up to 16 tracks (the worklet's bound).
+
+## Native Lean build
+
+The LeanDSP release can be reproduced in a container with Lean 4.34.0:
+
+```sh
+curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain leanprover/lean4:v4.34.0
+# unpack public/lean/project-files.json into a directory, then:
+npm install && node build.mjs     # writes out/catalog.json and out/build-report.json
+```
+
+Studio 0.7 used this to add four families: `heartbeat` (HumanHeart lub-dub), `orbitBlip` (Sputnik-style beacon), `sonar` (SonarBlup ping with echo) and `radioSnow` (shortwave static). The same native run rebuilt all 23 earlier families with byte-identical source, WAT and Wasm hashes; the published catalog keeps those entries verbatim, adds the four new ones, and records the run under `extensions` (see `public/lean/build-report-0.7.json`). `public/lean-client.js` pins the new catalog SHA-256.
+
+Proof-audio exports use a content-addressed renderer copy; automation support adds `proof-renderers/studio-worklet-6353dc37c9c05897.js` beside the earlier one so older proofs remain verifiable.
 
 ## GitHub Pages
 
