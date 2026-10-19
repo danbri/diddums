@@ -110,3 +110,8 @@ input.invalid,textarea.invalid{border-color:#b0566f!important;background:#2b1720
  .build-label{display:none}
 }
 @media(min-width:1100px){#makePane:not([hidden]){max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:start}#makeMount{display:contents}.mk-showcase{grid-column:1}.mk-song{grid-column:2;grid-row:1 / span 3}.mk-song{margin-top:0}}
+/* Labs sub-navigation: AI sketch, sine-wave speech, compare, workbench. */
+.labs-nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 16px;padding:4px;border:1px solid #2c4a5f;border-radius:14px;background:#0b1926}
+.labs-nav button{flex:1 0 auto;min-height:44px;border-radius:10px;background:transparent;border-color:transparent;color:#9fb8c8;font-size:14px}
+.labs-nav button.active{color:var(--mint);border-color:#355967;background:#11303a}
+@media(max-width:560px){.labs-nav{gap:2px;padding:3px}.labs-nav button{flex:1 1 0;min-width:0;padding:6px 4px;font-size:12px;line-height:1.2;white-space:normal}}
