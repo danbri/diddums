@@ -76,6 +76,14 @@
 .mk-more{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 8px}
 .mk-more button{flex:1 1 160px;min-height:46px;font-size:13px;background:#0e2131}
 input.invalid,textarea.invalid{border-color:#b0566f!important;background:#2b1720!important}
+.mk-showcase{margin-top:18px}
+.mk-showcase h2{font-size:18px;margin:0 0 4px}
+.mk-showcase-list{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px}
+.mk-piece{border:1px solid #2c4a5f;border-radius:16px;padding:10px 12px 12px;background:linear-gradient(160deg,#112536,#0a1824)}
+.mk-showcase-list .mk-hint{margin:6px 0 10px}
+.mk-showcase-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.mk-showcase-head b{font-size:16px}
+.mk-showcase-head small{font:11px var(--mono);color:#93acbd}
 /* Sheets: centred dialogs on large screens, bottom sheets on phones. */
 .mk-sheet{width:min(760px,calc(100vw - 24px));padding:16px}
 .mk-sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:18px}
@@ -101,4 +109,4 @@ input.invalid,textarea.invalid{border-color:#b0566f!important;background:#2b1720
  .app-header nav button{flex:0 0 auto}
  .build-label{display:none}
 }
-@media(min-width:1100px){#makePane:not([hidden]){max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:start}#makeMount{display:contents}.mk-hero{position:sticky;top:12px}.mk-song{margin-top:0}}
+@media(min-width:1100px){#makePane:not([hidden]){max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:start}#makeMount{display:contents}.mk-showcase{grid-column:1}.mk-song{grid-column:2;grid-row:1 / span 3}.mk-song{margin-top:0}}

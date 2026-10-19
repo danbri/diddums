@@ -7,6 +7,8 @@ import {recipeFromPrompt,songFromRecipe,recipeFromSong,shareUrl} from './maker.j
 import {MODELS,composeWithClaude,chatPrompt,songFromReply,exampleSong} from './ai.js';
 import {attachViz} from './viz.js';
 import {formatDuration} from './collection.js';
+import {SHOWCASE} from './showcase.js';
+import {siteUrl} from './site-url.js';
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store={get:k=>{try{return localStorage.getItem(k);}catch{return null;}},set:(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch{}}};
@@ -75,6 +77,11 @@ export function mountMaker(root,hooks){
    </div>
   </div>
   <div class="mk-ideas" id="mkIdeas">${IDEAS.map(i=>`<button type="button" data-idea="${esc(i)}">${esc(i)}</button>`).join('')}</div>
+ </section>
+ <section class="mk-showcase" aria-label="Example pieces">
+  <h2>Example pieces</h2>
+  <p class="mk-hint">Each one is a complete Song carried in its link. Share sends that link as-is.</p>
+  <ul id="mkShowcase" class="mk-showcase-list">${SHOWCASE.map((s,i)=>`<li class="mk-piece"><div class="mk-showcase-head"><b>${esc(s.title)}</b><small>${formatDuration(s.seconds||60)}</small></div>${s.description?`<p class="mk-hint">${esc(s.description)}</p>`:''}<div class="mk-row"><button type="button" class="mk-btn primary" data-play="${i}">▶ Play</button><button type="button" class="mk-btn" data-edit="${i}">Edit</button><button type="button" class="mk-btn" data-share="${i}">Share</button></div></li>`).join('')}</ul>
  </section>
  <section class="mk-song" aria-label="Your track">
   <div class="mk-bar">
@@ -240,6 +247,21 @@ export function mountMaker(root,hooks){
    if(navigator.share&&(!navigator.canShare||navigator.canShare(data))){try{await navigator.share(data);return;}catch(e){if(e.name==='AbortError')return;}}
    await navigator.clipboard.writeText(url);toast('Link copied');
   }catch(e){toast('Could not share: '+e.message,true);}
+ };
+ // Example pieces: readable link form, ?song=<percent-encoded Song JSON>, same as the skill page produces.
+ const songUrl=s=>siteUrl('')+'?song='+encodeURIComponent(JSON.stringify(s));
+ async function shareLink(title,url){
+  const data={title,text:title+' · made with Diddums',url};
+  if(navigator.share&&(!navigator.canShare||navigator.canShare(data))){try{await navigator.share(data);return;}catch(e){if(e.name==='AbortError')return;}}
+  try{await navigator.clipboard.writeText(url);toast('Link copied');}catch(e){toast('Could not share: '+e.message,true);}
+ }
+ $('#mkShowcase').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;const s=SHOWCASE[b.dataset.play??b.dataset.edit??b.dataset.share];if(!s)return;
+  if(b.dataset.share!=null){shareLink(s.title||'Diddums',songUrl(s));return;}
+  hooks.unlock();
+  if(b.dataset.edit!=null){load(structuredClone(s),'Loaded “'+s.title+'” for editing');$('.mk-song').scrollIntoView({behavior:'smooth'});return;}
+  const r=checkSong(s);if(!r.composition?.tracks.length){toast(r.problems[0]||'This piece cannot play',true);return;}
+  hooks.play({...r.composition,id:'showcase-'+b.dataset.play},{stay:true});viz.kick();toast('Playing “'+s.title+'”');
  };
  $('#mkCopyJson').onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(song,null,1));toast('Song JSON copied');}catch{toast('Copy failed',true);}};
  $('#mkRemix').onclick=()=>load(hooks.songOfCurrent(),'Loaded the piece from Compose');
