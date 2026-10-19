@@ -113,6 +113,23 @@ export const compositions=[
     ],
     space:{room:.42,damp:.68,wet:.12,echo:.075,delayBeats:.75},
     sections:sections([['Machine starts',8,.50,['drums','arp']],['Bass circuit',8,.67,['drums','bass','arp']],['Cold strings',8,.73,['drums','bass','arp','pad']],['Brass relay',8,.83,full],['Dead air',8,.34,['bass','arp']],['Motor return',8,.88,full],['Night floor',8,.96,full],['Power down',8,.30,['drums','pad','arp']]])}),
+    // Sound-design study written on second-accurate timeline tracks, paired stereo sequences and automation curves.
+    S({id:'firstcontact',title:'First Contact',subtitle:'Heartbeat · beacon · silence · sonar · static',tag:'Sound design / timeline',bpm:60,meter:[5,4],key:'E minor → C major',rhythm:'none',
+    description:'A human heartbeat fades in and quickens; at 15 seconds it becomes a Sputnik-style beacon crossing the sky, joined by answering blips and minor tones. At 30 seconds everything stops. Five seconds later a brash sonar arpeggio locks on to something approaching fast, accelerating and rising, before the signal dissolves into radio snow.',
+    harmony:[[40,0,3,7,10]],melody:[12],
+    tracks:[
+      T('heart','Heartbeat','heartbeat','timeline',.95,.42,.5,{note:'A1',seq:'x@.92 x@.86 x@.95 x@.88',step:'0.94@0 0.81@14',to:15,gate:.06,send:.06,pair:{width:.22,delay:.012},automate:{level:'0@0 1@1.2 1@14.7 0@15.02'}}),
+      T('beacon','Beacon','orbitBlip','timeline',.62,.55,.04,{note:'B5',seq:'x:1 .',step:.3,from:15,to:30,send:.22,automate:{pan:'-0.75@15 0.75@30',tune:'0.5@15 -0.6@30',level:'0@14.98 1@15.04 1@29.9 0@30'}}),
+      T('answer','Answering blips','orbitBlip','timeline',.34,.25,.05,{note:'E5',seq:'. . . x . . . . G5 . . . . . x@.7 . . . . . D5 . . .',step:.15,from:18,to:30,send:.42,pair:{width:.85,seqR:'. . . . . . . B4 . . . . . . . . x . . . . . F#5@.6 .',noteR:'E5',transposeR:-12,delay:.075},automate:{colour:'0.15@18 0.45@29',level:'0@18 1@21 1@29.9 0@30'}}),
+      T('mood','Minor tones','silk','timeline',.30,.22,3.2,{note:'E3',seq:'x:1',step:6,from:17,to:30,send:.6,pair:{width:.6,noteR:'G3',delay:.4},automate:{level:'0@17 1@22 1@29.9 0@30',colour:'0.1@17 0.35@29'}}),
+      T('deep','Deep root','phantomRoot','timeline',.26,.40,4,{note:'E2',seq:'x:1',step:13,from:17,to:30,send:.35,automate:{level:'0@17 1@24 1@29.9 0@30',tune:'0@17 -0.3@30'}}),
+      T('sonar','Sonar contact','sonar','timeline',.70,.45,1.6,{note:'C5',seq:'x C5 E5 G5 C6@.95 G5 E5@.9 C6',step:'1.1@35 0.42@43 0.14@50',from:35,to:52,gate:.12,send:.34,pair:{width:.7,transposeR:7,delay:.035},automate:{tune:'0@35 2@43 5@50',colour:'0.4@35 0.95@49',level:'0@34.99 1@35.05 1@48 0@54'}}),
+      T('fanfare','Contact fanfare','organ','timeline',.24,.82,2.2,{note:'C4',seq:'x:3 E4:3 G4:3 C5:6',step:.5,from:46,to:55,send:.45,pair:{width:.5,transposeR:7,delay:.02},automate:{level:'0@45.9 1@46.2 1@50 0@56'}}),
+      T('snow','Radio snow','radioSnow','timeline',.72,.55,3,{note:'F#5',seq:'x:1',step:30,from:47,to:68,send:.3,pair:{width:.9,delay:.37,noteR:'C#6'},automate:{level:'0@47 1@53 1@62 0@69',colour:'0.25@47 0.7@60'}})
+    ],
+    automate:{master:'1@29.97 0@30.02 0@34.98 1@35',room:'0.7@0 0.92@35',wet:'0.28@0 0.4@40'},
+    space:{room:.7,damp:.5,wet:.28,echo:.12,delayBeats:.75},
+    sections:sections([['Heartbeat',3,.5,[]],['Beacon',3,.6,[]],['Silence',1,.1,[]],['Contact',3,.95,[]],['Radio snow',4,.3,[]]])}),
     S({id:'nineRooms',title:'909 · Nine Rooms',subtitle:'Integrated percussion suite',tag:'Percussion / extended study',bpm:118,key:'C suspended',rhythm:'suite',
  description:'The old drum experiment becomes one continuous suite: sparse kick and rim, shuffled hats, tom conversations, broken beats and a dissolving metal room.',harmony:[[36,0,7,14,19],[32,0,7,12,16],[39,0,7,14,19],[34,0,7,12,17]],melody:[12,null,null,null,19,null,null,null,14,null,null,null,7,null,null,null],
  tracks:[T('bass','Pulse beneath','roundBass','bass',.28,.15,.38,{send:.04}),T('pad','Nine rooms','silk','pad',.22,.28,3.0),T('lead','Ceramic tones','felt','sparse',.24,.4,1.3,{send:.53})],space:{room:.8,damp:.54,wet:.35,echo:.15,delayBeats:.75},sections:sections([['Membrane',8,.35,['drums','pad']],['Paper',8,.48,['drums','bass']],['Metal',8,.58,['drums','pad','lead']],['Hands',8,.66,['drums','bass','lead']],['Three ceramics',8,.58,['drums','pad']],['Broken room',8,.8,full],['Open doors',8,.91,full],['Almost alone',8,.3,['drums','lead','air']],['Dissolve',8,.18,['pad','lead']]])})

@@ -21,5 +21,9 @@
   "ghostBeat",
   "sineVox",
   "speechGesture",
-  "sineChoir"
+  "sineChoir",
+  "heartbeat",
+  "orbitBlip",
+  "sonar",
+  "radioSnow"
 ]

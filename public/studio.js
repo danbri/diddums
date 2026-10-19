@@ -17,15 +17,27 @@ import {runPitchCritic,runTuningAudit} from './pitch-critic.js';
 import {auditScore,auditCollection as auditScoreCollection} from './score-critic.js';
 import {scoreEvidence} from './jigscore.js';
 import {makeCompositionProof,canonicalJson as proofCanonical} from './audio-proof.js';
+import {compositionFromRecipe,recipeFromParams,songFromRecipe} from './maker.js';
+import {compositionFromSong,decodeSong,songFromComposition,songLink} from './song.js';
+import {attachViz} from './viz.js';
+import {mountMaker} from './maker-ui.js';
 import {siteUrl} from './site-url.js';
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),wait=ms=>new Promise(r=>setTimeout(r,ms));
-let piece=compositionById.lowlight,session=makeSession(piece,48000),ctx=null,audio=null,outputGain=null,playing=false,loadedId=null,loading=false,generation=0,requestId=0,latest=null,route=[],currentGraph=null,selectedNode=null,watch={id:'out',mode:'track',instance:0,probe:'out',token:0},wat=null,notifyTimer=null,collectionRemaining=0,cascade=null,pulse=null,foreignActive=false;
+// A ?prompt=…/?sounds=… URL opens a shared track instead of the first collection piece.
+const urlRecipe=recipeFromParams(location.search),urlPiece=urlRecipe?compositionFromRecipe(urlRecipe):null;
+const urlParams=new URLSearchParams(location.search),urlPieceId=urlParams.get('piece');
+// ?song=… carries a whole Song (song.js), deflated and base64url-encoded.
+let urlSongPiece=null;if(urlParams.has('song')){try{urlSongPiece=compositionFromSong(await decodeSong(urlParams.get('song')));}catch(e){console.error('Unreadable song link',e);}}
+let piece=urlPiece||urlSongPiece||compositionById[urlPieceId]||compositionById.lowlight,analyser=null,session=makeSession(piece,48000),ctx=null,audio=null,outputGain=null,playing=false,loadedId=null,loading=false,generation=0,requestId=0,latest=null,route=[],currentGraph=null,selectedNode=null,watch={id:'out',mode:'track',instance:0,probe:'out',token:0},wat=null,notifyTimer=null,collectionRemaining=0,cascade=null,pulse=null,foreignActive=false;
 const compiled=new Map(),sourceEdits={},overrides={},uiControls={},labMatchCache=new Map(),patternCritics={},tuningCritics={};let lastStep=-1,sourceId='roundBass',pending=null,raf=0,labPlaying=null,telemetryTimer=null;
 let telemetryEvidence={generation:0,seq:0,frame:-1,receivedAt:0,windowFrames:0,gaps:0,valid:false,error:null},currentScoreEvidence=null,lastCompositionProof=null;
 // A library definition and a composition instance are distinct navigation targets.
 let definitionId=null,compositionRoute=[],activeTab='listen',contextUse=null,patternNavigationSerial=0;
 const patternUseChoices=new Map(),patternUsesCache=new Map();
+// Shared pieces join the collection list; tracks played from the Make tab (edits, previews) are only addressable by id.
+function registerComposition(c,listed=true){if(listed){const i=compositions.findIndex(x=>x.id===c.id);if(i>=0)compositions[i]=c;else compositions.push(c);patternUsesCache.clear();}compositionById[c.id]=c;}
+for(const c of [urlPiece,urlSongPiece])if(c)registerComposition(c);
 const workspace=document.querySelector('.workspace');
 const scoreFirstViewport=window.matchMedia('(max-width:600px), (pointer:coarse) and (max-width:950px)').matches;
 let workspaceMode=scoreFirstViewport?'seq':'graph',noteEdits={},noteUndo=[];
@@ -64,7 +76,7 @@ function updateLiveStatus(){
  const ms=ctx?.sampleRate&&telemetryEvidence.windowFrames?Math.round(telemetryEvidence.windowFrames/ctx.sampleRate*1000):0;
  e.textContent=(labPlaying?'Compare '+labPlaying.id:'Live DSP')+` · worklet #${telemetryEvidence.seq}${ms?` · ${ms} ms window`:''}${telemetryEvidence.gaps?` · ${telemetryEvidence.gaps} gap${telemetryEvidence.gaps===1?'':'s'}`:''}`;
 }
-function setTab(tab){if(tab!=='lab')sampleSws?.stop();if(tab!=='patterns'&&definitionId)leaveDefinition();activeTab=tab;for(const b of document.querySelectorAll('[data-tab]'))b.classList.toggle('active',b.dataset.tab===tab);for(const p of ['listen','patterns','lab','workbench'])$('#'+p+'Pane').hidden=p!==tab;if(tab==='listen'||tab==='patterns'&&definitionId)requestAnimationFrame(()=>{graph.render();graph.fit();});}
+function setTab(tab){if(tab!=='lab')sampleSws?.stop();if(tab!=='patterns'&&definitionId)leaveDefinition();activeTab=tab;for(const b of document.querySelectorAll('[data-tab]'))b.classList.toggle('active',b.dataset.tab===tab);for(const p of ['make','listen','patterns','lab','workbench'])$('#'+p+'Pane').hidden=p!==tab;if(tab==='listen'||tab==='patterns'&&definitionId)requestAnimationFrame(()=>{graph.render();graph.fit();});}
 const sourceFor=id=>patterns[id]?.source;
 const editorSourceFor=id=>sourceEdits[id]??sourceFor(id);
 async function compilePattern(id){
@@ -73,7 +85,7 @@ async function compilePattern(id){
 }
 function neededPatterns(c){return [...new Set([...c.tracks.map(t=>t.pattern),...drumKit.map(d=>d.pattern),'chamber'])];}
 let runtimeReady=null;
-async function ensureRuntime(){if(!ctx)ctx=new AudioContext({latencyHint:'interactive'});if(!runtimeReady)runtimeReady=(async()=>{await ctx.resume();await ctx.audioWorklet.addModule(siteUrl('studio-worklet.js'));audio=new AudioWorkletNode(ctx,'diddums-studio',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2]});outputGain=ctx.createGain();outputGain.gain.value=1;audio.connect(outputGain).connect(ctx.destination);audio.port.onmessage=onAudio;audio.onprocessorerror=()=>{playing=false;updateTransport();notify('The audio processor stopped. Reload to reset it; diagnostics are available.',true)};if(!telemetryTimer)telemetryTimer=setInterval(updateLiveStatus,250);})();await runtimeReady;if(ctx.state!=='running')await ctx.resume();}
+async function ensureRuntime(){if(!ctx)ctx=new AudioContext({latencyHint:'interactive'});if(!runtimeReady)runtimeReady=(async()=>{await ctx.resume();await ctx.audioWorklet.addModule(siteUrl('studio-worklet.js'));audio=new AudioWorkletNode(ctx,'diddums-studio',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2]});outputGain=ctx.createGain();outputGain.gain.value=1;audio.connect(outputGain).connect(ctx.destination);analyser=ctx.createAnalyser();analyser.fftSize=1024;analyser.smoothingTimeConstant=.78;outputGain.connect(analyser);audio.port.onmessage=onAudio;audio.onprocessorerror=()=>{playing=false;updateTransport();notify('The audio processor stopped. Reload to reset it; diagnostics are available.',true)};if(!telemetryTimer)telemetryTimer=setInterval(updateLiveStatus,250);})();await runtimeReady;if(ctx.state!=='running')await ctx.resume();}
 async function playPiece(id=piece.id,automatic=false){
  sampleSws?.stop();if(definitionId)setTab('listen');contextUse=null;labPlaying=null;
  const req=++requestId;loading=true;$('#play').disabled=true;notify('Loading hash-matched native-Lean instrument artifacts…',false,15000);
@@ -127,7 +139,7 @@ function paintTelemetry(){raf=0;const d=pending;pending=null;if(!d||ctx?.state==
  if(d.nonFinite)notify(`DSP fault: ${d.nonFinite} non-finite samples. See diagnostics.`,true);
 }
 function renderPiece(){
- $('#pieceTitle').textContent=piece.title;$('#pieceTag').textContent=piece.tag;$('#pieceDescription').textContent=piece.description;$('#pieceMeta').innerHTML=[piece.key,`${piece.bpm} BPM`,piece.meter.join('/'),formatDuration(durationOf(piece)),`${piece.sections.length} movements`].map(t=>`<span>${esc(t)}</span>`).join('');$('#dockTitle').textContent=piece.title;
+ $('#pieceTitle').textContent=piece.title;$('#pieceTag').textContent=piece.tag;$('#pieceDescription').textContent=piece.description;$('#pieceMeta').innerHTML=[piece.key,`${piece.bpm} BPM`,piece.meter.join('/'),formatDuration(durationOf(piece)),`${piece.sections.length} movement${piece.sections.length===1?'':'s'}`].map(t=>`<span>${esc(t)}</span>`).join('');$('#dockTitle').textContent=piece.title;
  $('#sectionName').textContent=piece.sections[0].name;$('#positionText').textContent=`${piece.bars} bars · ready`;$('#dockPosition').textContent='0:00 / '+formatDuration(durationOf(piece));
  $('#movements').innerHTML=piece.sections.map((s,i)=>`<button class="movement" data-section="${i}"><b>${esc(s.name)}</b><small>${s.bars} bars</small><i class="progress"></i></button>`).join('');for(const b of $('#movements').querySelectorAll('button'))b.onclick=()=>seekSection(Number(b.dataset.section));renderCollection();taste.setComposition(piece);
 }
@@ -278,7 +290,7 @@ function openSource(id){sourceId=id;$('#sourcePattern').value=id;$('#sourceText'
 function showCompiler(c){if(!c){$('#compilerStatus').textContent='Native Lean artifact not loaded in this session yet';$('#compilerReport').textContent='The browser does not compile DSP source or re-run Lean proofs. Play/audition or validate to load and integrity-check the pinned native-Lean artifact.';$('#watText').textContent='';return;}const draft=sourceEdits[c.id]&&sourceEdits[c.id].trim()!==sourceFor(c.id).trim();$('#compilerStatus').textContent=`${c.checked.name} · native Lean 4.34 artifact · ${c.bytes.length} bytes · SHA-256 ${c.hash.slice(0,18)}…${draft?' · DRAFT / NOT IN PINNED BUILD':''}`;$('#compilerReport').textContent=`BROWSER EVIDENCE ONLY — proofs are not executed here.\nThe browser checks the pinned catalog hash, source/WAT/Wasm hashes and WebAssembly validity.\n\n`+c.checked.checks.join('\n')+`\n\nPinned build ${c.nativeLean?.buildHash||'—'}\nRecorded proof scope: ${c.nativeLean?.scope||'—'}\nSee /lean/build-report.json for native-build evidence and the explicit trust boundary.`;$('#watText').textContent=c.checked.wat;}
 async function applyEditedSource(id,source){sourceEdits[id]=source;$('#sourceText').value=source;const c=compiled.get(id)||await compilePattern(id);showCompiler(c);notify('Draft staged for '+patterns[id].label+'. Runtime remains on the last hash-matched pinned artifact; export the Lean project and run the native build to produce new proof-backed evidence.',false,7000);}
 function download(name,data,type='application/json'){const url=URL.createObjectURL(new Blob([data],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
-const PROOF_RENDERER_URL=siteUrl('proof-renderers/studio-worklet-1ac9d149905958e2.js');
+const PROOF_RENDERER_URL=siteUrl('proof-renderers/studio-worklet-6353dc37c9c05897.js');
 const PROOF_WORKER_URL=siteUrl('proof-renderers/proof-render-worker-a2bb3527e5525d45.js');
 async function renderCompositionProof(doDownload=true){
  const button=$('#exportProofAudio');if(button)button.disabled=true;
@@ -326,6 +338,18 @@ async function runTuningCheck(){const b=$('#runTuningAudit'),id=$('#pitchPattern
 async function auditPitchedLibrary(){const button=$('#auditPitchedLibrary'),ids=['roundBass','acidBass','tine','glass','pluck','felt','silk','choir','organ','pulse','kick','tom'];button.disabled=true;$('#pitchStatus').textContent='Auditing pitched pattern library…';try{for(let i=0;i<ids.length;i++){const id=ids[i],kernel=await compilePattern(id);tuningCritics[id]=runTuningAudit(kernel);$('#pitchStatus').textContent=`Tuning audit ${i+1}/${ids.length} · ${patterns[id].label}`;}syncCriticSignals();const rows=ids.map(id=>{const t=tuningCritics[id].tuning,max=t.maxAbsoluteCents,kind=t.lowConfidence?'unstable / inharmonic':max<=8?'near nominal':max<=25?'noticeable offset':'pitch motion / offset';return{id,label:patterns[id].label,mean:t.meanAbsoluteCents,max,low:t.lowConfidence,kind};}).sort((a,b)=>(b.max??999)-(a.max??999));$('#pitchReport').textContent=['Pitched library · deterministic audit','C3 / C4 / A4 · 22.05 kHz','',...rows.map(r=>`${r.label.padEnd(22)} ${r.max==null?'—':r.max.toFixed(1).padStart(5)+'¢'} · ${r.kind}`),'','Largest stable offset is not automatically an error: inspect patterns with deliberate pitch envelopes or inharmonic partials.'].join('\n');$('#pitchStatus').textContent=`${ids.length} pitched families audited · results attached to future Taste Lab records`;notify('Pitched library tuning audit complete',false,3500);}catch(e){$('#pitchStatus').textContent=e.message;notify('Library tuning audit failed: '+e.message,true);}finally{button.disabled=false;}}
 async function runPitchCheck(){const b=$('#runPitchCritic'),id=$('#pitchPattern').value;b.disabled=true;try{const kernel=await compilePattern(id),result=await runPitchCritic(kernel,{onStatus:s=>$('#pitchStatus').textContent=s});patternCritics[id]=result;tuningCritics[id]={schema:'diddums-tuning-audit/1',kernel:result.kernel,render:result.render,expected:result.expected,tuning:result.tuning,interpretation:result.tuning.lowConfidence?'At least one deterministic pitch estimate is low confidence.':result.tuning.maxAbsoluteCents<=8?'Stable probe fundamentals are close to requested pitch.':'Inspect deterministic tuning estimates.'};syncCriticSignals();$('#pitchReport').textContent=pitchReport(result);$('#pitchStatus').textContent=`${patterns[id].label} · ${result.comparison.missed?'review':'complete'} · model signal attached to future Taste Lab records`;notify('Pitch critic complete for '+patterns[id].label,false,3500);}catch(e){$('#pitchStatus').textContent=e.message;notify('Pitch critic failed: '+e.message,true);}finally{b.disabled=false;}}
 for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>setTab(b.dataset.tab);
+// iOS: start audio inside the first tap, and play through the silent switch like a media app.
+function unlockAudio(){try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch{}ensureRuntime().catch(()=>{});}
+document.addEventListener('pointerdown',unlockAudio,{once:true,capture:true});
+const maker=mountMaker($('#makeMount'),{initial:urlSongPiece?.song||(urlRecipe?songFromRecipe(urlRecipe):null),example:()=>compositionById.firstcontact,analyser:()=>analyser,unlock:unlockAudio,notify:(m,e)=>notify(m,!!e,e?6000:2600),songOfCurrent:()=>songFromComposition(piece),
+ play:(c,opts={})=>{registerComposition(c,!opts.stay);if(!opts.stay)setTab('listen');return playPiece(c.id);}});
+const npViz=attachViz($('#npViz'),()=>analyser);
+$('#sharePiece').onclick=async()=>{try{const url=piece.song?await songLink(piece.song):location.origin+location.pathname+'?piece='+encodeURIComponent(piece.id),data={title:piece.title,text:piece.title+' · Diddums',url};if(navigator.share&&(!navigator.canShare||navigator.canShare(data))){try{await navigator.share(data);return;}catch(e){if(e.name==='AbortError')return;}}await navigator.clipboard.writeText(url);notify('Link copied',false,2600);}catch(e){notify('Could not share: '+e.message,true);}};
+$('#remixPiece').onclick=()=>{maker.load(songFromComposition(piece),'Loaded '+piece.title+' into Make');setTab('make');scrollTo({top:0});};
+$('#machineryToggle').onclick=()=>{const on=document.body.classList.toggle('show-machinery');$('#machineryToggle').textContent=on?'Hide how it works ▴':'Show how it works ▾';$('#machineryToggle').setAttribute('aria-expanded',on);if(on)requestAnimationFrame(()=>{graph.render();graph.fit();});};
+$('#moreTabs').onclick=()=>{const on=document.body.classList.toggle('more-open');$('#moreTabs').setAttribute('aria-expanded',on);};
+// Phones without a link to open land on Make, the quickest way in.
+if(!location.search&&matchMedia('(max-width:700px)').matches)setTab('make');
 $('#browse').onclick=()=>{$('#collectionDialog').showModal();renderCollection()};$('#closeCollection').onclick=()=>$('#collectionDialog').close();$('#searchCollection').oninput=renderCollection;$('#collectionDialog').addEventListener('click',e=>{if(e.target===$('#collectionDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
 $('#play').onclick=togglePlay;$('#prevPiece').onclick=()=>{const i=compositions.indexOf(piece);playPiece(compositions[(i+compositions.length-1)%compositions.length].id);};$('#nextPiece').onclick=()=>{const i=compositions.indexOf(piece);playPiece(compositions[(i+1)%compositions.length].id);};$('#nextSection').onclick=()=>{const i=piece.sections.findIndex(s=>s.name===(latest?.section||piece.sections[0].name));seekSection((i+1)%piece.sections.length);};$('#upGraph').onclick=()=>{if(definitionId){leaveDefinition();setTab('patterns');return;}route.pop();renderView();};
 $('#backToPatterns').onclick=()=>{leaveDefinition();setTab('patterns');};

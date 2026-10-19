@@ -1,6 +1,6 @@
 // Native-build artifact loader. There is intentionally no JavaScript DSP compiler fallback.
 import {siteUrl} from './site-url.js';
-const EXPECTED_CATALOG='79224a64f5dfc6044494e174f407f0883ccb3fa43fba539daca2adf385365331';
+const EXPECTED_CATALOG='2ea408c7d6122cb8e94362703011a66a5d40a19f61b6a6cbfd5d121450760460';
 const normalized=s=>String(s).replace(/\r\n/g,'\n').trim();
 const sha=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');
 const textHash=s=>sha(new TextEncoder().encode(s));

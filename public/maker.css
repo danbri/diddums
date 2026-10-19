@@ -1,0 +1,119 @@
+/* Make tab: mobile first; widens into two columns on large screens. Touch targets are at least 44px. */
+.app-header nav button.make-tab{color:var(--amber)}
+.app-header nav button.make-tab.active{color:var(--amber);border-color:#7a6440;background:#2a2417}
+#makePane{max-width:820px;margin:0 auto}
+.mk-hero h1{margin:6px 0 8px}
+.mk-hero>p{max-width:640px}
+.mk-ask{display:grid;gap:10px;margin:16px 0 12px;padding:14px;border:1px solid #3c5a70;border-radius:16px;background:linear-gradient(160deg,#13283b,#0c1b29)}
+.mk-ask textarea,#mkReply{width:100%;font-size:17px;line-height:1.45;padding:12px 14px;border-radius:12px;background:#07131e;border:1px solid #3a5a70;color:var(--text);resize:vertical;min-height:84px}
+.mk-ask textarea:focus{border-color:var(--mint)}
+.mk-ask-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mk-check{display:flex;align-items:center;gap:8px;font-size:13px;color:#b5c9d6;min-height:44px}
+.mk-icon{min-width:44px;min-height:44px;padding:0;border-radius:12px;font-size:17px;display:inline-grid;place-items:center;background:#112739}
+.mk-primary{min-height:56px;font-size:18px;font-weight:700;border-radius:14px;color:#062325;background:linear-gradient(120deg,#91dfd4,#b9a3f2);border:0;box-shadow:0 8px 24px #7ce3dd33}
+.mk-primary:hover{filter:brightness(1.06);background:linear-gradient(120deg,#a5ebe1,#c8b6f6)}
+.mk-primary:disabled{opacity:.6;cursor:progress}
+.mk-alt{display:flex;flex-wrap:wrap;gap:8px}
+.mk-alt button{flex:1 1 180px;min-height:46px;font-size:14px;background:#0f2232}
+.mk-status{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:#0b2230;border:1px solid #2f5866;color:#bfeee6;font-size:14px}
+.mk-status #mkStatusText{flex:1}
+.mk-status button{min-height:40px;padding:6px 12px;font-size:13px}
+.mk-spinner{width:18px;height:18px;border-radius:50%;border:3px solid #2c5b63;border-top-color:var(--mint);display:none}
+.mk-status.busy .mk-spinner{display:block;animation:mk-spin .9s linear infinite}
+@keyframes mk-spin{to{transform:rotate(360deg)}}
+.mk-app{display:grid;gap:10px;padding:12px;border-radius:12px;border:1px dashed #4b6e80;background:#0b1c29}
+.mk-app ol{margin:0;padding-left:20px;color:#b9cdd9;font-size:14px;line-height:1.6}
+.mk-row{display:flex;flex-wrap:wrap;gap:8px}
+.mk-btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 14px;border-radius:12px;border:1px solid #325269;background:#112739;color:var(--text);font-size:14px;flex:1 1 auto;text-decoration:none}
+.mk-btn:hover{text-decoration:none;background:#19364a}
+.mk-btn.primary,.mk-btn.primary:hover{background:#91dfd4;color:#062325;border-color:#91dfd4;font-weight:700}
+.mk-ideas{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mk-ideas button{flex:0 0 auto;max-width:280px;white-space:normal;text-align:left;min-height:56px;font-size:13px;line-height:1.35;border-radius:14px;background:#0e2131;color:#c8dae4;scroll-snap-align:start}
+.mk-song{margin-top:18px}
+.mk-bar{position:sticky;top:0;z-index:15;display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:10px 12px;margin:0 -4px 12px;border:1px solid #3c5a70;border-radius:16px;background:#0c1d2cf2;backdrop-filter:blur(14px);overflow:hidden}
+.mk-viz{position:absolute;inset:0;width:100%;height:100%;opacity:.35;pointer-events:none}
+.mk-bar-title{position:relative;min-width:0}
+.mk-bar-title input{width:100%;font-size:18px;font-weight:680;background:transparent;border:0;border-bottom:1px dashed transparent;color:var(--text);padding:2px 0;min-height:32px}
+.mk-bar-title input:focus{border-bottom-color:var(--mint);outline:none}
+.mk-bar-title small{display:block;font:11px var(--mono);color:#93acbd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mk-play{position:relative;width:56px;height:56px;border-radius:50%;padding:0;font-size:22px;color:#062325;background:#91dfd4;border:0;font-weight:800}
+.mk-play:hover{background:#b0ede3}
+.mk-share{position:relative;min-height:48px;border-radius:14px;padding:8px 14px}
+.mk-problems{padding:10px 14px;border-radius:12px;background:#2b1720;border:1px solid #6b3745;color:#f0c3cb;font-size:13px;margin-bottom:10px}
+.mk-problems ul{margin:6px 0 0;padding-left:18px}
+.mk-tracks{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.mk-card{border:1px solid #2c4a5f;border-radius:16px;padding:10px 12px 12px;background:linear-gradient(160deg,#112536,#0a1824)}
+.mk-card.bad{border-color:#8f4a5d}
+.mk-card-head{display:grid;grid-template-columns:1fr 44px 44px;gap:6px;align-items:center}
+.mk-sound{display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-height:50px;padding:6px 10px;border-radius:12px;background:transparent;border-color:transparent;min-width:0}
+.mk-sound:hover{background:#15304a}
+.mk-sound b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mk-sound small{font:11px var(--mono);color:#8ea6b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mk-card input[type=range]{width:100%;height:36px;margin:4px 0}
+.mk-chips{display:flex;gap:6px;flex-wrap:wrap}
+.mk-chips button,.mk-keys button{min-height:40px;padding:6px 12px;border-radius:20px;font-size:13px;background:#0e2131}
+.mk-chips button[aria-pressed=true],.mk-chips button[aria-expanded=true],.mk-keys button[aria-pressed=true]{border-color:var(--amber);color:#ffe2b5;background:#2a2417}
+.mk-panel{margin-top:10px;padding-top:10px;border-top:1px solid #23394a;display:grid;gap:8px}
+.mk-keys{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.mk-keys button{flex:0 0 auto}
+.mk-curve{display:block;width:100%;height:150px;border-radius:12px;background:#07131e;border:1px solid #2a465a;touch-action:none;cursor:crosshair}
+.mk-curve-row{display:flex;gap:6px}
+.mk-curve-row input{flex:1;min-width:0;font:12px var(--mono);background:#07111b;border:1px solid #2a465a;color:#c9dbe4;border-radius:10px;padding:8px 10px;min-height:42px}
+.mk-curve-row button{min-height:42px}
+.mk-hint{font-size:12px;line-height:1.55;color:#89a3b6;margin:0}
+.mk-hint code,.mk-sheet code{font:11px var(--mono);color:#d2e4ec}
+.mk-field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#9db4c4;min-width:0}
+.mk-field input,.mk-field select,.mk-field textarea{width:100%;min-width:0;min-height:44px;font-size:16px;background:#07131e;border:1px solid #36566e;color:var(--text);border-radius:10px;padding:8px 10px}
+.mk-field textarea{font:14px/1.5 var(--mono)}
+.mk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mk-slider{display:grid;grid-template-columns:96px 1fr 52px;gap:8px;align-items:center;font-size:13px;color:#b0c5d3;min-height:44px}
+.mk-slider output{font:11px var(--mono);color:#d5c29d;text-align:right}
+.mk-add{width:100%;min-height:56px;margin-top:12px;border-radius:16px;border:2px dashed #3f6276;background:transparent;font-size:16px;color:#bfe9e3}
+.mk-add:hover{background:#0f2433}
+.mk-empty{padding:18px;color:var(--muted);text-align:center;border:1px dashed #2c4a5f;border-radius:16px}
+.mk-undo{width:100%;min-height:44px;margin-bottom:10px;border-color:var(--amber);color:#ffe2b5;background:#2a2417}
+.mk-details{margin-top:14px;border:1px solid #2c4a5f;border-radius:16px;padding:0 14px 12px;background:#0b1926}
+.mk-details summary{min-height:48px;display:flex;align-items:center}
+#mkDetails{display:grid;gap:10px}
+.mk-more{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 8px}
+.mk-more button{flex:1 1 160px;min-height:46px;font-size:13px;background:#0e2131}
+input.invalid,textarea.invalid{border-color:#b0566f!important;background:#2b1720!important}
+/* Sheets: centred dialogs on large screens, bottom sheets on phones. */
+.mk-sheet{width:min(760px,calc(100vw - 24px));padding:16px}
+.mk-sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:18px}
+.mk-sheet p{font-size:14px;line-height:1.55}
+.mk-sheet .mk-field,.mk-sheet .mk-check{margin:8px 0}
+#mkLibSearch{width:100%;min-height:46px;font-size:16px;margin-bottom:8px}
+.mk-cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.mk-cats button{flex:0 0 auto;min-height:40px;border-radius:20px;font-size:13px;padding:6px 12px;background:#0e2131}
+.mk-cats button.on{border-color:var(--mint);color:#c9fffa;background:#12373f}
+.mk-lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;max-height:60dvh;overflow:auto;overscroll-behavior:contain}
+.mk-tile{display:grid;grid-template-columns:1fr 44px;gap:4px;align-items:stretch}
+.mk-tile-add{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:3px;min-height:64px;border-radius:12px;background:linear-gradient(140deg,#15283d,#0c1b2a)}
+.mk-tile-add b{font-size:15px}
+.mk-tile-add small{font-size:11px;line-height:1.35;color:#8ea6b8}
+.mk-tile .mk-icon{height:auto}
+/* Listen view additions */
+.np-viz{display:block;width:100%;max-width:300px;aspect-ratio:1;margin:0 auto}
+.np-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.np-actions button{min-height:44px;border-radius:12px}
+.machinery-toggle{display:none;width:100%;min-height:48px;margin:6px 0 10px;border-radius:12px}
+.more-tabs{display:none}
+@media(max-width:700px){
+ .mk-ask{padding:12px}
+ .mk-sheet{width:100vw;max-width:100vw;margin:auto 0 0;border-radius:18px 18px 0 0;max-height:88dvh;padding:14px 12px max(14px,env(safe-area-inset-bottom))}
+ .mk-lib{grid-template-columns:1fr;max-height:62dvh}
+ .mk-slider{grid-template-columns:84px 1fr 44px}
+ .now-playing{flex-direction:column;align-items:stretch}
+ .np-viz{max-width:220px}
+ .machinery-toggle{display:block}
+ body:not(.show-machinery) #compositionWorkspaceMount,body:not(.show-machinery) .session-actions{display:none}
+ .app-header nav button[data-tab=lab],.app-header nav button[data-tab=workbench]{display:none}
+ body.more-open .app-header nav button[data-tab=lab],body.more-open .app-header nav button[data-tab=workbench]{display:inline-flex}
+ .more-tabs{display:inline-flex}
+ .app-header{min-width:0}
+ .app-header nav{overflow-x:auto;min-width:0;scrollbar-width:none}
+ .app-header nav button{flex:0 0 auto}
+ .build-label{display:none}
+}
+@media(min-width:1100px){#makePane:not([hidden]){max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:start}#makeMount{display:contents}.mk-hero{position:sticky;top:12px}.mk-song{margin-top:0}}
