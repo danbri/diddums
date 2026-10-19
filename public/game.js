@@ -35,11 +35,13 @@ const CONTOUR={calm:[0,null,2,null,4,null,3,2,0,null,-1,null,-3,null,-1,null],ch
  hero:[0,null,4,null,7,null,6,4,7,null,8,7,4,null,6,null],dread:[0,null,null,1,0,null,null,null,-1,null,null,-3,null,null,-2,null]};
 const SCALES={minor:[0,2,3,5,7,8,10],hijaz:[0,1,4,5,7,8,10],yo:[0,2,5,7,9],octatonic:[0,2,3,5,6,8,9,11],wholetone:[0,2,4,6,8,10],pelog:[0,1,3,7,8]};
 const degree=(scale,d)=>d==null?null:12+scale[((d%scale.length)+scale.length)%scale.length]+12*Math.floor(d/scale.length);
-const STYLE_DATA=STYLES.map(s=>{const scale=SCALES[s.key.split(' ')[1]],h={},m={};for(const k in s.ch){h[k]=compositionFromSong({...song,key:s.key,chords:s.ch[k]}).harmony;m[k]=CONTOUR[k].map(d=>degree(scale,d));}return {...s,h,m};});
+const STYLE_DATA=STYLES.map(s=>{const scale=SCALES[s.key.split(' ')[1]],h={},m={};for(const k in s.ch){h[k]=compositionFromSong({...song,key:s.key,chords:s.ch[k]}).harmony;m[k]=CONTOUR[k].map(d=>degree(scale,d));}return {...s,scale,h,m};});
+// The notes you collect become the tune: k notes spread evenly over the bar (doubled an octave up when hunted).
+function motifMelody(scale,motif,busy){const k=motif.length,out=Array(16).fill(null);motif.forEach((d,i)=>{out[Math.floor(i*16/k)]=degree(scale,d);});if(busy)motif.forEach((d,i)=>{const at=Math.floor(i*16/k+8/k);if(at<16&&out[at]==null)out[at]=degree(scale,d+7);});return out;}
 const B={calm:[0,null,0,null,7,null,0,3,0,null,0,null,10,null,7,null],drive:[0,0,12,0,0,0,10,0,0,0,12,0,7,0,10,0],dread:[0,null,null,null,1,null,null,null,0,null,null,null,null,null,1,null]};
 
 // Game state → arrangement. Continuous inputs cross thresholds track by track.
-function plan({threat=0,health=1,power=false,level=0,safe=false}){
+function plan({threat=0,health=1,power=false,level=0,safe=false,progress=0,motif=[]}){
  const st=STYLE_DATA[level%STYLE_DATA.length],q=x=>Math.round(x*10)/10,T=safe?0:q(threat),Hh=Math.round(health*4)/4,low=Hh<=.25,hurt=Hh<=.5;
  const L=new Set(['wind','heart']);
  if(T<.3&&!power)L.add('drone');if(st.extra&&T<.6)L.add(st.extra);else if(T<.4&&!power)L.add('iso');
@@ -49,10 +51,12 @@ function plan({threat=0,health=1,power=false,level=0,safe=false}){
  if(T>=.4)L.add('arp');
  if((T>=.7&&!hurt)||power)L.add('stabs');
  if(power||(T>=.6&&!hurt))L.add('saw');
+ // Progress through the level: your motif joins as a phasing marimba at half way, a bell shimmer at three quarters.
+ if(progress>=.5&&T<.6)L.add('phase');if(progress>=.75&&T<.6)L.add('cloud');
  const mood=power?'hero':low&&T>=.3?'dread':T>=.5?'chase':'calm';
  const rhythm=power?'house':low&&T>=.3?'halftime':T<.15?'none':st.drums[T<.35?0:T<.55?1:T<.75?2:3];
  return {name:`${safe?'Sheltered':power?'Power':mood==='dread'?'Desperate':T>=.5?'Hunted':T>=.2?'Watched':'Unseen'} · ${st.name}`,rhythm,
-  energy:q(Math.min(1,.25+.7*T+(power?.15:0))*(low?.8:1)),harmony:st.h[mood],melody:st.m[mood],
+  energy:q(Math.min(1,.25+.7*T+.2*progress+(power?.15:0))*(low?.8:1)),harmony:st.h[mood],melody:motif.length>=2&&(mood==='calm'||mood==='chase')?motifMelody(st.scale,motif.slice(-8),mood==='chase'):st.m[mood],
   bass:mood==='dread'?B.dread:T>=.5||power?B.drive:B.calm,layers:[...L]};
 }
 
@@ -67,7 +71,7 @@ const inHouse=p=>p.x>HOUSE.x&&p.x<HOUSE.x+HOUSE.w&&p.y>HOUSE.y&&p.y<HOUSE.y+HOUS
 function free(r=.05){for(let i=0;i<50;i++){const p={x:rnd(.06,.94),y:rnd(.06,Hgt-.06)};if(!inHouse({x:p.x+r,y:p.y})&&!inHouse(p)&&!inHouse({x:p.x-r,y:p.y}))return p;}return {x:.6,y:.3};}
 function newLevel(level,keepScore=0,health=1){
  const n=6+level*2;
- game={level,score:keepScore,health,power:0,combo:0,comboAt:0,invuln:0,over:0,player:{x:HOUSE.x+HOUSE.w/2,y:HOUSE.y+HOUSE.h/2},ally:{x:HOUSE.x+.05,y:HOUSE.y+.05,a:0},
+ game={got:[],total:n+2,level,score:keepScore,health,power:0,combo:0,comboAt:0,invuln:0,over:0,player:{x:HOUSE.x+HOUSE.w/2,y:HOUSE.y+HOUSE.h/2},ally:{x:HOUSE.x+.05,y:HOUSE.y+.05,a:0},
   items:[...Array.from({length:n},()=>({...free(),kind:'🍄'})),...Array.from({length:2},()=>({...free(),kind:'💎'})),{...free(),kind:'⭐'}],chest:null,
   trees:Array.from({length:4},()=>({...free(.1),r:.05})),enemies:Array.from({length:2+level},()=>spawnEnemy()),flash:[]};
 }
@@ -93,8 +97,16 @@ function step(dt){
  if($('#auto').checked){const a=autopilot();vx=a.x;vy=a.y;}
  else if(steer&&!vx&&!vy){vx=steer.x;vy=steer.y;gain=Math.min(1,Math.hypot(vx,vy));}
  else if(target&&!vx&&!vy){vx=target.x-p.x;vy=target.y-p.y;if(Math.hypot(vx,vy)<.01)vx=vy=0;}
- if(dash){dash.t-=dt;if(dash.t<=0)dash=null;else{vx=dash.x;vy=dash.y;gain=2.2;}}
- const m=Math.hypot(vx,vy)||1,sp=.3*gain,moving=vx||vy?1:0;p.x=Math.max(.02,Math.min(W-.02,p.x+vx/m*sp*dt*moving));p.y=Math.max(.02,Math.min(Hgt-.02,p.y+vy/m*sp*dt*moving));
+ // Inertia: input sets a target velocity; the player accelerates towards it and coasts when let go.
+ // A flick is an impulse added to the velocity, not a jump, so it carries the player's weight.
+ const m=Math.hypot(vx,vy)||1,sp=.3*gain,moving=vx||vy?1:0,pv=p.v||(p.v={x:0,y:0});
+ const want={x:vx/m*sp*moving,y:vy/m*sp*moving},k=1-Math.exp(-dt*(moving?3.2:1.8));
+ pv.x+=(want.x-pv.x)*k;pv.y+=(want.y-pv.y)*k;
+ if(dash){pv.x+=dash.x*.5;pv.y+=dash.y*.5;dash=null;}
+ const top=.62,s=Math.hypot(pv.x,pv.y);if(s>top){pv.x*=top/s;pv.y*=top/s;}
+ p.x+=pv.x*dt;p.y+=pv.y*dt;
+ if(p.x<.02||p.x>W-.02){pv.x*=-.35;p.x=Math.max(.02,Math.min(W-.02,p.x));}// soft bounce off the edges
+ if(p.y<.02||p.y>Hgt-.02){pv.y*=-.35;p.y=Math.max(.02,Math.min(Hgt-.02,p.y));}
  game.power=Math.max(0,game.power-dt);game.invuln=Math.max(0,game.invuln-dt);
  if(game.power>0&&game.power<dt*1.01)hit('chime',{tones:[2,1,0],spread:2,velocity:.5});
  // Companion: circles you and stays close, like the small triangle in the film.
@@ -102,7 +114,10 @@ function step(dt){
  for(const it of [...game.items])if(dist(p,it)<.04){game.items.splice(game.items.indexOf(it),1);
   if(it.kind==='⭐'){game.power=7;hit('chime',{tones:[0,1,2,4],octave:1});hit('boom',{tones:[0],octave:-1});say('<b>Star</b>: the hunters can be knocked out for 7 s');}
   else{game.combo=performance.now()-game.comboAt<1800?game.combo+1:0;game.comboAt=performance.now();const gem=it.kind==='💎';game.score+=(gem?50:10)*(1+game.combo);
-   hit('chime',gem?{tones:[game.combo%8,game.combo%8+2],octave:1,spread:1}:{tones:[game.combo%8],octave:1,velocity:.7+.04*Math.min(6,game.combo)});}
+   // Each pickup plays a chord tone and keeps it, as a scale degree, for the motif the music is built from.
+   // The field is a keyboard: a mushroom's note rises from left to right; quick runs climb from the last note.
+   const k=game.combo>0?Math.min(7,(game.lastK??0)+1):Math.round(it.x*5);game.lastK=k;const deg=x=>[0,2,4,6][x%4]+7*Math.floor(x/4);
+   hit('chime',gem?{tones:[k,k+2],octave:1,spread:1}:{tones:[k],octave:1,velocity:.7+.04*Math.min(6,game.combo)});game.got.push(deg(k));if(gem)game.got.push(deg(k+2));}
   game.flash.push({x:it.x,y:it.y,t:.4,c:'#7ce3dd'});}
  if(!game.chest&&!game.items.some(i=>i.kind==='🍄')){game.chest={...free(),kind:'💰'};hit('chime',{tones:[0,2,4],octave:1,grid:4,velocity:.6});say('A <b>treasure chest</b> has appeared');}
  if(game.chest&&dist(p,game.chest)<.045){hit('chime',{tones:[0,1,2,4,5,6],octave:1,velocity:.85});hit('boom',{tones:[0,0],octave:-1,spread:4});game.score+=200;
@@ -125,7 +140,7 @@ function step(dt){
   if(e.x<.03||e.x>W-.03)e.a=Math.PI-e.a;if(e.y<.03||e.y>Hgt-.03)e.a=-e.a;e.x=Math.max(.03,Math.min(W-.03,e.x));e.y=Math.max(.03,Math.min(Hgt-.03,e.y));wallBlock(e,.03);
   if(d<.045){
    if(game.power>0){e.dead=6;e.alert=0;game.score+=50;hit('boom',{tones:[2],velocity:.6});hit('chime',{tones:[4,6],octave:1,spread:1,velocity:.6});game.flash.push({x:e.x,y:e.y,t:.5,c:'#ba96f0'});}
-   else if(game.invuln<=0){game.health=Math.max(0,game.health-.15);game.invuln=1.5;hit('boom',{tones:[0],octave:-1,velocity:1});const k=d||1;p.x+=(p.x-e.x)/k*.06;p.y+=(p.y-e.y)/k*.06;game.flash.push({x:p.x,y:p.y,t:.5,c:'#ff7a7a'});
+   else if(game.invuln<=0){game.health=Math.max(0,game.health-.15);game.invuln=1.5;hit('boom',{tones:[0],octave:-1,velocity:1});const k=d||1;p.v=p.v||{x:0,y:0};p.v.x+=(p.x-e.x)/k*.5;p.v.y+=(p.y-e.y)/k*.5;game.flash.push({x:p.x,y:p.y,t:.5,c:'#ff7a7a'});
     if(game.health<=0){game.over=4;hit('boom',{tones:[0,-1,-2,-4],octave:-1,spread:3,velocity:1});hit('chime',{tones:[3,2,1,0],spread:3,velocity:.6});say(`<b>Caught</b> on level ${game.level+1} with ${game.score} points`);}}
   }
  }
@@ -179,7 +194,8 @@ const sent={};function ctl(id,key,v){const k=id+key;if(Math.abs((sent[k]??-9)-v)
 function frame(now){
  const dt=Math.min(.05,(now-last)/1000);last=now;
  step(dt);draw();
- if(music){const s={threat:threat(),health:game.health,power:game.power>0,level:game.level,safe:inHouse(game.player)};music.set(s);
+ if(music){const progress=Math.round(Math.min(1,game.got.length/game.total)*100)/100,s={threat:threat(),health:game.health,power:game.power>0,level:game.level,safe:inHouse(game.player),progress,motif:game.got.slice(-8)};music.set(s);
+  ctl('pad','colour',.25+.55*progress);
   ctl('heart','level',game.health<.6?Math.min(1.3,(.6-game.health)/.6*1.5):0);
   ctl('energy','level',.8+.6*s.threat);
   $('#meters').innerHTML=`Threat <b>${Math.round(s.threat*100)}%</b> · Health <b>${Math.round(game.health*100)}%</b>${s.power?' · <b>Power</b>':''}${s.safe?' · <b>Sheltered</b>':''} · <b>${STYLES[game.level%STYLES.length].name}</b> (${STYLES[game.level%STYLES.length].key})`;}
@@ -217,7 +233,7 @@ play.addEventListener('pointermove',e=>{
  steer=len<5?null:{x:dx/60,y:dy/60};e.preventDefault();});
 const endTouch=e=>{if(e.pointerType==='mouse'){target=null;return;}if(!touch||e.pointerId!==touch.id)return;
  const dx=e.clientX-touch.sx,dy=e.clientY-touch.sy,dt=performance.now()-touch.t,len=Math.hypot(dx,dy);
- if(dt<220&&len>24){dash={x:dx/len,y:dy/len,t:.22};}touch=null;steer=null;};
+ if(dt<220&&len>24){dash={x:dx/len,y:dy/len};}touch=null;steer=null;};
 play.addEventListener('pointerup',endTouch);play.addEventListener('pointercancel',endTouch);
 // Keep the page itself still while playing: no scrolling, zooming, text selection or long-press menus.
 for(const ev of ['touchmove','gesturestart','dblclick','contextmenu','selectstart'])play.addEventListener(ev,e=>e.preventDefault(),{passive:false});
