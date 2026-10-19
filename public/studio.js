@@ -124,7 +124,7 @@ function onAudio({data:d}){
  if(d.type==='replaced'){notify('Pattern replaced · '+d.id+' · '+d.hash.slice(0,10));return;}
  if(d.type==='telemetry'&&d.generation===generation){acceptTelemetry(d);updateLiveStatus();if(!telemetryEvidence.valid)return;latest=d;pending=d;if(!raf)raf=requestAnimationFrame(paintTelemetry);}
 }
-function paintTelemetry(){raf=0;const d=pending;pending=null;if(!d||ctx?.state==='suspended')return;const bar=d.bar,step=d.step,s=sectionAt(piece,bar);$('#sectionName').textContent=d.section;$('#positionText').textContent=`Bar ${bar+1} / ${piece.bars} · ${piece.meter.join('/')}`;$('#dockPosition').textContent=`${formatDuration(d.position/d.sampleRate)} / ${formatDuration(durationOf(piece))}`;
+function paintTelemetry(){raf=0;const d=pending;pending=null;if(!d||ctx?.state==='suspended')return;updateMixer(d.measurements);for(const f of levelListeners)f(d.measurements);const bar=d.bar,step=d.step,s=sectionAt(piece,bar);$('#sectionName').textContent=d.section;$('#positionText').textContent=`Bar ${bar+1} / ${piece.bars} · ${piece.meter.join('/')}`;$('#dockPosition').textContent=`${formatDuration(d.position/d.sampleRate)} / ${formatDuration(durationOf(piece))}`;
  for(const b of $('#movements').querySelectorAll('button')){const sec=piece.sections[Number(b.dataset.section)],at=d.position/(d.sampleRate*60/piece.bpm*session.beats);b.classList.toggle('active',sec.name===s.name);b.querySelector('.progress').style.width=clamp((at-sec.start)/sec.bars*100,0,100)+'%';}
  for(const b of $('#stepGrid').querySelectorAll('[data-step]'))b.classList.toggle('playhead',Number(b.dataset.step)===step);
  const metrics={...d.measurements,clock:{last:step+1,events:step!==lastStep?1:0},score:{last:bar+1,events:step!==lastStep?1:0}};lastStep=step;
@@ -172,6 +172,46 @@ function watchNode(n){if(definitionId){invalidateWatch('pattern:'+definitionId);
 function addControl(host,label,id,key,value,min,max,step=.01){const row=document.createElement('label');row.className='control-row';const name=document.createElement('span');name.textContent=label;const input=document.createElement('input');input.type='range';input.min=min;input.max=max;input.step=step;input.value=value;input.setAttribute('aria-label',label);const output=document.createElement('output');output.textContent=shortNumber(value);row.append(name,input,output);input.oninput=()=>{const v=Number(input.value);output.textContent=shortNumber(v);(uiControls[id]??={})[key]=v;audio?.port.postMessage({type:'control',id,key,value:v});if(id==='out'&&key==='level'){$('#volume').value=v;$('#volumeValue').textContent=Math.round(v*100)+'%';}};host.append(row);return input;}
 const controlValue=(id,key,def)=>uiControls[id]?.[key]??def;
 function button(host,label,fn,active=false){const b=document.createElement('button');b.textContent=label;b.classList.toggle('active',active);b.onclick=fn;host.append(b);return b;}
+// Mixer: one row per sound (a stereo pair is one row), with live meters fed by worklet telemetry.
+let mixerRows=[];const levelListeners=new Set();
+const ROLE_NAME={bass:'bass line',drone:'drone',pad:'chords',long:'held chords',keys:'chord rhythm',stabs:'stabs',arp:'arpeggio',sequence:'sequence',lead:'melody',sparse:'sparse melody',answer:'answers',air:'texture',continuous:'endless tone',speechVowel:'voice',speechConsonant:'consonants',timeline:'timed notes',drums:'drum machine'};
+function mixerGroups(){
+ const groups=[],byKey=new Map();
+ for(const t of session.tracks){const key=t.pairOf||t.id;let g=byKey.get(key);if(!g){g={key,ids:[],label:t.pairOf?t.label.replace(/ · [LR]$/,''):t.label,pattern:t.pattern,role:t.role,level:t.level,pair:!!t.pairOf};byKey.set(key,g);groups.push(g);}g.ids.push(t.id);}
+ if(session.events.some(e=>e.track.startsWith('d:')))groups.push({key:'drums',ids:['drums'],label:'Drums',pattern:null,role:'drums',level:1,pair:false});
+ return groups;
+}
+function mixerMute(g){return g.ids.every(id=>controlValue(id,'mute',false));}
+function sendMute(ids,v){for(const id of ids){(uiControls[id]??={}).mute=v;audio?.port.postMessage({type:'control',id,key:'mute',value:v});}}
+function renderMixer(host){
+ const groups=mixerGroups(),solo=uiControls.__solo||null;
+ const list=document.createElement('div');list.className='mx-list';
+ mixerRows=groups.map((g,i)=>{
+  const hue=Math.round((i*137.5)%360),row=document.createElement('div');row.className='mx-row';row.style.setProperty('--mx-c',`hsl(${hue} 70% 62%)`);
+  const sub=[g.pattern?patterns[g.pattern]?.label:null,ROLE_NAME[g.role]||g.role,g.pair?'stereo pair':null].filter(Boolean).join(' · ');
+  const level=controlValue(g.ids[0],'level',g.level);
+  row.innerHTML=`<i class="mx-dot"></i><div class="mx-name"><b>${esc(g.label)}</b><small>${esc(sub)}</small></div><canvas class="mx-spark" aria-hidden="true"></canvas><div class="mx-btns"><button type="button" class="mx-solo" aria-pressed="${solo===g.key}" aria-label="Play ${esc(g.label)} alone">S</button><button type="button" class="mx-mute" aria-pressed="${mixerMute(g)}" aria-label="Silence ${esc(g.label)}">M</button></div><div class="mx-fader"><i class="mx-meter"></i><input type="range" min="0" max="1.5" step="0.01" value="${level}" aria-label="Volume of ${esc(g.label)}"></div><output>${shortNumber(level)}</output>`;
+  const input=row.querySelector('input'),out=row.querySelector('output');
+  input.oninput=()=>{const v=Number(input.value);out.textContent=shortNumber(v);for(const id of g.ids){(uiControls[id]??={}).level=v;audio?.port.postMessage({type:'control',id,key:id==='drums'?'level':'level',value:v});}};
+  row.querySelector('.mx-mute').onclick=()=>{uiControls.__solo=null;sendMute(g.ids,!mixerMute(g));renderMixer(host);};
+  row.querySelector('.mx-solo').onclick=()=>{const on=uiControls.__solo!==g.key;uiControls.__solo=on?g.key:null;for(const o of groups)sendMute(o.ids,on&&o.key!==g.key);renderMixer(host);};
+  list.append(row);
+  return {g,row,meter:row.querySelector('.mx-meter'),spark:row.querySelector('.mx-spark'),hist:[]};
+ });
+ host.querySelector('.mx-list')?.remove();host.prepend(list);
+}
+function updateMixer(m){
+ if(!mixerRows.length||!mixerRows[0].row.isConnected){mixerRows=[];return;}
+ for(const r of mixerRows){
+  let rms=0;for(const id of r.g.ids)rms=Math.max(rms,m?.[id]?.rms||0);
+  const now=rms>0?Math.max(0,Math.min(1,(20*Math.log10(rms)+60)/60)):0,v=r.v=Math.max(now,(r.v||0)*.82);
+  r.meter.style.width=(v*100).toFixed(1)+'%';r.row.classList.toggle('live',v>.05);
+  r.hist.push(now);if(r.hist.length>48)r.hist.shift();
+  const c=r.spark,dpr=Math.min(2,devicePixelRatio||1),w=Math.round(c.clientWidth*dpr),h=Math.round(c.clientHeight*dpr);if(!w||!h)continue;if(c.width!==w)c.width=w;if(c.height!==h)c.height=h;
+  const g=c.getContext('2d');g.clearRect(0,0,w,h);g.fillStyle=getComputedStyle(r.row).getPropertyValue('--mx-c');const bw=w/48;
+  r.hist.forEach((x,i)=>{const bh=Math.max(1*dpr,x*h);g.globalAlpha=.35+.65*(i/r.hist.length);g.fillRect((48-r.hist.length+i)*bw,h-bh,Math.max(1,bw-1*dpr),bh);});
+ }
+}
 function selectNode(n){if(!n)return;selectedNode=n;const r=route[route.length-1],ctrl=$('#nodeControls'),actions=$('#nodeActions');ctrl.replaceChildren();actions.replaceChildren();expressionView.clear();$('#bindingBox').hidden=true;$('#sequenceBox').hidden=true;$('#nodeTitle').textContent=n.label;$('#nodeBackend').textContent=n.backend==='wasm'?'CHECKED LEANDSP / WASM':n.backend==='external'?'IMPORTED / OPAQUE':'HOST RUNTIME';$('#nodeInfo').textContent=n.detail||n.type;$('#openSelected').hidden=!n.open;$('#openSelected').onclick=()=>openNode(n);
  if(r?.kind==='leaf'||r?.kind==='definition'){
   $('#nodeInfo').textContent=n.expression||n.detail||'Source-derived internal node';const t=r.kind==='definition'?null:trackInfo(r.id);
@@ -195,7 +235,7 @@ function selectNode(n){if(!n)return;selectedNode=n;const r=route[route.length-1]
   else if(n.id==='room'){addControl(ctrl,'Room','room','room',controlValue('room','room',session.space.room),0,.94);addControl(ctrl,'Damping','room','damp',controlValue('room','damp',session.space.damp),0,.94);addControl(ctrl,'Return','room','wet',controlValue('room','wet',session.space.wet),0,.9);$('#nodeInfo').textContent=patterns.chamber.about;button(actions,'Source',()=>openSource('chamber'));}
   else if(n.id==='echo'){addControl(ctrl,'Delay beats','echo','delayBeats',controlValue('echo','delayBeats',session.space.delayBeats),.125,2,.125);addControl(ctrl,'Feedback','echo','feedback',controlValue('echo','feedback',.34),0,.8);addControl(ctrl,'Return','echo','echo',controlValue('echo','echo',session.space.echo),0,.8);$('#nodeInfo').textContent='Bounded host-side cross-feedback delay. This stage is JavaScript, not a LeanDSP kernel.';}
   else if(n.id==='drums'){addControl(ctrl,'Drum bus','drums','level',controlValue('drums','level',1),0,1.5);$('#nodeInfo').textContent='Nine independent LeanDSP voices, used by the score. Opening this group stays in the same editor.';}
-  else if(n.id==='mix'){for(const t of session.tracks)addControl(ctrl,t.label,t.id,'level',controlValue(t.id,'level',t.level),0,1.5);addControl(ctrl,'Percussion','drums','level',controlValue('drums','level',1),0,1.5);$('#nodeInfo').textContent='Generic track faders. The same controls are available on each individual component.';}
+  else if(n.id==='mix'){renderMixer(ctrl);$('#nodeInfo').textContent='One row per sound. The coloured bar under each fader and the trace beside the name show what that sound is doing now; S plays it alone, M silences it.';}
   else if(n.id==='score'||n.id==='clock'){$('#nodeInfo').textContent=`${session.events.length} note events, scheduled at sample-frame boundaries. ${piece.sections.length} movements; ${piece.meter.join('/')} meter.`;addControl(ctrl,'Energy','energy','level',controlValue('energy','level',1),.3,1.5);for(let i=0;i<piece.sections.length;i++)button(actions,piece.sections[i].name,()=>seekSection(i));}
   else if(n.id==='foreign'&&cascade){$('#nodeInfo').textContent='RDF-profiled external processor; resource integrity checked. Internal variables are not exposed.';renderForeignControls(ctrl,cascade);}
  }
@@ -343,7 +383,7 @@ for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>setTab(b.da
 function unlockAudio(){try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch{}}
 const maker=mountMaker($('#makeMount'),{initial:urlSongPiece?.song||(urlRecipe?songFromRecipe(urlRecipe):null),example:()=>compositionById.firstcontact,analyser:()=>analyser,unlock:unlockAudio,notify:(m,e)=>notify(m,!!e,e?6000:2600),songOfCurrent:()=>songFromComposition(piece),
  play:async(c,opts={})=>{registerComposition(c,!opts.stay);if(!opts.stay)setTab('listen');await playPiece(c.id);if(opts.bar>0&&audio&&loadedId===c.id)audio.port.postMessage({type:'seek',bar:Math.min(c.bars-1,opts.bar)});},
- isPlaying:id=>playing&&loadedId===id,bar:()=>latest?.bar??0,
+ isPlaying:id=>playing&&loadedId===id,pause:()=>{if(playing)togglePlay();},onLevels:f=>{levelListeners.add(f);return()=>levelListeners.delete(f);},bar:()=>latest?.bar??0,
  control:({ids,key,value})=>{for(const id of ids)audio?.port.postMessage({type:'control',id,key,value});}});
 
 $('#browse').onclick=()=>{$('#collectionDialog').showModal();renderCollection()};$('#closeCollection').onclick=()=>$('#collectionDialog').close();$('#searchCollection').oninput=renderCollection;$('#collectionDialog').addEventListener('click',e=>{if(e.target===$('#collectionDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});

@@ -118,3 +118,23 @@ input.invalid,textarea.invalid{border-color:#b0566f!important;background:#2b1720
 .labs-skill{margin:-6px 0 16px;font-size:13px;line-height:1.5;color:#9fb8c8}
 .mk-tile-src{grid-column:1/-1;margin:0 4px 6px;font-size:11px;line-height:1.45;color:#8ea6b8}.mk-tile-src b{color:#c8dae4;font-weight:600}
 .pattern-card .pattern-sound{color:#c8dae4;font-size:12px}.pattern-card .pattern-sound b{color:var(--mint);font-weight:600}.pattern-lean{align-self:center;padding:10px;font-size:12px}
+/* Mixer (Compose › Stereo mixer): one row per sound with a live meter behind the fader and a short activity trace. */
+.mx-list{display:grid;gap:6px;margin-bottom:10px}
+.mx-row{--mx-c:#7ce3dd;display:grid;grid-template-columns:10px minmax(0,1fr) 64px auto;grid-template-areas:"dot name spark btns" "fader fader fader out";gap:4px 8px;align-items:center;padding:8px 10px;border:1px solid #23394a;border-left:3px solid color-mix(in srgb,var(--mx-c) 35%,transparent);border-radius:10px;background:#0a1824;transition:border-color .2s,background .2s}
+.mx-row.live{border-left-color:var(--mx-c);background:color-mix(in srgb,var(--mx-c) 9%,#0a1824)}
+.mx-dot{grid-area:dot;width:10px;height:10px;border-radius:50%;background:var(--mx-c);opacity:.3;transition:opacity .12s,box-shadow .12s}
+.mx-row.live .mx-dot{opacity:1;box-shadow:0 0 10px var(--mx-c)}
+.mx-name{grid-area:name;min-width:0}
+.mx-name b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mx-name small{display:block;font:10px var(--mono);color:#86a2b5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mx-spark{grid-area:spark;width:64px;height:26px}
+.mx-btns{grid-area:btns;display:flex;gap:4px}
+.mx-btns button{min-width:36px;min-height:36px;padding:0;font:600 12px var(--mono);border-radius:8px}
+.mx-btns .mx-solo[aria-pressed=true]{background:#2a2417;border-color:var(--amber);color:#ffe2b5}
+.mx-btns .mx-mute[aria-pressed=true]{background:#2b1720;border-color:#b0566f;color:#ffc5cd}
+.mx-fader{grid-area:fader;position:relative;height:40px;display:flex;align-items:center;padding-bottom:8px}.mx-fader:before{content:'';position:absolute;left:0;right:0;bottom:0;height:6px;border-radius:3px;background:#162a3a}
+.mx-meter{position:absolute;left:0;bottom:0;height:6px;width:0;border-radius:3px;box-shadow:0 0 8px color-mix(in srgb,var(--mx-c) 60%,transparent);background:var(--mx-c);transition:width .08s linear;pointer-events:none}
+.mx-fader input{position:relative;width:100%;margin:0;background:transparent}
+.mx-row>output{grid-area:out;font:11px var(--mono);color:#d5c29d;min-width:40px;text-align:right}
+.mk-meter{display:block;height:5px;width:0;margin:-2px 0 6px;border-radius:3px;background:var(--mint);box-shadow:0 0 8px #7ce3dd88;transition:width .08s linear}
+.mk-card.sounding{border-color:#3f7b80}

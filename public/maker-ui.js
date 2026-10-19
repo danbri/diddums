@@ -115,6 +115,14 @@ export function mountMaker(root,hooks){
  const toast=(m,e)=>hooks.notify(m,e);
  const save=()=>store.set('diddums.make.song',JSON.stringify(song));
  const viz=attachViz($('#mkViz'),hooks.analyser,{mode:'line'});
+ // Live meter on each track card while this song plays.
+ hooks.onLevels?.(m=>{
+  const on=liveId&&hooks.isPlaying(liveId)&&composition?.tracks.length===song.tracks.length;
+  root.querySelectorAll('#mkTracks .mk-card').forEach(li=>{const ct=on?composition.tracks[+li.dataset.i]:null,bar=li.querySelector('.mk-meter');if(!bar)return;
+   let rms=0;if(ct)for(const id of ct.pair?[ct.id+'L',ct.id+'R']:[ct.id])rms=Math.max(rms,m?.[id]?.rms||0);
+   const now=rms>0?Math.max(0,Math.min(1,(20*Math.log10(rms)+60)/60)):0,v=li._v=Math.max(now,(li._v||0)*.82);
+   bar.style.width=(v*100).toFixed(1)+'%';li.classList.toggle('sounding',v>.05);});
+ });
 
  // Edits reach the playing song: a fader moves the running track at once; anything else reloads the
  // edited song at the current bar shortly after the last change.
@@ -147,7 +155,7 @@ export function mountMaker(root,hooks){
      <button type="button" class="mk-icon" data-act="preview" aria-label="Preview ${esc(name)}">▶</button>
      <button type="button" class="mk-icon" data-act="remove" aria-label="Remove ${esc(name)}">✕</button>
     </div>
-    <input type="range" min="0" max="1.2" step="0.01" value="${lvl}" data-act="level" aria-label="Volume of ${esc(name)}">
+    <input type="range" min="0" max="1.2" step="0.01" value="${lvl}" data-act="level" aria-label="Volume of ${esc(name)}"><i class="mk-meter" aria-hidden="true"></i>
     <div class="mk-chips">
      <button type="button" data-act="pair" aria-pressed="${!!t.pair}">Stereo</button>
      <button type="button" data-open="animate" aria-expanded="${o==='animate'}">Animate${auto?` · ${auto}`:''}</button>
@@ -249,7 +257,9 @@ export function mountMaker(root,hooks){
 
  // ---- Play / share ----
  $('#mkTitle').oninput=()=>{song.title=$('#mkTitle').value;rebuild();};
- $('#mkPlay').onclick=()=>{hooks.unlock();rebuild();if(!composition?.tracks.length){toast('Add a sound first',true);return;}playLive(composition);viz.kick();};
+ $('#mkPlay').onclick=()=>{hooks.unlock();if(liveId&&hooks.isPlaying(liveId)){hooks.pause();return;}rebuild(false);if(!composition?.tracks.length){toast('Add a sound first',true);return;}playLive(composition);viz.kick();};
+ // The round button shows whether this song is the one playing.
+ setInterval(()=>{const on=!!liveId&&hooks.isPlaying(liveId),b=$('#mkPlay');if(b.dataset.on!==String(on)){b.dataset.on=on;b.textContent=on?'❚❚':'▶';b.setAttribute('aria-label',on?'Pause this track':'Play this track');}},400);
  async function link(){const r=recipeFromSong(song);return r?shareUrl(r):songLink(song);}
  $('#mkShare').onclick=async()=>{
   try{const url=await link(),data={title:song.title||'Diddums',text:(song.title||'A Diddums track')+' · made with Diddums',url};
