@@ -1,138 +1,85 @@
 # Diddums
 
-Diddums is a web-native music workstation and audio experimentation environment built around deterministic score generation, LeanDSP/Wasm instruments, proof-carrying audio, and Lean-first RDF/signing verification.
+A music engine that runs in the browser. Every sound is synthesised live by a small DSP program written in LeanDSP, compiled from Lean 4 to WebAssembly, and checked against a pinned build. Pieces are JSON "Songs" that travel in a link.
 
-Current themes:
+## Links
 
-- LeanDSP instruments and effects with pinned native-Lean build evidence.
-- JigScore deterministic score/event-plan hashing and a growing Lean model.
-- Proof-carrying WAVs with replayable renderer/Wasm/PCM provenance.
-- Lean-generated Factoidal Wasm for RDF parsing/canonicalisation.
-- JigDAW compatibility, including Danny Ayers' `jigdaw-eddsa-2026` signing profile.
-- Browser-first composition, sequencer, score, telemetry and psychoacoustic experiments.
+- App: https://danbri.github.io/diddums/
+- Labs (example songs, AI sketches, sine-wave speech): https://danbri.github.io/diddums/ → Labs
+- Skill page for AI assistants (how to write a Song and return it as a link): https://danbri.github.io/diddums/skill/SKILL.md, indexed from https://danbri.github.io/diddums/llms.txt
+- Instrument list: https://danbri.github.io/diddums/skill/INSTRUMENTS.md
+- Adaptive game music demo: https://danbri.github.io/diddums/game.html
+- Characters-in-a-scene demo: https://danbri.github.io/diddums/scene.html
+- Used from another site: [Escape / Great Maze Pond](https://danbri.github.io/glitchcan-minigam/magpie/guys/game.html) loads the engine from its public URL and plays a songbook piece on each floor, re-arranged by game state.
 
-## Status
+Status: a research prototype. Schemas and APIs can change without notice.
 
-Early-stage research/prototype. There are currently no compatibility guarantees for Diddums-owned schemas or browser APIs.
+## Songs
 
-JigDAW identifiers are preserved only where they belong to the external JigDAW vocabulary/specification/cryptosuite.
+A Song is JSON: key and scale, tempo, meter, a drum pattern, chords, melody, sections with energy, and tracks. Each track is an instrument playing either a part generated from the chords (bass, pad, arpeggio, lead, and process parts such as phasing or isorhythm) or notes placed in time. A Song can be opened from `?song=` in a link, so a piece can be shared without a server.
 
-## Source layout
+Labs lists about 50 example pieces in groups: Featured, Kids (a nursery-rhyme medley and lullabies), Arty, Genres (22 styles, from ska and sea shanty to drum and bass and krautrock), Techniques, and Themes and sketches. Each one plays, opens for editing, and shares as its own link.
 
-The application lives under `public/`, mirroring the current Hatchable deployment layout.
+The Kids, Arty and Genres pieces are written in `tools/songbook/songs.mjs` as chord charts, accompaniment patterns and melodies. `node tools/songbook/build.mjs` builds them into `public/songbook.js` and checks each with the Song validator, and `node tools/songbook/audit.mjs` renders them offline and reports each part's level.
 
-Notable paths:
+Scales are defined once, in `public/song.js` (`modes`), and are available to every Song through its `key` (for example `"D hijaz"`): the church modes, harmonic minor, hijaz (Phrygian dominant), acoustic, pentatonic, yo, hirajoshi, pelog, blues, whole-tone and octatonic. The Labs editor's Mode menu, the AI prompt, the skill page and the game all use the same table.
 
-- `public/index.html` — main Diddums UI.
-- `public/studio.js` / `public/studio-worklet.js` — host/runtime.
-- `public/lean/` — LeanDSP and JigScore sources/evidence.
-- `public/audio-proof.js` — proof-carrying audio format/replay.
-- `public/proof-verifier.html` — standalone proof verifier.
-- `public/jigdaw-signing.html` — JigDAW signing compatibility console.
-- `public/vendor/factoidal-lean-0.8.0/` — pinned Lean-generated Factoidal Wasm used for RDF canonicalisation/signing verification.
+## Voices
 
-## JigDAW compatibility
+- Sine-wave speech: a Song's `say` text is turned into syllables sung by a vowel voice and a consonant voice. Labs has a sine-wave speech page.
+- Sung vowels: 70 generated voice instruments (a, e, i, o, u, aa; bass to child; clean or breathy) for melodies, humming and choirs.
+- Choir and radio-voice presets among the named sounds.
 
-Diddums aims to interoperate with https://github.com/danja/jigdaw, including profile/resource integrity and `jigdaw-eddsa-2026` signatures.
+## Instruments
 
-That is a compatibility target, not the Diddums product name.
+- 27 hand-written instruments in the pinned catalog (`public/lean/catalog.json`), with 54 named presets on top of them (`public/sounds.js`).
+- 1017 generated instruments in 17 categories (`public/families.js`, sources in `public/lean/families/src/`), built from synthesis archetypes in `tools/families`: struck bars and bells, plucked and bowed strings, winds, reeds, FM, subtractive synths, drawbar organs, wavefolders, sung vowels, drums, noise textures, chip sounds, beating drones, ring modulators, comb resonators and others. The browser loads a shard of 40 only when one of its instruments is used.
 
-## Licensing
+Every published kernel comes from a native Lean 4.34 build with kernel axiom audits; the browser checks the pinned catalog or shard index hash and each instrument's source, WAT and Wasm hashes before use. A JavaScript draft compiler (`public/leandsp.js`, bit-identical output on the published instruments) is used only for screening and editing.
 
-Project-level licensing is not yet declared in this repository. Vendored third-party material retains its own licensing and notices.
+To change generated instruments:
 
+```sh
+cd tools/families && npm install
+node screen.mjs          # all candidates: compile, render, reject faulty ones, set loudness, remove near-duplicates
+node refresh.mjs         # or: regenerate published ones in place after fixing an archetype (same ids)
+node build-shards.mjs    # native Lean build in shards (needs elan/lake); only changed shards rebuild
+node publish.mjs         # public/families.js and sources; prints the index hash to pin in public/lean-client.js
+node measure-winds.mjs   # tuning and sustain audit of published wind, reed and bowed instruments
+node ../build-skill.mjs  # skill page and instrument list
+```
 
-## Labs (experimental): AI-assisted song sketches
+The hand-written catalog is reproduced with Lean 4.34.0 from `public/lean/project-files.json` (`npm install && node build.mjs`); see `public/lean/README.md`.
 
-The **Labs** tab is experimental and kept apart from the rest of Diddums, which neither uses nor needs any AI service.
+## Adaptive music
 
-1. **Any AI assistant.** "Copy prompt for any AI assistant" copies a self-contained description of the *Song* format (`public/song.js`: tracks, notes placed in seconds, stereo pairs, automation curves) plus the request. Paste it into whichever assistant you use and paste the JSON reply back; Diddums validates it and lists anything it cannot play.
-2. **Optional API route.** With an Anthropic API key, the browser can call that API directly (`public/ai.js`; SDK loaded from jsDelivr only when used, key kept on the device only if asked). This is one optional route, not a dependency.
-3. **Edit and share.** Track cards with preview, volume, stereo pair, tone, notes and finger-drawn automation; links as `?song=` or readable `?sounds=…` parameters. `?piece=<id>` opens a collection piece.
+`public/adaptive.js` plays an endless score written a few bars ahead from live state. The caller reports what things mean; a plan function chooses the arrangement, and changes land on the next bar line, optionally through a fill, pickup, crossfade or cut. `hit()` plays event sounds on the chord that is sounding, within one 16th note. Characters can enter over the scene with their own motifs, treated according to their state (power, mood, stability, health). There are also immediate controls (level, muffle, pitch wobble and drift, ducking), a tempo map with ramps and rubato, and per-layer timing feel. The skill page documents the API and a mapping from game meaning to music.
 
-"Quick sketch, no AI" maps keywords offline (`public/maker.js`).
+The game demo has seven levels, each playing a songbook piece. A page on another site can import the engine from `https://danbri.github.io/diddums/adaptive.js`; it fetches its worklet and instruments relative to its own URL.
 
-### Skill page for any LLM
-
-`public/skill/SKILL.md` (served at https://danbri.github.io/diddums/skill/SKILL.md, indexed from `/llms.txt`) teaches an assistant with no prior knowledge of Diddums to write a Song and return a playable `?song=` link (under the host's ~8000-character URL limit). It is generated from the same sound lists and guide as the Labs prompt: run `node tools/build-skill.mjs` after changing sounds, instruments, the Song format or the First Contact example.
-
-### URL recipe parameters
-
-| Parameter | Meaning |
-|---|---|
-| `prompt` | Free text for the offline keyword sketch. |
-| `sounds` | Comma list of sound ids from `public/sounds.js`, each optionally `:level` and `^width/delay` for a stereo pair. A raw `pattern.role` pair (e.g. `tine.keys`) also works. |
-| `title`, `bpm`, `key`, `meter`, `rhythm` | e.g. `key=F# lydian`, `meter=7/8`, `rhythm=none` for ambient. |
-| `minutes`, `room`, `seed`, `say` | Length, reverb size (0–1), generator seed, words for the speech voices. |
-| `auto.<sound>.<key>`, `auto.master` | Automation curves. |
-| `song` | A complete Song (deflate-raw, base64url). |
-
-### Sound library
-
-`public/sounds.js` holds 54 named presets (space drones, radio chatter, choirs, timpani, harp, music box, rain, heartbeat…). Each preset uses one of the 23 existing hash-matched LeanDSP instrument families and sets its score role, register (`transpose`) and existing colour/life/level/pan/send controls. No new DSP is added, so the pinned native-Lean catalog and its proof boundary are unchanged. Adding a new instrument family still requires the native Lean build described in `public/lean/README.md`.
-
-## MIDI
-
-Labs can open a Standard MIDI File as the working song: each channel and General MIDI instrument becomes a timed-note track on a 16th-note grid, GM programs map to the nearest Diddums sound (`midi-import.js`), and channel 10 drums map to the kick, snare, hat, clap and tom instruments. Any song can be downloaded as MIDI; exports carry GM program numbers chosen to map back to the same instrument families.
-
-## Adaptive game music
-
-`game.html` is a playable demo of `adaptive.js`: an endless score written two bars ahead from game state (`set()`, applied at the next bar line), with in-key event sounds on the next 16th note (`hit()`) and immediate mix changes (`control()`). The skill page explains the API and a systematic mapping from game meaning to music.
-
-`scene.html` puts characters over a running scene. Each has a motif treated according to its state (power, mood, stability, health: fragmentation, register, darker modes, augmentation, pitch wobble and drift, muffling, loose timing). The engine also has ducking, a tempo map with ramps and rubato, per-layer feel, and fill, pickup, crossfade and cut transitions. `adaptiveCore` is the scheduler without audio, so the tests drive the real worklet and native kernels offline:
+`adaptiveCore` is the scheduler without audio, so the tests drive the real worklet and native kernels offline:
 
 ```sh
 node tools/adaptive/test.mjs
 ```
 
-## Generated instrument families
+## MIDI
 
-Beyond the 27 hand-written instruments, `tools/families` generates LeanDSP instrument programs from synthesis archetypes (modal, waveguide strings and tubes, reeds, FM, subtractive, additive organ, wavefolding, formant voices, drums, noise textures, chip, beating drones, ring modulation, comb resonators, note hoppers, seeded bells):
+Labs opens Standard MIDI Files: channels become timed-note tracks on a 16th-note grid, General MIDI programs map to the nearest instrument (`public/midi-import.js`), and channel 10 drums map to the drum kit. Any Song downloads as MIDI with GM program numbers.
 
-```sh
-cd tools/families && npm install
-node screen.mjs          # compile (JS draft compiler), render, reject duds, set loudness, dedupe, describe
-node build-shards.mjs    # native Lean 4.34 build in shards of 40, with axiom audits (needs elan/lake)
-node publish.mjs         # public/families.js, readable sources, index hash to pin in lean-client.js
-node ../build-skill.mjs  # skill/INSTRUMENTS.md
-```
+## Timelines and automation
 
-The JS draft compiler is used only for screening; its kernels were compared with the native ones and are bit-identical. Published kernels come from the native build. The browser loads a shard only when one of its families is used, verifying the pinned index hash, the shard hash and each family's source, WAT and Wasm hashes.
+Tracks can place notes in seconds as well as follow the bar grid (`public/timeline.js`): `seq:'x@.9 . A2:2 C4+E4+G4 .*7'` with `step` seconds per step (which may itself be a curve). Automation curves (`'0@0 1@1.2 0@15'`, value@seconds) drive level, pan, send, colour, life and tune per track, and master, room and echo for the piece. Stereo pairs expand one track into left and right, optionally delayed or with different notes. `?piece=firstcontact` is a worked example.
 
-## Timelines, automation and stereo pairs
+## Proofs and signing
 
-Compositions can be written against the clock as well as the bar grid (`public/timeline.js`). `?piece=firstcontact` is a worked example.
+- Proof-carrying WAV export with replayable renderer, Wasm and PCM provenance (`public/audio-proof.js`), checked by `public/proof-verifier.html`.
+- RDF canonicalisation with a pinned Lean-generated Factoidal Wasm, and compatibility with the [JigDAW](https://github.com/danja/jigdaw) `jigdaw-eddsa-2026` signing profile (`public/jigdaw-signing.html`).
 
-- **Timeline tracks** (`role:'timeline'`) place notes in seconds: `seq:'x@.9 . . x .*7 | A2:2 _'` (x = the track note, `.` rest, `@velocity`, `:length` in steps, `*repeat`), `step` seconds per step, `from`/`to` window. `step` may itself be a curve, so a pattern can accelerate.
-- **Automation** (`automate:{level:'0@0 1@1.2 1@14.7 0@15', pan:'-0.75@15 0.75@30', tune:'0@35 5@50'}`) on any track: `level` (× track level), `pan`, `send`, `colour`, `life`, `tune` (semitones). Composition-level `automate` drives `master`, `room`, `damp`, `wet`, `echo`. Points are `value@seconds` (suffix `b` for bars), linear between points; two points at the same time make a jump. Curves are evaluated in the AudioWorklet at score time, so seeking and proof renders follow them.
-- **Stereo pairs** (`pair:{width:.8, delay:.023, seqR:'…', noteR:'E5', transposeR:7}`) expand one track into `<id>L`/`<id>R` at ∓width; the right side can play its own sequence, note or transposition and is delayed by `delay` seconds. Pan automation on a pair sets the width.
+## Deployment
 
-The same features are available in share URLs: `auto.<sound>.<key>=curve`, `auto.master=curve`, and `sounds=radioSnow^0.9/0.37` for a pair. A session may hold up to 16 tracks (the worklet's bound).
+GitHub Pages serves `public/` through `.github/workflows/pages.yml`, which stamps one build id onto every page and module (`tools/stamp-build.py`) and fetches the Factoidal Wasm from a pinned `danbri/factoidal` commit, checked by SHA-256. URLs are relative, so the same tree works under `/diddums/` or at a domain root.
 
-## Native Lean build
+## License
 
-The LeanDSP release can be reproduced in a container with Lean 4.34.0:
-
-```sh
-curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain leanprover/lean4:v4.34.0
-# unpack public/lean/project-files.json into a directory, then:
-npm install && node build.mjs     # writes out/catalog.json and out/build-report.json
-```
-
-Studio 0.7 used this to add four families: `heartbeat` (HumanHeart lub-dub), `orbitBlip` (Sputnik-style beacon), `sonar` (SonarBlup ping with echo) and `radioSnow` (shortwave static). The same native run rebuilt all 23 earlier families with byte-identical source, WAT and Wasm hashes; the published catalog keeps those entries verbatim, adds the four new ones, and records the run under `extensions` (see `public/lean/build-report-0.7.json`). `public/lean-client.js` pins the new catalog SHA-256.
-
-Proof-audio exports use a content-addressed renderer copy; automation support adds `proof-renderers/studio-worklet-6353dc37c9c05897.js` beside the earlier one so older proofs remain verifiable.
-
-## GitHub Pages
-
-The static site is deployed from `public/` by `.github/workflows/pages.yml`.
-
-The 6.36 MB Lean-generated Factoidal Wasm is deliberately fetched during the Pages job from pinned `danbri/factoidal` commit `30154c0467ee529b7a056bb9c2ac61f144578619` and must match SHA-256:
-
-`6201b6c477e81b9996df1cd75d9a90630118eb02cf48f5dbb94d40af330172b4`
-
-The harvested Plugin Universe tar snapshot is not needed by the runtime and is not published to Pages.
-
-One-time repository setting: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Without it, the workflow's `GITHUB_TOKEN` cannot create the Pages site and the `Configure Pages` step fails with "Resource not accessible by integration".
-
-Diddums' static URLs are deployment-root-relative, so the same tree works at both `/diddums/` on GitHub Pages and `/` on a future custom domain.
+Apache License 2.0 (`LICENSE`). Vendored third-party material keeps its own licence and notices.
