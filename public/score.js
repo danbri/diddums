@@ -55,7 +55,7 @@ export function drumSteps(c,bar){
 export const euclid=(k,n,rot=0)=>Array.from({length:n},(_,i)=>{const j=(i+rot)%n;return Math.floor(j*k/n)!==Math.floor((j+n-1)%n*k/n)||(j===0&&k>0);});
 // Process roles: techniques from minimalism, medieval and non-Western practice, all following the
 // song's chords. g counts 16th steps from the start of the piece, so long cycles never reset at bar lines.
-function processRole(t,bar,chord,root,steps,E,vel,colour,last,emit,c,rand){
+function processRole(t,bar,chord,root,steps,E,vel,colour,last,emit,c,rand,memory){
  const pitches=(c.melody||[]).filter(v=>v!=null),tones=[0,chord[2],chord[3],chord[4]];
  for(let step=0;step<steps;step++){
   if(last&&step>steps/2)break;const g=bar*steps+step;
@@ -85,7 +85,13 @@ function processRole(t,bar,chord,root,steps,E,vel,colour,last,emit,c,rand){
    emit(t.id,bar,step,above,vel*.8,.5,colour,t.life);
   }else if(t.role==='cloud'){
    // Aleatoric cloud: chord tones scattered over three octaves, density set by energy.
-   if(rand()>.08+.3*E)continue;emit(t.id,bar,step,root+12+tones[Math.floor(rand()*4)]+12*Math.floor(rand()*3),vel*(.5+.5*rand()),.15+rand()*.6,colour,t.life);
+   if(!(t.dejaVu>0)){if(rand()>.08+.3*E)continue;emit(t.id,bar,step,root+12+tones[Math.floor(rand()*4)]+12*Math.floor(rand()*3),vel*(.5+.5*rand()),.15+rand()*.6,colour,t.life);continue;}
+   // Déjà vu (after the looping random generators of modular synths): each step of a loop of
+   // `loopSteps` remembers its last draw and replays it with probability `dejaVu`, so the randomness
+   // repeats as a motif and drifts slowly. A draw is a chord-tone index, not a pitch, so it follows the chords.
+   const len=t.loopSteps||16,slots=memory.get(t.id)||memory.set(t.id,[]).get(t.id),i=g%len;let d=slots[i];
+   if(!d||rand()>=t.dejaVu){d={hit:rand(),tone:Math.floor(rand()*4),oct:Math.floor(rand()*3),vel:.5+.5*rand(),len:.15+rand()*.6};slots[i]=d;}
+   if(d.hit>.08+.3*E)continue;emit(t.id,bar,step,root+12+tones[d.tone]+12*d.oct,vel*d.vel,d.len,colour,t.life);
   }
  }
 }
@@ -93,7 +99,7 @@ export function makeSession(c,sr,overrides={}){
  if(!(sr>=8000&&sr<=192000))throw new Error('Unsupported sample rate');
  const beatFrames=sr*60/c.bpm,beats=c.meter[0]*4/c.meter[1],steps=Math.round(beats*4),rand=random(c.seed),events=[],grids=[];
  const tracks=expandPairs(c.tracks).map(t=>({...t,pool:1,poolRequired:1})),kit=drumKit.map(d=>({...d,...(c.drumKit?.[d.id]||{})}));
- const eventIds=new Map(),transposeOf=new Map(tracks.map(t=>[t.id,Math.round(Number(t.transpose)||0)]));
+ const cloudMemory=new Map(),eventIds=new Map(),transposeOf=new Map(tracks.map(t=>[t.id,Math.round(Number(t.transpose)||0)]));
  const emit=(track,bar,step,note,velocity,length,colour,life,meta={})=>{
   if(!meta.speechPart&&!meta.localPattern&&transposeOf.get(track))note=Math.max(0,Math.min(127,note+transposeOf.get(track)));const swing=(!meta.exact&&Math.floor(step)%2===1?c.swing:0),jitter=track.startsWith('d:')||meta.speechPart||meta.humanize===false?0:(rand()-.5)*.012;
   const nominalBeat=bar*beats+step/4+swing,frame=Math.max(0,Math.round((nominalBeat+jitter)*beatFrames));
@@ -124,7 +130,7 @@ export function makeSession(c,sr,overrides={}){
    }else if(t.role==='sequence'){
     const seq=Array.isArray(t.sequence)&&t.sequence.length?t.sequence:[0,null,7,null],gate=Math.max(.05,Math.min(2,Number(t.gate??.18))),oct=Number(t.octave??12);for(let step=0;step<steps;step++){const raw=seq[(bar*steps+step)%seq.length];if(raw===null||raw===undefined||last&&step>steps/2)continue;const interval=typeof raw==='object'?Number(raw.note):Number(raw),accent=typeof raw==='object'?Math.max(.2,Math.min(1.4,Number(raw.velocity??1))):1;if(!Number.isFinite(interval))continue;emit(t.id,bar,step,root+oct+tune(interval,chord),vel*accent,gate,colour,t.life,{sequenceIndex:(bar*steps+step)%seq.length,humanize:t.humanize});}
    }else if(['ostinato','euclid','phase','canon','tintinnabuli','cloud'].includes(t.role)){
-    processRole(t,bar,chord,root,steps,E,vel,colour,last,emit,c,rand);
+    processRole(t,bar,chord,root,steps,E,vel,colour,last,emit,c,rand,cloudMemory);
    }else if(t.role==='arp'){
     const stride=c.arpStride??(['amber','violet'].includes(c.id)?1:2);
     const order=[0,2,1,3,2,0,3,1];for(let step=0;step<steps;step+=stride){if(E<.5&&step%4!==0||last&&step>steps/2)continue;const j=(Math.floor(step/stride)+bar%4)%order.length;const degree=chord[1+order[j]%Math.max(1,chord.length-1)];const oct=(bar%4===2&&j>4)?12:0;emit(t.id,bar,step,root+24+degree+oct,vel*(step%4===0?1:.75),.16+stride*.10,colour,t.life);}
