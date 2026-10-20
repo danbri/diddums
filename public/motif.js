@@ -41,7 +41,7 @@ export const BRIGHTER={minor:'major',phrygian:'minor',locrian:'phrygian',dorian:
 // Each row is a condition and what it contributes; numeric contributions scale with how far past the
 // threshold the state is. Edit or replace this table to change the mapping.
 export const STATE_OPS=[
- {when:'mood',below:-.3,does:(x,base)=>({mode:x>.6?DARKER[DARKER[base]||base]||DARKER[base]:DARKER[base],augment:2,rubato:.35*x,invertRising:true,level:1-.15*x})},
+ {when:'mood',below:-.3,does:(x,base)=>({mode:x>.9?DARKER[DARKER[base]||base]||DARKER[base]:DARKER[base],augment:2,rubato:.35*x,invertRising:true,level:1-.15*x})},
  {when:'mood',above:.3,does:(x,base)=>({mode:BRIGHTER[base],octave:x>.6?1:0,swing:.06*x,level:1+.1*x})},
  {when:'power',below:.5,does:x=>({fragment:x>.6?2:3,octave:1,drop:.35*x,level:1-.5*x,role:'sparse'})},
  {when:'power',above:.85,does:()=>({octave:-1,level:1.15,accents:[1.25,.8,.9,.8]})},

@@ -79,6 +79,12 @@ Labs can open a Standard MIDI File as the working song: each channel and General
 
 `game.html` is a playable demo of `adaptive.js`: an endless score written two bars ahead from game state (`set()`, applied at the next bar line), with in-key event sounds on the next 16th note (`hit()`) and immediate mix changes (`control()`). The skill page explains the API and a systematic mapping from game meaning to music.
 
+`scene.html` puts characters over a running scene. Each has a motif treated according to its state (power, mood, stability, health: fragmentation, register, darker modes, augmentation, pitch wobble and drift, muffling, loose timing). The engine also has ducking, a tempo map with ramps and rubato, per-layer feel, and fill, pickup, crossfade and cut transitions. `adaptiveCore` is the scheduler without audio, so the tests drive the real worklet and native kernels offline:
+
+```sh
+node tools/adaptive/test.mjs
+```
+
 ## Generated instrument families
 
 Beyond the 27 hand-written instruments, `tools/families` generates LeanDSP instrument programs from synthesis archetypes (modal, waveguide strings and tubes, reeds, FM, subtractive, additive organ, wavefolding, formant voices, drums, noise textures, chip, beating drones, ring modulation, comb resonators, note hoppers, seeded bells):

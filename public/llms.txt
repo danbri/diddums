@@ -7,4 +7,5 @@
 - [Example sound design](https://danbri.github.io/diddums/?piece=firstcontact): First Contact, 70 seconds.
 - [Generated instruments](https://danbri.github.io/diddums/skill/INSTRUMENTS.md): 1011 more LeanDSP instrument programs, by category.
 - [Adaptive game music demo](https://danbri.github.io/diddums/game.html): an endless score re-arranged from game state, with in-key event sounds.
+- [Characters in a scene](https://danbri.github.io/diddums/scene.html): characters enter a running scene, each motif treated according to the character's state.
 - [Source](https://github.com/danbri/diddums)

@@ -62,7 +62,20 @@ What exists now (a working demo, not yet a packaged library): ${SITE}game.html, 
 
 The demo's own plan, as a worked example. Threat (hunters chasing, nearest distance) adds parts one at a time: drone and a process layer when unseen, sub bass and a sparse kit when watched, then arpeggio, acid bass, saw lead and harder drums. Health below half drops the bell melody and saw lead; near death the chords turn to a flat-second progression over a halftime beat and a heartbeat rises. Power switches to a heroic progression and a house beat; shelter settles everything. Each level is a different idiom: night synth (A minor), hijaz (D, koto isorhythm, clave), pentatonic phasing (E, marimba, bembé), octatonic (F, Amen breaks), whole-tone (C, bell cloud), pelog (G). Melodies are written as scale degrees so each idiom keeps to its own notes. Pickups, gems, fruit, alarms, impacts and level changes are \`hit()\` calls. The characters follow Heider and Simmel's 1944 film (a circle, two triangles, a house); on touch screens movement is a relative trackpad so the thumb never covers the view.
 
-Not done yet: tempo changes, transition fills between states, a mood map stored inside the Song so the whole adaptive score is one document, and packaging for game engines (it needs a browser; the instruments are WebAssembly, the scheduler is JavaScript).
+### Characters, transitions and expression
+
+A second demo, ${SITE}scene.html (source \`scene.js\`), puts characters over a running scene. All of this is in \`adaptive.js\` and \`motif.js\`; \`tools/adaptive/test.mjs\` renders each feature offline through the same worklet and checks it.
+
+- **Characters.** \`startAdaptive({..., characters: {mentor: {track: 'mentor', motif: [0, null, 2, null, 4, …]}}})\`. A motif is written in scale degrees (0 = chord root, null = rest, one entry per 16th). \`music.enter('mentor', {state})\`, \`music.leave('mentor')\` and \`music.setCharacter('mentor', {power, mood, stability, health})\` take effect at the next bar line; the scene's own tracks are unchanged note for note. A character's instrument is a track of the composition, so it is loaded at start.
+- **State → treatment.** \`STATE_OPS\` in \`motif.js\` is an editable table. Defaults: sad (mood below −0.3) plays twice as slow in a darker mode (minor → phrygian; major → minor) with rubato, a rising motif inverted to fall; happy brightens the mode; powerless (power below 0.5) plays only the first two or three notes, an octave up, quieter, dropping notes; powerful plays an octave down with accents; unstable (stability below 0.75) wobbles and drifts in pitch and plays loosely; ill (health below 0.6) is muffled and drops notes. States combine.
+- **Motif operations** on their own: \`transform(motif, {transpose, invert, retrograde, augment, fragment, displace, drop, mode, octave}, scale)\`.
+- **Expression controls, immediate:** \`music.control(id, 'wobble', {depth, rate})\` (semitones, Hz), \`'drift'\` (semitones of random walk), \`'muffle'\` (0–1 low-pass: through a wall, underwater, dazed). \`id\` can be a track, a character, \`'scene'\`, \`'drums'\` or \`'characters'\`.
+- **Ducking:** \`music.duck({by: 'mentor', targets: 'scene', amount: 0.6, release: 0.4})\` lowers the targets while the character's notes sound; \`amount: 0\` removes it.
+- **Tempo:** a plan may return \`tempo\` (and \`tempoRamp\` in bars); \`music.tempoTo(bpm, {ramp})\` does the same directly. Bar lines, \`hit()\` timing and events follow the tempo map. A plan's \`rubato\` (0–1) bends time inside each bar for the whole scene.
+- **Feel per layer:** \`feel: {arp: {looseness: 40, swing: 0.1, accents: [1, 0.6], rubato: 0.3}}\` at start, or \`music.feel(track, {...})\` later (ms of timing jitter, extra swing in beats, a repeating velocity pattern or \`'random'\`, per-bar rubato).
+- **Transitions:** \`music.set(state, {transition: 'fill' | 'pickup' | 'crossfade' | 'cut', beats: 2})\`, or return \`transition\` from the plan, or pass \`transitions: (prev, next) => …\` to choose per pair of states. Fill, pickup and cut play out in the next bar and the new arrangement starts after it; a crossfade starts at the next bar and fades leaving layers out and entering layers in over the given beats.
+
+Not done yet: a mood map stored inside the Song so the whole adaptive score is one document, and packaging for game engines (it needs a browser or another WebAssembly host; the scheduler is JavaScript).
 
 ### Mapping game meaning to music
 
@@ -72,7 +85,8 @@ Keep the game reporting what things *mean*; keep musical decisions in the plan a
 |---|---|---|---|
 | State | Situations that last: danger, safety, stealth, power, morale, progress | Next bar line | \`set()\` → \`plan()\` |
 | Event | Moments: a success, a mistake, a pickup, being seen, a choice | Next 16th or beat | \`hit()\` |
-| Mix | Bodily or continuous signals: health, proximity, breath | Immediate | \`control()\` |
+| Mix | Bodily or continuous signals: health, proximity, breath | Immediate | \`control()\`, \`duck()\` |
+| Character | Who is present and how they are: power, mood, stability, health | Next bar line | \`enter()\`, \`setCharacter()\` |
 
 Map each game meaning onto a small set of musical dimensions, and keep the mapping consistent so players learn it:
 
@@ -117,6 +131,7 @@ fs.writeFileSync(path.join(root,'llms.txt'),`# Diddums
 - [Example sound design](${SITE}?piece=firstcontact): First Contact, 70 seconds.
 - [Generated instruments](${SITE}skill/INSTRUMENTS.md): ${GENERATED.length} more LeanDSP instrument programs, by category.
 - [Adaptive game music demo](${SITE}game.html): an endless score re-arranged from game state, with in-key event sounds.
+- [Characters in a scene](${SITE}scene.html): characters enter a running scene, each motif treated according to the character's state.
 - [Source](https://github.com/danbri/diddums)
 `);
 console.log('wrote skill/SKILL.md ('+skill.length+' chars) and llms.txt');

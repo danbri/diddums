@@ -1,6 +1,8 @@
 # Adaptive expression: seven additions
 
-Status: plan. Goal: a busy conflict scene into which characters enter in different states (powerless, sad, unstable, ill, or several at once), each audible as such while the scene music continues. Each step lists what it adds, how, the API, and how it is tested. Steps 1–3 and 6 fit the current engine; 4, 5 and 7 need scheduler work.
+Status: done (all seven), October 2026. Demo: `scene.html`; tests: `tools/adaptive/test.mjs` (one or more per step, rendered offline through the worklet). Notes on what was built differently from the plan are at the end.
+
+Goal: a busy conflict scene into which characters enter in different states (powerless, sad, unstable, ill, or several at once), each audible as such while the scene music continues. Each step lists what it adds, how, the API, and how it is tested. Steps 1–3 and 6 fit the current engine; 4, 5 and 7 need scheduler work.
 
 ## 1. Character layers
 
@@ -75,3 +77,12 @@ Status: plan. Goal: a busy conflict scene into which characters enter in differe
 ## Order
 
 1 → 2 → 3 → 6 (character layers with transformations, instability and room in the mix: the core of the scenario), then 4 → 5 → 7 (scheduler work). A demo scene follows step 3 and is extended with each later step.
+
+## As built
+
+- Characters' instruments are tracks of the composition, loaded at start (the worklet's tracks are fixed when a session loads), so `enter()` takes a motif, role and state but not a new sound.
+- The state table lives in `motif.js` (`STATE_OPS`). Rows match on power, mood, stability and health and contribute operations and controls; several states combine.
+- Ducking follows the ducking track's notes (on while any note is held, releasing over `release` seconds) rather than its audio envelope, which keeps it independent of how loud a given instrument is.
+- Fades are gain paths in score frames, so a transition can queue several (fade out, then restore) ahead of time.
+- Fill, pickup and cut delay the new arrangement by one bar so the transition has a bar to play in; a crossfade starts at the next bar line.
+- Found while testing: an event humanised to before the first beat of a piece was dropped (frame NaN); beats are now clamped at zero.
