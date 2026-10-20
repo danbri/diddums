@@ -17,7 +17,7 @@ class JigStudio extends AudioWorkletProcessor {
    else if(d.type==='trigger'){const t=this.byId.get(d.id);if(t)this.note({track:t.id,note:d.note??60,velocity:.8,duration:Math.round(sampleRate*.08),colour:t.colour,life:t.life},currentFrame,'audition');}
    else if(d.type==='control')this.control(d);
    else if(d.type==='replace-pattern')this.replacePattern(d);
-   else if(d.type==='score'){if(!Array.isArray(d.events)||d.events.length>32768)throw new Error('Event budget exceeded');this.session.events=d.events;this.eventIndex=this.session.events.findIndex(e=>e.frame>=this.position);if(this.eventIndex<0)this.eventIndex=d.events.length;}
+   else if(d.type==='score'){if(!this.session)return;if(!Array.isArray(d.events)||d.events.length>32768)throw new Error('Event budget exceeded');this.session.events=d.events;this.eventIndex=this.session.events.findIndex(e=>e.frame>=this.position);if(this.eventIndex<0)this.eventIndex=d.events.length;}
   }catch(e){this.port.postMessage({type:'error',message:e.message,stack:String(e.stack||'')});}};
  }
  // These records are emitted at the actual runtime action, never inferred from a UI clock.

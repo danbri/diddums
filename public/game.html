@@ -32,21 +32,32 @@ html,body{overscroll-behavior:none}
 .gm-status,.gm-layers,#start,.gm-auto{-webkit-user-select:none;user-select:none}
 .gm-pad{display:none;margin-top:8px;height:110px;border-radius:14px;border:1px dashed #3f6276;background:#0b1926;color:#6d8799;font-size:13px;align-items:center;justify-content:center;text-align:center}
 @media(pointer:coarse){.gm-pad{display:flex}.gm-keys{display:none}}
+.gm-fullbtn{width:100%;min-height:48px;margin-top:8px}
+.gm-overlay{display:none}
+/* Full screen: the play area covers the page, which is fixed so nothing can scroll or be selected. */
+body.gm-full{overflow:hidden;position:fixed;inset:0;touch-action:none}
+body.gm-full #play{position:fixed;inset:0;z-index:50;margin:0;border:0;border-radius:0;padding:0;background:#050d15;display:flex;align-items:center;justify-content:center}
+body.gm-full #arena{max-height:none;border:0;border-radius:0}
+body.gm-full .gm-pad,body.gm-full .gm-keys{display:none}
+body.gm-full .gm-overlay{display:flex;position:fixed;top:max(8px,env(safe-area-inset-top));right:8px;gap:8px;z-index:51}
+.gm-overlay button{min-height:44px;min-width:44px;border-radius:12px;background:#0b1926cc;color:#e5f0f5;border:1px solid #3f6276;font-size:15px}
 @media(max-width:900px){.gm-grid{grid-template-columns:1fr}main{padding:12px 8px 40px}.section-heading h1{font-size:26px}}
 </style>
 </head><body>
 <header class="app-header"><a class="brand" href="./" aria-label="Diddums home"><span class="jigsaw" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Diddums</a><nav aria-label="Workspace"><a href="./" style="padding:9px">← Studio</a><a href="scene.html" style="padding:9px">Scene demo</a></nav></header>
 <main>
 <div class="section-heading"><span class="eyebrow">LABS · ADAPTIVE MUSIC DEMO</span><h1>Music that follows the game.</h1>
-<p>Collect 🍄, then grab the 💰 to level up. Hide in 🌲 or the house. ⭐ lets you fight back. Grab bonus fruit while it lasts. The music follows what happens.</p></div>
+<p>Seven places, each with its own piece from Labs. Collect, keep your companion close, and get out. The music follows what happens.</p></div>
 <div class="gm-grid">
  <section class="gm-card" id="play">
   <canvas id="arena" aria-label="Game: you are the small circle"></canvas>
   <div class="gm-pad" aria-hidden="true">Brush here to move · flick to dash</div>
-  <p class="gm-note gm-keys">Arrow keys or WASD, or hold the mouse where you want to go.</p>
+  <p class="gm-note gm-keys">Arrow keys or WASD, or hold the mouse where you want to go. F for full screen.</p>
+  <div class="gm-overlay"><button type="button" id="fullMusic" aria-label="Music">♪</button><button type="button" id="fullExit" aria-label="Exit full screen">✕</button></div>
  </section>
  <section class="gm-card">
   <button type="button" id="start" class="gm-start">▶ Start music</button>
+  <button type="button" id="full" class="gm-fullbtn">⛶ Full screen</button>
   <label class="gm-auto"><input type="checkbox" id="auto" checked> Autopilot</label>
   <div class="gm-status" id="meters">Threat 0% · Health 100%</div>
   <div class="gm-status" id="status">Press Start. Arrangement changes land on the next bar line.</div>

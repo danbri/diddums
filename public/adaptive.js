@@ -30,7 +30,7 @@ function periodBars(c,steps){let p=lcm(2*c.harmony.length,8);for(const a of [c.m
 // replace composition tracks (a character's track with another role).
 export function planEvents(base,plan,start,count,sr){
  const steps=Math.round(base.meter[0]*16/base.meter[1]),harmony=plan.harmony||base.harmony,melody=plan.melody||base.melody,bass=plan.bass||base.bass;
- const P=periodBars({harmony,melody,bass},steps),phase=start%P,shift=start-phase,bars=phase+count+2;
+ const P=base.loopBars||periodBars({harmony,melody,bass},steps),phase=start%P,shift=start-phase,bars=phase+count+2;
  const layers=new Set(plan.layers),swap=new Map((plan.tracks||[]).map(t=>[t.id,t]));
  const c={...base,id:base.id+'-live',rhythm:plan.rhythm||'none',harmony,melody,bass,bars,
   tracks:base.tracks.filter(t=>layers.has(t.id)).map(t=>swap.get(t.id)||t),sections:[{name:plan.name||'Live',start:0,bars,energy:plan.energy??.6,roles:ALL_ROLES}]};
@@ -41,7 +41,8 @@ export function planEvents(base,plan,start,count,sr){
 // Transition material (fills, pickups) as score events; exported for tests and other schedulers.
 export const FILL=['sd','sd','ht','sd','ht','mt','sd','mt','lt','sd','lt','lt','sd','mt','lt','bd'];
 
-export function adaptiveCore({composition,plan,state={},characters={},feel={},transitions=null,lookahead=2,sr=48000,post=()=>{},clock=()=>0,onBar=()=>{}}){
+// `chordAt(bar)` (optional) gives the chord actually sounding, as [root, 0, third, fifth, seventh], for hit().
+export function adaptiveCore({composition,plan,state={},characters={},feel={},transitions=null,lookahead=2,sr=48000,post=()=>{},clock=()=>0,onBar=()=>{},chordAt=null}){
  const beats=composition.meter[0]*4/composition.meter[1],steps=Math.round(beats*4),key=parseKey(composition.key)||{mode:'minor'};
  const byId=new Map(composition.tracks.map(t=>[t.id,t]));
  const chars=new Map(Object.entries(characters).map(([name,c])=>[name,{name,track:c.track||name,motif:c.motif||[0,null,2,null,4,null,null,null],scale:c.scale||key.mode,role:c.role,state:{...(c.state||{})},present:!!c.present}]));
@@ -181,7 +182,7 @@ export function adaptiveCore({composition,plan,state={},characters={},feel={},tr
   let first=barStart(b0)+Math.ceil((at-barStart(b0))/slot)*slot;if(first>=barStart(b0+1)-1)first=barStart(b0+1);
   const harmony=current.harmony||composition.harmony;
   tones.forEach((k,i)=>{
-   const frame=Math.round(first+i*spread*stepF),b=barAt(frame),chord=harmony[Math.floor(b/2)%harmony.length];
+   const frame=Math.round(first+i*spread*stepF),b=barAt(frame),chord=chordAt?.(b)||harmony[Math.floor(b/2)%harmony.length];
    const iv=[chord[1],chord[2],chord[3],chord[4]??chord[3]+5],idx=((k%4)+4)%4,oct=Math.floor(k/4);
    const note=clamp(chord[0]+24+12*octave+iv[idx]+12*oct+(t.transpose||0),0,127),bpm=(ensure(b),bpms[b]);
    events.push({id:`hit:${t.id}:${frame}:${i}`,frame,track:t.id,note,velocity,bar:b,step:0,nominalBeat:0,durationBeats:length,duration:Math.round(length*60/bpm*sr),colour:t.colour,life:t.life,humanizeBeats:0,keep:true,hit:true});
@@ -208,18 +209,20 @@ export function adaptiveCore({composition,plan,state={},characters={},feel={},tr
  };
 }
 
-export async function startAdaptive({composition,plan,state={},characters={},feel={},transitions=null,onBar=()=>{},onLevels=()=>{},lookahead=2}){
+// Pass `ctx` to reuse an AudioContext (for example one per game rather than one per level); stop({keepContext:true}) leaves it open.
+export async function startAdaptive({composition,plan,state={},characters={},feel={},transitions=null,onBar=()=>{},onLevels=()=>{},lookahead=2,ctx:given=null,chordAt=null}){
  const [{loadLeanKernel},{assetUrl}]=await Promise.all([import('./lean-client.js'),import('./site-url.js')]);
- const ctx=new AudioContext({latencyHint:'interactive'});
+ const ctx=given||new AudioContext({latencyHint:'interactive'});
  await ctx.resume();
- await ctx.audioWorklet.addModule(assetUrl('studio-worklet.js'));
- const node=new AudioWorkletNode(ctx,'diddums-studio',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2]});
- const analyser=ctx.createAnalyser();analyser.fftSize=2048;node.connect(analyser);node.connect(ctx.destination);
+ if(!ctx.diddumsWorklet){await ctx.audioWorklet.addModule(assetUrl('studio-worklet.js'));ctx.diddumsWorklet=true;}
+ // One worklet node per context: a new session replaces the old one (and frees its instruments) on load.
+ let node=ctx.diddumsNode,analyser=ctx.diddumsAnalyser;
+ if(!node){node=new AudioWorkletNode(ctx,'diddums-studio',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2]});analyser=ctx.createAnalyser();analyser.fftSize=2048;node.connect(analyser);node.connect(ctx.destination);ctx.diddumsNode=node;ctx.diddumsAnalyser=analyser;}
  const needed=[...new Set([...composition.tracks.map(t=>t.pattern),...drumKit.map(d=>d.pattern),'chamber'])];
  const modules=await Promise.all(needed.map(async id=>{const m=await loadLeanKernel(id,patterns[id].source);if(!patterns[id].source)patterns[id].source=m.source;return m;}));
  const sr=ctx.sampleRate;let position=0,heardAt=0;
  const post=m=>node.port.postMessage(m);
- const core=adaptiveCore({composition,plan,state,characters,feel,transitions,lookahead,sr,post,onBar,clock:()=>position+(ctx.currentTime-heardAt)*sr});
+ const core=adaptiveCore({composition,plan,state,characters,feel,transitions,lookahead,sr,post,onBar,chordAt,clock:()=>position+(ctx.currentTime-heardAt)*sr});
  node.port.onmessage=e=>{const d=e.data;if(d.type==='telemetry'){position=d.position;heardAt=ctx.currentTime;core.update(position);onLevels(d.measurements||{});}else if(d.type==='error')console.error('Diddums worklet:',d.message);};
  const session=adaptiveSession(composition,core,sr);
  post({type:'load',session,modules:modules.map(m=>({id:m.id,bytes:m.bytes,hash:m.hash,debug:m.debug})),generation:1,play:true});
@@ -231,7 +234,7 @@ export async function startAdaptive({composition,plan,state={},characters={},fee
   ctx,analyser,barSeconds:(core.barStart(1)-core.barStart(0))/sr,
   pause(){post({type:'play',value:false});},
   resume(){ctx.resume();post({type:'play',value:true});},
-  stop(){clearInterval(timer);node.disconnect();ctx.close();}
+  stop({keepContext=false}={}){clearInterval(timer);node.port.onmessage=null;post({type:'play',value:false});if(!keepContext){node.disconnect();ctx.diddumsNode=null;ctx.close();}}
  });
 }
 
@@ -242,5 +245,6 @@ export function adaptiveSession(composition,core,sr){
  const worst=makeSession({...composition,rhythm:'factory',bars:16,sections:[{name:'Sizing',start:0,bars:16,energy:1,roles:ALL_ROLES}]},sr);
  return {...worst,id:composition.id+'-live',bars:ENDLESS_BARS,durationFrames:Number.MAX_SAFE_INTEGER/4,
   sections:[{name:core.plan.name||'Live',start:0,bars:ENDLESS_BARS,energy:core.plan.energy??.6,roles:ALL_ROLES}],
-  tracks:worst.tracks.map(t=>{const n=t.role==='timeline'?3:Math.min(8,Math.max(2,t.poolRequired));return {...t,pool:n,poolRequired:n,automation:null};}),automation:null,events:[]};
+  // Event-sound tracks (an empty timeline) get 3 voices; a song's own timeline parts (chords) up to 8.
+  tracks:worst.tracks.map(t=>{const n=t.role==='timeline'?(String(t.seq||'.').trim()!=='.'?Math.min(8,Math.max(3,t.poolRequired)):3):Math.min(8,Math.max(2,t.poolRequired));return {...t,pool:n,poolRequired:n,automation:null};}),automation:null,events:[]};
 }

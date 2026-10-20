@@ -104,5 +104,7 @@ export function song({title,description,key,bpm,meter='4/4',sub=2,rhythm='none',
   const {sound,label,level=.5,pan=0,send=.3,colour,life,transpose=0}=t;
   out.push({id,sound,label:label||id,seq:seqText(events,total,transpose),step:+stepSec.toFixed(5),from:0,loop:false,level,pan,send,...(colour!=null?{colour}:{}),...(life!=null?{life}:{})});
  }
- return {title,description,bpm,meter,key,rhythm,...(swing?{swing}:{}),seconds:+(bars.length*barSec+2).toFixed(2),room,...(space?{space}:{}),sections,tracks:out,...extra};
+ // The chord sounding in each bar (first chord of the bar), as [root, 0, third, fifth, seventh] for hit().
+ let last=null;const chart=bars.map(b=>{const c=b.chords[0].chord||last;last=c;const v=c.ivs;return [bassOf({bass:c.root},36),0,v[1]??4,v[2]??7,v[3]??(v[2]??7)+5];});
+ return {chart,title,description,bpm,meter,key,rhythm,...(swing?{swing}:{}),seconds:+(bars.length*barSec+2).toFixed(2),room,...(space?{space}:{}),sections,tracks:out,...extra};
 }
