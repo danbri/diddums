@@ -57,3 +57,16 @@ export function centroid(x,a,b,sr=SR){const N=2048,start=Math.max(0,Math.floor((
 // `lowpass` (Hz) first isolates the fundamental with four one-pole stages run from 0.1 s before `a`.
 export function pitch(x,a,b,sr=SR,lowpass=0){a=Math.round(a);b=Math.round(b);let y=x;if(lowpass){const from=Math.max(0,a-Math.round(sr*.1)),k=1-Math.exp(-2*Math.PI*lowpass/sr),s=[0,0,0,0];y=new Float64Array(b);for(let i=from;i<b;i++){s[0]+=k*(x[i]-s[0]);s[1]+=k*(s[0]-s[1]);s[2]+=k*(s[1]-s[2]);s[3]+=k*(s[2]-s[3]);y[i]=s[3];}}
  let first=null,last=null,n=0;for(let i=a+1;i<b;i++)if(y[i-1]<0&&y[i]>=0){const t=i-1+(-y[i-1])/(y[i]-y[i-1]);if(first==null)first=t;last=t;n++;}return n>1?(n-1)*sr/(last-first):0;}
+
+// Render an ordinary Song (not adaptive) through the worklet: returns per-track RMS while sounding, peak, and the mix.
+export async function renderSong(songJson,{seconds=null}={}){
+ const {makeSession}=await import(pathToFileURL(path.join(pub,'score.js')).href);
+ const c=compositionFromSong(songJson),s=makeSession(c,SR),proc=new Processor(),msgs=[];proc.port.sent=m=>msgs.push(m);
+ const needed=[...new Set([...s.tracks.map(t=>t.pattern),...drumKit.map(d=>d.pattern),'chamber'])];
+ proc.port.onmessage({data:{type:'load',session:s,modules:needed.map(kernel),generation:1,play:true}});
+ const n=Math.round((seconds??s.durationFrames/SR+1)*SR),acc={};let peak=0,sum=0;
+ proc.port.sent=m=>{if(m.type==='telemetry')for(const [id,v] of Object.entries(m.measurements)){if(id.includes('#'))continue;const a=acc[id]||(acc[id]={sum:0,n:0,max:0});if(v.rms>1e-4){a.sum+=v.rms*v.rms;a.n++;}a.max=Math.max(a.max,v.rms);}else if(m.type==='error')msgs.push(m);};
+ for(let f=0;f<n;f+=128){const out=[[new Float32Array(128),new Float32Array(128)]];proc.process([],out);for(const x of out[0][0]){peak=Math.max(peak,Math.abs(x));sum+=x*x;}globalThis.currentFrame+=128;}
+ const tracks=Object.fromEntries(Object.entries(acc).map(([id,a])=>[id,{rms:a.n?Math.sqrt(a.sum/a.n):0,max:a.max}]));
+ return {tracks,peak,rms:Math.sqrt(sum/n),errors:msgs.filter(m=>m.type==='error').map(m=>m.message),labels:Object.fromEntries(c.tracks.map(t=>[t.id,t.label]))};
+}

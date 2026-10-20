@@ -141,3 +141,10 @@ input.invalid,textarea.invalid{border-color:#b0566f!important;background:#2b1720
 .mk-song-head h2{font-size:18px;margin:0 0 2px}.mk-song-head .mk-hint{margin:0 0 10px}
 .mk-piece.playing{border-color:var(--mint);box-shadow:0 0 0 1px #7ce3dd55}
 .mk-libmode{display:flex;gap:6px;margin-bottom:8px}.mk-libmode button{flex:1;min-height:44px;border-radius:12px;font-size:14px}.mk-libmode button[aria-pressed=true]{border-color:var(--mint);color:#c9fffa;background:#12373f}
+.mk-group{margin:10px 0;border-top:1px solid #23394a;padding-top:6px}
+.mk-group>summary{cursor:pointer;list-style:none;padding:10px 4px;min-height:44px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
+.mk-group>summary::-webkit-details-marker{display:none}
+.mk-group>summary b{font-size:18px;color:#e5f0f5}
+.mk-group>summary b::before{content:'▸ ';color:var(--mint)}
+.mk-group[open]>summary b::before{content:'▾ '}
+.mk-group>summary small{color:#93acbd;font-size:13px}

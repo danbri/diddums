@@ -7,7 +7,7 @@ import {recipeFromPrompt,songFromRecipe,recipeFromSong,shareUrl} from './maker.j
 import {MODELS,composeWithClaude,chatPrompt,songFromReply,exampleSong} from './ai.js';
 import {attachViz} from './viz.js';
 import {formatDuration} from './collection.js';
-import {SHOWCASE} from './showcase.js';
+import {PIECES,GROUPS} from './labs-pieces.js';
 import {siteUrl} from './site-url.js';
 import {songFromMidi} from './midi-import.js';
 import {GENERATED} from './families.js';
@@ -86,7 +86,7 @@ export function mountMaker(root,hooks){
  <section class="mk-showcase" aria-label="Example pieces">
   <h2>Example pieces</h2>
   <p class="mk-hint">Each one is a complete Song carried in its link. Share sends that link as-is.</p>
-  <ul id="mkShowcase" class="mk-showcase-list">${SHOWCASE.map((s,i)=>`<li class="mk-piece"><div class="mk-showcase-head"><b>${esc(s.title)}</b><small>${formatDuration(s.seconds||60)}</small></div>${s.description?`<p class="mk-hint">${esc(s.description)}</p>`:''}<div class="mk-row"><button type="button" class="mk-btn primary" data-play="${i}">▶ Play</button><button type="button" class="mk-btn" data-edit="${i}">Edit</button><button type="button" class="mk-btn" data-share="${i}">Share</button></div></li>`).join('')}</ul>
+  <div id="mkShowcase">${GROUPS.map(g=>`<details class="mk-group"${g.open?' open':''}><summary><b>${esc(g.name)}</b> <small>${g.items.length} pieces · ${esc(g.about)}</small></summary><ul class="mk-showcase-list">${g.items.map(i=>[PIECES[i],i]).map(([s,i])=>`<li class="mk-piece"><div class="mk-showcase-head"><b>${esc(s.title)}</b><small>${formatDuration(s.seconds||60)}</small></div>${s.description?`<p class="mk-hint">${esc(s.description)}</p>`:''}<div class="mk-row"><button type="button" class="mk-btn primary" data-play="${i}">▶ Play</button><button type="button" class="mk-btn" data-edit="${i}">Edit</button><button type="button" class="mk-btn" data-share="${i}">Share</button></div></li>`).join('')}</ul></details>`).join('')}</div>
  </section>
  <section class="mk-song" aria-label="Your working song">
   <div class="mk-song-head"><h2>Your working song</h2><p class="mk-hint">The one song you are editing, kept on this device. It came from the last link you opened, an assistant's reply, or an example you chose to Edit. Its tracks, waveform and play button belong to it alone.</p></div>
@@ -291,7 +291,7 @@ export function mountMaker(root,hooks){
   try{await navigator.clipboard.writeText(url);toast('Link copied');}catch(e){toast('Could not share: '+e.message,true);}
  }
  $('#mkShowcase').onclick=e=>{
-  const b=e.target.closest('button');if(!b)return;const s=SHOWCASE[b.dataset.play??b.dataset.edit??b.dataset.share];if(!s)return;
+  const b=e.target.closest('button');if(!b)return;const s=PIECES[b.dataset.play??b.dataset.edit??b.dataset.share];if(!s)return;
   if(b.dataset.share!=null){shareLink(s.title||'Diddums',songUrl(s));return;}
   hooks.unlock();
   if(b.dataset.edit!=null){load(structuredClone(s),'Loaded “'+s.title+'” for editing');$('.mk-song').scrollIntoView({behavior:'smooth'});return;}

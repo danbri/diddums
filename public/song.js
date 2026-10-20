@@ -16,7 +16,7 @@ import {AUTOMATABLE,GLOBAL_AUTOMATABLE,parseCurve,parseSequence,parseNote} from 
 export const SONG_SCHEMA_ID='diddums-song/1';
 export const MAX_TRACKS=16; // studio-worklet.js accepts at most 16 tracks per session (a stereo pair uses two)
 export const MAX_SECONDS=600;
-export const rhythms=['none','brush','halftime','broken','shuffle','house','motorik','postpunk','factory','euclid','seven','ritual','suite','clave','bembe','dembow','amen'];
+export const rhythms=['none','brush','halftime','broken','shuffle','house','motorik','postpunk','factory','euclid','seven','ritual','suite','clave','bembe','dembow','amen','ska','reggae','glam','rock','metal','disco','motown','punk','waltz','stomp','bossa','dnb','funk','train'];
 export const ROLES=['bass','drone','pad','long','keys','stabs','arp','sequence','lead','sparse','answer','air','continuous','speechVowel','speechConsonant','ostinato','euclid','phase','canon','tintinnabuli','cloud','timeline'];
 export const modes={minor:[0,2,3,5,7,8,10],major:[0,2,4,5,7,9,11],dorian:[0,2,3,5,7,9,10],lydian:[0,2,4,6,7,9,11],phrygian:[0,1,3,5,7,8,10],mixolydian:[0,2,4,5,7,9,10],
  // Beyond the church modes. Chords stack every other scale note, so five- and six-note scales give
@@ -143,14 +143,14 @@ export function compositionFromSong(input){
   if(role==='timeline'){
    // Role-playback settings of a preset (register shift, built-in step pattern) do not apply to explicit notes.
    for(const k of ['sequence','octave','gate','humanize','speechOffsetSteps'])delete track[k];if(t.transpose==null)track.transpose=0;
-   try{parseSequence(t.seq,parseNote(t.note,60));track.seq=String(t.seq).slice(0,4000);}catch(e){warnings.push(`${where}: ${e.message}`);continue;}
+   try{parseSequence(t.seq,parseNote(t.note,60));track.seq=String(t.seq).slice(0,16000);}catch(e){warnings.push(`${where}: ${e.message}`);continue;}
    if(t.note!=null)track.note=t.note;
    if(t.step!=null){try{parseCurve(t.step);track.step=typeof t.step==='number'?num(t.step,.25,.01,30):String(t.step);}catch(e){warnings.push(`${where}: step ${e.message}`);}}
    for(const [k,a,b] of [['from',0,MAX_SECONDS],['to',0,MAX_SECONDS],['gate',.02,64]])if(t[k]!=null)track[k]=num(t[k],undefined,a,b);
    if(t.loop===false)track.loop=false;
   }
   if(pair){const p={width:num(pair.width,.75,0,1),delay:num(pair.delay,.023,0,2)};
-   if(pair.seqR){try{parseSequence(pair.seqR,60);p.seqR=String(pair.seqR).slice(0,4000);}catch(e){warnings.push(`${where}: seqR ${e.message}`);}}
+   if(pair.seqR){try{parseSequence(pair.seqR,60);p.seqR=String(pair.seqR).slice(0,16000);}catch(e){warnings.push(`${where}: seqR ${e.message}`);}}
    if(pair.noteR!=null)p.noteR=pair.noteR;if(pair.transposeR!=null)p.transposeR=num(pair.transposeR,0,-48,48);if(pair.colourR!=null)p.colourR=num(pair.colourR,.5,0,1);
    track.pair=p;}
   if(t.automate&&typeof t.automate==='object'){const a={};for(const [k,v] of Object.entries(t.automate)){if(!AUTOMATABLE.includes(k)){warnings.push(`${where}: cannot automate ${k}`);continue;}try{parseCurve(v);a[k]=typeof v==='string'?v.slice(0,2000):v;}catch(e){warnings.push(`${where}: ${k} ${e.message}`);}}if(Object.keys(a).length)track.automate=a;}

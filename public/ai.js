@@ -70,7 +70,7 @@ Minor key, four chords, four-on-the-floor and a saw lead is one idiom among many
   - \`canon\`: the melody again \`delaySteps\` later (default half a bar), \`interval\` semitones higher (default 7).
   - \`tintinnabuli\`: for each melody note, the nearest chord tone above it (after Arvo Pärt). Pair with a \`lead\` track.
   - \`cloud\`: chord tones scattered over three octaves at random, denser at higher energy.
-- **More drum patterns**: \`clave\` (son clave, 3-2), \`bembe\` (12/8 bell; use 6/8 or 12/8), \`dembow\` (reggaeton), \`amen\` (breakbeat), plus \`seven\` for 7/8 and \`euclid\` for off-kilter grooves. Or use \`"none"\` and let a \`euclid\` track be the rhythm.
+- **More drum patterns**: \`clave\` (son clave, 3-2), \`bembe\` (12/8 bell; use 6/8 or 12/8), \`dembow\` (reggaeton), \`amen\` (breakbeat), plus \`seven\` for 7/8 and \`euclid\` for off-kilter grooves. Genre kits: \`ska\` (off-beat rims), \`reggae\` (one drop), \`glam\` (four-beat stomp with claps), \`rock\`, \`metal\` (double kick at high energy), \`disco\`, \`motown\` (snare on every beat, northern soul), \`punk\`, \`waltz\` (3/4), \`stomp\` (handclap stomp, shanties; any meter), \`bossa\`, \`dnb\` (drum and bass, 160–175 bpm), \`funk\` (16th hats, ghost rims), \`train\` (country/bluegrass). Or use \`"none"\` and let a \`euclid\` track be the rhythm.
 - **Form**: static harmony (\`chords: [1]\`) with slowly changing texture is as valid as a progression; so are odd meters (5/4, 7/8) and long, slow pieces built from one process.
 
 ## Song fields

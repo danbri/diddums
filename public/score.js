@@ -27,6 +27,21 @@ export function drumSteps(c,bar){
  else if(c.rhythm==='dembow'){add('bd',[0,4,8,12]);add('sd',[3,6,11,14]);add('ch',[0,2,4,6,8,10,12,14]);}
  else if(c.rhythm==='amen'){add('bd',[0,2,10,11]);add('sd',[4,7,9,12,15]);for(let i=0;i<steps;i+=2)add('ch',[i]);if(bar%4===3)add('oh',[14]);}
  else if(c.rhythm==='shuffle'){add('bd',[0,7,10]);add('sd',[4,12]);add('ch',[0,2,5,6,8,10,13,14]);if(bar%2===1)add('rs',[15]);}
+ // Genre patterns. Positions assume 16 steps per bar (4/4); 3/4 and 6/8 have their own.
+ else if(c.rhythm==='ska'){add('bd',[0,8]);add('sd',[4,12]);add('rs',[2,6,10,14]);add('ch',[0,2,4,6,8,10,12,14]);if(bar%4===3)add('sd',[14,15]);}
+ else if(c.rhythm==='reggae'){add('bd',[8]);add('rs',[8]);add('ch',[2,6,10,14]);if(E>.6)add('ch',[0,4,8,12]);if(bar%4===3)add('lt',[14]);}
+ else if(c.rhythm==='glam'){add('bd',[0,4,8,12]);add('sd',[4,12]);add('cp',[4,12]);if(E>.7)add('oh',[2,6,10,14]);if(bar%4===3)add('lt',[13,14,15]);}
+ else if(c.rhythm==='rock'){add('bd',[0,8,10]);add('sd',[4,12]);for(let i=0;i<steps;i+=2)add(E>.75?'oh':'ch',[i]);if(bar%4===3)add('mt',[14]);}
+ else if(c.rhythm==='metal'){for(let i=0;i<steps;i+=E>.75?1:2)add('bd',[i]);add('sd',[4,12]);add('oh',[0,4,8,12]);if(bar%4===3){add('ht',[12,13]);add('mt',[14]);add('lt',[15]);}}
+ else if(c.rhythm==='disco'){add('bd',[0,4,8,12]);add('sd',[4,12]);add('oh',[2,6,10,14]);for(let i=0;i<steps;i++)if(i%2===1&&E>.6)add('ch',[i]);if(E>.8)add('cp',[4,12]);}
+ else if(c.rhythm==='motown'){add('bd',[0,8,10]);add('sd',[0,4,8,12]);add('ch',[0,2,4,6,8,10,12,14]);if(E>.7)add('cp',[4,12]);}
+ else if(c.rhythm==='punk'){add('bd',[0,6,8,14]);add('sd',[4,12]);for(let i=0;i<steps;i+=2)add('ch',[i]);if(bar%4===3)add('sd',[13,14,15]);}
+ else if(c.rhythm==='waltz'){add('bd',[0]);add('rs',[4,8]);add('ch',[4,8]);if(E>.7)add('ch',[2,6,10]);}
+ else if(c.rhythm==='stomp'){const n=steps,h=Math.round(n/2);add('bd',[0,h]);add('cp',[Math.round(n/4),Math.round(3*n/4)]);if(E>.6)add('lt',[n-2]);}
+ else if(c.rhythm==='bossa'){add('bd',[0,6,8,14]);add('rs',bar%2===0?[0,6,12]:[4,10]);for(let i=0;i<steps;i+=2)add('ch',[i]);}
+ else if(c.rhythm==='dnb'){add('bd',[0,10]);add('sd',[4,12]);if(bar%2===1)add('bd',[7]);for(let i=0;i<steps;i+=2)add('ch',[i]);if(E>.75)add('rs',[3,11]);}
+ else if(c.rhythm==='funk'){add('bd',[0,3,10]);add('sd',[4,12]);add('rs',[7,9,15]);for(let i=0;i<steps;i++)add('ch',[i]);if(E>.7)add('oh',[14]);}
+ else if(c.rhythm==='train'){add('bd',[0,8]);add('sd',[4,12]);add('rs',[1,2,3,5,6,7,9,10,11,13,14,15].filter(i=>i%2===0||E>.7));}
  else if(c.rhythm==='suite'){
   const room=Math.floor(bar/8);add('bd',room<2?[0,8]:room===4?[0]:room===5?[0,7,10]:[0,4,8,12]);
   if(room>=1&&room!==4)add('sd',[4,12]);if(room>=2)for(let i=0;i<steps;i+=2)add('ch',[i]);if(room>=3)add('cp',[room%2?12:4]);
