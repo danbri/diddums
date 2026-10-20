@@ -11,13 +11,13 @@ dsp GenNoiseSeaStillNarrow where
   state env : F32 := 0.0
   state lfo : F32 := 0.0
   state crack : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   state i1w : F32 := 0.0
   state i2w : F32 := 0.0
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let envC := select(gt(gate, env), 1.0 - expneg(1.0 / (0.8 * sr)), 1.0 - expneg(5.0 / (life * sr)))
     let envA := env + envC * (gate - env)
     set env := envA
@@ -32,4 +32,4 @@ dsp GenNoiseSeaStillNarrow where
     set i1w := 2.0 * v1w - i1w
     set i2w := 2.0 * v2w - i2w
     set previous := gate
-    return softsign(((v1w * 0.7 + crackA * nz * 0.6) * envA * move) * 1.2) * 0.9295
+    return softsign(((v1w * 0.7 + crackA * nz * 0.6) * envA * move) * 1.2) * 1.0745

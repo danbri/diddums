@@ -11,7 +11,7 @@ dsp GenVoiceEeAltoClean where
   state env : F32 := 0.0
   state ph : F32 := 0.0
   state vib : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   state i1a : F32 := 0.0
   state i2a : F32 := 0.0
   state i1b : F32 := 0.0
@@ -20,8 +20,8 @@ dsp GenVoiceEeAltoClean where
   state i2c : F32 := 0.0
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let envC := select(gt(gate, env), 1.0 - expneg(1.0 / (0.08 * sr)), 1.0 - expneg(5.0 / (life * sr)))
     let envA := env + envC * (gate - env)
     set env := envA
@@ -50,4 +50,4 @@ dsp GenVoiceEeAltoClean where
     set i1c := 2.0 * v1c - i1c
     set i2c := 2.0 * v2c - i2c
     set previous := gate
-    return softsign((v1a + v1b * 0.6 + v1c * 0.3) * 0.9) * 0.4167
+    return softsign((v1a + v1b * 0.6 + v1c * 0.3) * 0.9) * 0.4164

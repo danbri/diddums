@@ -21,11 +21,11 @@ dsp GenModalChurchBellMediumRing where
   state e4 : F32 := 0.0
   state e5 : F32 := 0.0
   state click : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let e0A := select(trigger, gate * 0.6 * (1.0 + colour * 0.0), e0 * expneg(5.0 / (life * 1.0 * sr)))
     set e0 := e0A
     set p0 := fract(p0 + min(0.45, freq * 0.5 / sr))
@@ -48,4 +48,4 @@ dsp GenModalChurchBellMediumRing where
     set click := clickA
     let lpA := nz * clickA * (0.3 + colour * 0.5)
     set previous := gate
-    return softsign((sinpi(p0 * 2.0) * e0A + sinpi(p1 * 2.0) * e1A + sinpi(p2 * 2.0) * e2A + sinpi(p3 * 2.0) * e3A + sinpi(p4 * 2.0) * e4A + sinpi(p5 * 2.0) * e5A + lpA * 0.5) * 0.224537) * 1.0256
+    return softsign((sinpi(p0 * 2.0) * e0A + sinpi(p1 * 2.0) * e1A + sinpi(p2 * 2.0) * e2A + sinpi(p3 * 2.0) * e3A + sinpi(p4 * 2.0) * e4A + sinpi(p5 * 2.0) * e5A + lpA * 0.5) * 0.224537) * 0.9898

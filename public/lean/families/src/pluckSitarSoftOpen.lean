@@ -12,7 +12,7 @@ dsp GenPluckSitarSoftOpen where
   state lp : F32 := 0.0
   state dcx : F32 := 0.0
   state dcs : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   state i1b1 : F32 := 0.0
   state i2b1 : F32 := 0.0
   state i1b2 : F32 := 0.0
@@ -20,9 +20,9 @@ dsp GenPluckSitarSoftOpen where
   buffer string : F32[4096]
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
-    let burstA := select(trigger, gate, burst * 0.86)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
+    let burstA := select(trigger, gate, burst * expneg(2.5 * max(24.0, freq) / sr))
     set burst := burstA
     let lpA := lp + 0.35 * (nz * burstA - lp)
     set lp := lpA
@@ -32,7 +32,7 @@ dsp GenPluckSitarSoftOpen where
     let damping := 0.28 + (1.0 - colour) * 0.25
     let wave := a * (1.0 - damping) + b * damping
     let fb := min(0.9998, expneg(5.0 / (max(24.0, freq) * life)))
-    let driven := clip(softsign(wave * 1.6) * fb * 0.97 + lpA * 0.5, -1.5, 1.5)
+    let driven := clip((wave + (softsign(wave * 4.0) * 0.25 - wave) * 0.15) * fb + lpA * 2.0, -1.5, 1.5)
     push string := driven
     let gb1 := tanpi(min(0.45, max(10.0, 180.0) / sr))
     let kb1 := 0.7
@@ -53,4 +53,4 @@ dsp GenPluckSitarSoftOpen where
     set dcx := pre
     set dcs := hp
     set previous := gate
-    return softsign(hp) * 1.3747
+    return softsign(hp) * 1.5907

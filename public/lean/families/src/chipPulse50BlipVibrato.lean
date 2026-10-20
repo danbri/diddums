@@ -13,7 +13,7 @@ dsp GenChipPulse50BlipVibrato where
   state vib : F32 := 0.0
   state sl : F32 := 0.0
   state held : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   sample x =>
     let trigger := gt(gate, previous + 0.001)
     let envA := select(trigger, gate, env * expneg(5.0 / (life * 1.0 * sr)))

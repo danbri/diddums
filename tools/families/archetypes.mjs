@@ -24,8 +24,13 @@ const svf=(tag,input,cut,res)=>`    let g${tag} := tanpi(min(0.45, max(10.0, ${c
     set i2${tag} := 2.0 * v2${tag} - i2${tag}
 `;// low-pass = v2, band-pass = v1, high-pass = input - k*v1 - v2
 const svfState=tag=>st([`i1${tag}`,`i2${tag}`]);
-const noise='    let nz := noise1(seed * 8191.0) * 2.0 - 1.0\n    set seed := fract(seed + 0.75487767)\n';
-const seedState='  state seed : F32 := 0.31\n';
+// White noise from a sample counter, hashed twice: noise1 alone on a counter has strong spectral lines
+// (spectral flatness 0.35); hashing its output again with the counter scaled by the golden ratio measures
+// 0.99 (white = 1). The counter restarts with each note and wraps long before F32 loses integer precision.
+// (An earlier version hashed a seed stepped by a constant fraction, which repeats every ~80 samples and
+// sounds as a fixed ~600 Hz buzz.)
+const noise='    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)\n    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)\n';
+const seedState='  state counter : F32 := 1.0\n';
 const fin=(expr,gain=1)=>`    set previous := gate\n    return softsign((${expr}) * ${L(gain)})\n`;
 // Same ending with a DC blocker, for models whose excitation carries a steady offset (breath, reed pressure, folding).
 const dcFin=(expr,gain=1)=>`    let pre := (${expr}) * ${L(gain)}\n    let hp := pre - dcx + 0.995 * dcs\n    set dcx := pre\n    set dcs := hp\n    set previous := gate\n    return softsign(hp)\n`;
@@ -59,49 +64,71 @@ const BODIES={none:null,mandolin:[[240,.5],[700,.4]],oud:[[110,.6],[280,.4]],dul
 for(const [body,res] of Object.entries(BODIES))for(const pick of ['soft','bright'])for(const damp of ['dark','open','metal']){
  const id=`pluck${cap(body)}${cap(pick)}${cap(damp)}`;
  add(id,`plucked string · ${body==='none'?'bare':body+' body'}, ${pick} pick, ${damp} decay`,'Plucked strings','pluck',name=>{
-  const d={dark:[.42,.2],open:[.28,.25],metal:[.12,.2]}[damp];
+  const d={dark:[.42,.2],open:[.28,.25],metal:[.12,.2]}[damp];// the noise burst lasts about a period of the note (Karplus-Strong)
   let s=head(name,{dark:1.2,open:2,metal:3.5}[damp],st(['burst','lp'])+dcState+seedState+(res?svfState('b1')+(res[1]?svfState('b2'):''):'')+'  buffer string : F32[4096]\n')+'  sample x =>\n'+trig+noise;
-  s+=`    let burstA := select(trigger, gate, burst * ${pick==='soft'?'0.86':'0.93'})\n    set burst := burstA\n    let lpA := lp + ${pick==='soft'?'0.35':'0.85'} * (nz * burstA - lp)\n    set lp := lpA\n`;
+  s+=`    let burstA := select(trigger, gate, burst * expneg(${pick==='soft'?'2.5':'4.0'} * max(24.0, freq) / sr))\n    set burst := burstA\n    let lpA := lp + ${pick==='soft'?'0.35':'0.85'} * (nz * burstA - lp)\n    set lp := lpA\n`;
   s+=`    let length := min(4093.0, sr / max(24.0, freq) - 0.5)\n    let a := taplin(string, length)\n    let b := taplin(string, length + 1.0)\n    let damping := ${L(d[0])} + (1.0 - colour) * ${L(d[1])}\n    let wave := a * (1.0 - damping) + b * damping\n    let fb := min(0.9998, expneg(5.0 / (max(24.0, freq) * life)))\n`;
-  s+=body==='sitar'?`    let driven := clip(softsign(wave * 1.6) * fb * 0.97 + lpA * 0.5, -1.5, 1.5)\n`:`    let driven := clip(wave * fb + lpA * 0.5, -1.5, 1.5)\n`;
+  s+=body==='sitar'?`    let driven := clip((wave + (softsign(wave * 4.0) * 0.25 - wave) * 0.15) * fb + lpA * 2.0, -1.5, 1.5)\n`:`    let driven := clip(wave * fb + lpA * 2.0, -1.5, 1.5)\n`;
   s+='    push string := driven\n';
   let outE='wave';
   if(res){s+=svf('b1','wave',L(res[0][0]),'0.7');outE+=` + v1b1 * ${L(res[0][1])}`;if(res[1]){s+=svf('b2','wave',L(res[1][0]),'0.9');outE+=` + v1b2 * ${L(res[1][1])}`;}}
   s+=dcFin(outE,.9);return s;});
 }
 
-// 3. Bowed strings: a waveguide driven continuously by a friction nonlinearity, with vibrato.
+// 3–5. Bowed strings, winds and reeds: oscillators in tune by construction (a phase accumulator), shaped
+// by harmonic mixes, filters and body resonances, with breath or bow noise and delayed vibrato. (The first
+// versions were self-oscillating waveguides that did not lock to the requested pitch.)
+const vibrato=(rate,depth,delay)=>`    set vib := fract(vib + ${L(rate)} / sr)\n    let veA := ve + (envA - ve) * (1.0 - expneg(1.0 / (${L(delay)} * sr)))\n    set ve := veA\n`;
+const phase=(fexpr)=>`    let f := ${fexpr}\n    let phA := fract(ph + f / sr)\n    set ph := phA\n`;
+
+// 3. Bowed strings: a sawtooth (the Helmholtz motion of a bowed string) through two body resonances,
+// bow noise, a bowed attack and vibrato that arrives after the note starts.
+const BODY={violin:[450,2900],viola:[350,2200],cello:[210,1500],bass:[110,900],fiddle:[520,2600]};
 for(const reg of ['violin','viola','cello','bass','fiddle'])for(const bow of ['smooth','airy','gritty'])for(const vib of ['still','warm','wide']){
  const id=`bowed${cap(reg)}${cap(bow)}${cap(vib)}`;
  add(id,`bowed ${reg} · ${bow} bow, ${vib} vibrato`,'Bowed strings','bowed',name=>{
-  const [rate,depth]={still:[0,0],warm:[5.2,.004],wide:[6.4,.009]}[vib],[noiseAmt,drive]={smooth:[.05,1.2],airy:[.18,1.1],gritty:[.08,2.2]}[bow],bright={violin:.55,viola:.45,cello:.35,bass:.25,fiddle:.7}[reg];
-  let s=head(name,1.5,st(['env','vib','lp'])+seedState+'  buffer string : F32[4096]\n')+'  sample x =>\n'+trig+noise+susEnv({violin:.08,viola:.1,cello:.12,bass:.16,fiddle:.04}[reg]);
-  s+=`    set vib := fract(vib + ${L(rate)} / sr)\n    let f := max(24.0, freq) * (1.0 + sinpi(vib * 2.0) * ${L(depth)})\n    let length := min(4093.0, sr / f - 0.5)\n    let a := taplin(string, length)\n    let b := taplin(string, length + 1.0)\n    let wave := a * 0.5 + b * 0.5\n`;
-  s+=`    let bowv := envA * (0.6 + colour * 0.5) - wave\n    let friction := softsign(bowv * ${L(drive*4)}) * envA * 0.5 + nz * envA * ${L(noiseAmt)}\n    push string := clip(wave * 0.985 + friction, -1.5, 1.5)\n    let lpA := lp + ${L(bright)} * (wave - lp)\n    set lp := lpA\n`;
-  s+=fin('lpA',1.4);return s;});
+  const [rate,depth]={still:[5,.0008],warm:[5.2,.0045],wide:[6.2,.009]}[vib],grit={smooth:.04,airy:.14,gritty:.09}[bow],edge={smooth:.5,airy:.45,gritty:.9}[bow],[b1,b2]=BODY[reg];
+  let s=head(name,.6,st(['env','ph','vib','ve','i1l','i2l','i1a','i2a','i1b','i2b'])+seedState)+'  sample x =>\n'+trig+noise+susEnv({violin:.09,viola:.1,cello:.12,bass:.16,fiddle:.05}[reg]);
+  s+=vibrato(rate,depth,.35)+phase(`max(24.0, freq) * (1.0 + sinpi(vib * 2.0) * ${L(depth)} * veA)`);
+  s+=`    let saw := phA * 2.0 - 1.0\n    let bowNoise := nz * envA * ${L(grit)} * (1.0 + 2.0 * max(0.0, 0.6 - envA))\n    let drive := saw * envA + bowNoise\n`;
+  s+=svf('l','drive',`f * ${L(3+5*edge)} * (0.6 + colour)`,'1.0');
+  s+=svf('a','v2l',L(b1),'0.9')+svf('b','v2l',L(b2),'1.4');
+  s+=fin('v2l * 0.6 + v1a * 0.5 + v1b * 0.35',1.6);return s;});
 }
 
-// 4. Blown tubes (flutes, pipes): a short delay with a jet nonlinearity and breath noise.
+// 4. Blown: a sine with a little 2nd and 3rd harmonic (more for recorders and fifes), breath noise
+// band-passed around the note, a chiff at the start, and vibrato; shakuhachi bends up into the note.
+const BLOWN={flute:[.12,.05,0],recorder:[.22,.12,0],pan:[.06,.02,0],shakuhachi:[.1,.06,.04],ocarina:[.03,.01,0],bottle:[.02,.0,0],whistle:[.08,.04,0],fife:[.25,.15,0]};
 for(const kind of ['flute','recorder','pan','shakuhachi','ocarina','bottle','whistle','fife'])for(const breath of ['pure','breathy','windy'])for(const reg of ['low','high']){
  const id=`blown${cap(kind)}${cap(breath)}${cap(reg)}`;
  add(id,`${kind} · ${breath}, ${reg} register`,'Winds','blown',name=>{
-  const n={pure:.03,breathy:.12,windy:.3}[breath],jet={flute:.5,recorder:.45,pan:.55,shakuhachi:.6,ocarina:.35,bottle:.3,whistle:.4,fife:.65}[kind],oct=reg==='high'?2:1;
-  let s=head(name,1,st(['env','lp','vib','chiff'])+dcState+seedState+'  buffer bore : F32[4096]\n')+'  sample x =>\n'+trig+noise+susEnv(kind==='shakuhachi'?.12:.05);
-  s+=`    let chiffA := select(trigger, gate * 0.8, chiff * expneg(1.0 / (0.03 * sr)))\n    set chiff := chiffA\n    set vib := fract(vib + 4.8 / sr)\n`;
-  s+=`    let f := max(24.0, freq * ${L(oct)}) * (1.0 + sinpi(vib * 2.0) * 0.003 * envA)\n    let length := min(4093.0, sr / f - 1.0)\n    let back := taplin(bore, length)\n`;
-  s+=`    let breathIn := envA * (0.7 + colour * 0.3) + nz * (envA * ${L(n)} + chiffA * 0.3)\n    let jetOut := softsign((breathIn - back * ${L(jet)}) * 2.5) - back * 0.3\n    push bore := clip(jetOut * (0.5 + 0.42 * min(1.0, envA * 3.0)), -1.2, 1.2)\n`;
-  s+=`    let lpA := lp + 0.45 * (back - lp)\n    set lp := lpA\n`+dcFin(`lpA + nz * envA * ${L(n*.4)}`,1.2);return s;});
+  const n={pure:.05,breathy:.16,windy:.35}[breath],[h2,h3,bend]=BLOWN[kind],oct=reg==='high'?2:1;
+  let s=head(name,.4,st(['env','ph','vib','ve','chiff','i1b','i2b'])+seedState)+'  sample x =>\n'+trig+noise+susEnv(kind==='shakuhachi'?.12:kind==='pan'?.07:.05);
+  s+=`    let chiffA := select(trigger, gate, chiff * expneg(1.0 / (0.05 * sr)))\n    set chiff := chiffA\n`+vibrato(kind==='ocarina'?5.5:4.8,.004,.4);
+  s+=phase(`max(24.0, freq * ${L(oct)}) * (1.0 + sinpi(vib * 2.0) * 0.004 * veA - chiffA * ${L(bend)})`);
+  s+=`    let bright := 0.5 + colour\n    let tone := sinpi(phA * 2.0) + sinpi(phA * 4.0) * ${L(h2)} * bright + sinpi(phA * 6.0) * ${L(h3)} * bright\n`;
+  s+=svf('b','nz','f * 2.0','1.4');
+  s+=fin(`tone * envA * 0.55 + v1b * envA * ${L(n)} * 3.0 + v1b * chiffA * 0.6`,1.2);return s;});
 }
 
-// 5. Reeds: a bore with a reed table (clarinet-like odd harmonics) or a conical bore (saxophone/oboe-like).
+// 5. Reeds. Clarinet and chalumeau: a sine driven into a soft clip (odd harmonics, brighter when
+// louder). Oboe, sax, bassoon (conical bores): a sawtooth through a low-pass, with a nasal formant for
+// the oboe. Harmonium, accordion, melodica (free reeds): pulse waves, two or three slightly detuned
+// for the accordion's beating; all through a low-pass that opens with the breath.
+const FORMANT={clarinet:[0,0],chalumeau:[0,0],oboe:[1400,.6],sax:[900,.4],bassoon:[500,.5],harmonium:[1200,.15],accordion:[1500,.2],melodica:[1100,.25]};
 for(const kind of ['clarinet','chalumeau','oboe','sax','bassoon','harmonium','accordion','melodica'])for(const reed of ['soft','reedy','brassy'])for(const vib of ['still','vibrato']){
  const id=`reed${cap(kind)}${cap(reed)}${cap(vib)}`;
  add(id,`${kind} · ${reed} reed, ${vib}`,'Reeds','reed',name=>{
-  const stiff={soft:.6,reedy:.9,brassy:1.3}[reed],conical=['oboe','sax','bassoon'].includes(kind),bright={clarinet:.5,chalumeau:.3,oboe:.7,sax:.6,bassoon:.35,harmonium:.55,accordion:.65,melodica:.6}[kind];
-  let s=head(name,1,st(['env','lp','vib'])+dcState+seedState+'  buffer bore : F32[4096]\n')+'  sample x =>\n'+trig+noise+susEnv(.04);
-  s+=`    set vib := fract(vib + 5.5 / sr)\n    let f := max(24.0, freq) * (1.0 + sinpi(vib * 2.0) * ${vib==='vibrato'?'0.005':'0.0'} * envA)\n    let length := min(4093.0, sr / f * ${conical?'1.0':'0.5'} - 1.0)\n    let back := taplin(bore, length)\n`;
-  s+=`    let pressure := envA * (0.55 + colour * 0.4) + nz * envA * 0.02\n    let diff := pressure - back${conical?'':' * (0.0 - 1.0)'}\n    let reedGain := clip(1.0 - diff * ${L(stiff)}, -1.0, 1.0)\n    push bore := clip(pressure - diff * reedGain, -1.0, 1.0) * (0.5 + 0.45 * min(1.0, envA * 3.0))\n`;
-  s+=`    let lpA := lp + ${L(bright)} * (back - lp)\n    set lp := lpA\n`+dcFin('lpA',1.1);return s;});
+  const edge={soft:.5,reedy:.8,brassy:1.2}[reed],odd=kind==='clarinet'||kind==='chalumeau',free=['harmonium','accordion','melodica'].includes(kind),[fm,fa]=FORMANT[kind];
+  const detune=kind==='accordion'?.004:kind==='harmonium'?.0015:0;
+  let s=head(name,.3,st(['env','ph','ph2','vib','ve','i1l','i2l','i1f','i2f'])+(free?dcState:'')+seedState)+'  sample x =>\n'+trig+noise+susEnv(free?.03:.04);
+  s+=vibrato(5.4,vib==='vibrato'?.005:0,.35)+phase(`max(24.0, freq) * (1.0 + sinpi(vib * 2.0) * ${L(vib==='vibrato'?.005:0)} * veA)`);
+  s+=`    let ph2A := fract(ph2 + f * ${L(1+detune)} / sr)\n    set ph2 := ph2A\n`;
+  const wave=odd?`softsign(sinpi(phA * 2.0) * (1.0 + ${L(edge*4)} * envA * (0.4 + colour)))`:free?`(select(lt(phA, 0.42), 1.0, 0.0 - 1.0) + 0.16) * 0.6 + (select(lt(ph2A, 0.42), 1.0, 0.0 - 1.0) + 0.16) * ${detune?'0.6':'0.0'}`:`(phA * 2.0 - 1.0)`;
+  s+=`    let src := (${wave}) * envA + nz * envA * 0.015\n`;
+  s+=svf('l','src',`f * ${L(odd?6:4)} * (0.5 + colour) * (0.4 + 0.8 * envA) * ${L(.6+edge*.6)}`,'0.9');
+  const end=free?dcFin:fin;// free reeds: soft-clipping an asymmetric pulse leaves an offset
+  s+=fa?svf('f','v2l',L(fm),'1.2')+end(`v2l + v1f * ${L(fa)}`,1.3):end('v2l',1.3);return s;});
 }
 
 // 6. Two-operator FM with index envelope, feedback and fixed or ratio modulators.
@@ -259,7 +286,7 @@ for(const wave of ['pulse12','pulse25','pulse50','triangle4bit','noiseShort','no
   s+=`    let bend := ${fx==='slideUp'?'1.0 - slA * 0.5':fx==='slideDown'?'1.0 + slA * 1.0':'1.0'} + sinpi(vib * 2.0) * ${fx==='vibrato'?'0.012':'0.0'}\n    set ph := fract(ph + min(0.45, max(24.0, freq) * bend / sr))\n`;
   if(wave.startsWith('pulse'))s+=`    let w := select(lt(ph, ${L(Number(wave.slice(5))/100)} + colour * 0.1), 1.0, (0.0 - 1.0))\n`;
   else if(wave.startsWith('tri'))s+=`    let w := quant(1.0 - abs(ph * 4.0 - 2.0), 8.0)\n`;
-  else s+=`    let heldA := select(lt(ph, ${L(wave==='noiseShort'?.07:.5)}), noise1(fract(seed + ph * 13.0) * 8191.0) * 2.0 - 1.0, held)\n    set held := heldA\n    set seed := fract(seed + 0.61803)\n    let w := heldA\n`;
+  else s+=`    let heldA := select(lt(ph, ${L(wave==='noiseShort'?.07:.5)}), noise1(noise1(counter) * 437.5453 + counter * 0.6180339), held)\n    set held := heldA\n    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)\n    let w := heldA\n`;
   s+=fin('w * envA * 0.5',1);return s;});
 }
 
@@ -291,7 +318,7 @@ for(const b of [.1,.3,.5,.7,.9])for(const tone of ['dark','bright'])for(const ta
  add(id,`Karplus-Strong drum · blend ${b}, ${tone}, ${tail}`,'Drums & percussion','ksdrum',name=>{
   let s=head(name,tail==='tight'?.3:1,st(['burst','lp'])+dcState+seedState+'  buffer loop : F32[4096]\n')+'  sample x =>\n'+trig+noise;
   s+=`    let burstA := select(trigger, gate, burst * 0.9)\n    set burst := burstA\n    let length := min(4093.0, sr / max(24.0, freq) - 0.5)\n    let a := taplin(loop, length)\n    let b := taplin(loop, length + 1.0)\n`;
-  s+=`    let avg := (a + b) * 0.5\n    let flip := select(lt(noise1(fract(seed * 3.7) * 8191.0), ${L(b)}), 1.0, (0.0 - 1.0))\n    let fb := min(0.9995, expneg(5.0 / (max(24.0, freq) * life)))\n`;
+  s+=`    let avg := (a + b) * 0.5\n    let flip := select(lt(nz, ${L(b)}), 1.0, (0.0 - 1.0))\n    let fb := min(0.9995, expneg(5.0 / (max(24.0, freq) * life)))\n`;
   s+=`    push loop := clip(avg * flip * fb + nz * burstA, -1.5, 1.5)\n    let lpA := lp + ${tone==='dark'?'0.3':'0.8'} * (avg - lp) * (0.6 + colour * 0.4)\n    set lp := lpA\n`+dcFin('lpA',1.2);return s;});
 }
 
@@ -302,7 +329,7 @@ for(const [sc,steps] of Object.entries(SH_SCALES))for(const rate of [4,8,13])for
  add(id,`note hopper · ${sc} steps, ${rate} hops per second, ${wave}`,'Generative','hop',name=>{
   let s=head(name,1.5,st(['env','ph','clk','step','pe'])+seedState)+'  sample x =>\n'+trig+noise+susEnv(.01);
   s+=`    let clkA := fract(clk + ${L(rate)} * (0.5 + colour) / sr)\n    let tick := lt(clkA, clk)\n    set clk := clkA\n`;
-  s+=`    let stepA := select(tick, (noise1(seed * 977.0) * ${L(steps.length)} * 0.999 - fract(noise1(seed * 977.0) * ${L(steps.length)} * 0.999)), step)\n    set step := stepA\n`;
+  s+=`    let stepA := select(tick, (nz * ${L(steps.length)} * 0.999 - fract(nz * ${L(steps.length)} * 0.999)), step)\n    set step := stepA\n`;
   // map step index to semitones with nested selects
   let sel=L(steps[steps.length-1]);for(let i=steps.length-2;i>=0;i--)sel=`select(lt(stepA, ${L(i+.5)}), ${L(steps[i])}, ${sel})`;
   s+=`    let semis := ${sel}\n    let ratio := expneg(semis * (0.0 - 0.05776227))\n    set ph := fract(ph + min(0.45, max(24.0, freq) * ratio / sr))\n`;
@@ -310,13 +337,14 @@ for(const [sc,steps] of Object.entries(SH_SCALES))for(const rate of [4,8,13])for
   s+=fin(`sinpi(ph * 2.0) * envA * ${wave==='pluck'?'peA':'(0.6 + peA * 0.4)'}`,.8);return s;});
 }
 
-// 19. Comb resonators: noise driving a tuned feedback comb, so the noise takes the note's pitch.
+// 19. Comb resonators: noise driving a tuned feedback comb, so the noise takes the note's pitch. The
+// feedback drops a little when the note is released, so even the longest combs end.
 for(const fb of [.9,.97,.995])for(const src of ['hiss','crackle','rumble'])for(const env of ['held','swell','strike']){
  const id=`comb${String(fb).replace('.','p')}${cap(src)}${cap(env)}`;
  add(id,`comb resonator · feedback ${fb}, ${src}, ${env}`,'Resonators','comb',name=>{
   let s=head(name,env==='strike'?1:2,st(['env','lp','crack'])+dcState+seedState+'  buffer comb : F32[4096]\n')+'  sample x =>\n'+trig+noise+(env==='strike'?percEnv():susEnv(env==='swell'?.6:.02));
   s+=src==='crackle'?`    let crackA := select(gt(nz, 0.97), nz, crack * 0.6)\n    set crack := crackA\n    let exc := crackA\n`:src==='rumble'?`    let crackA := crack + 0.02 * (nz - crack)\n    set crack := crackA\n    let exc := crackA * 4.0\n`:'    let exc := nz\n';
-  s+=`    let length := min(4093.0, sr / max(24.0, freq) - 0.5)\n    let a := taplin(comb, length)\n    let lpA := lp + (0.3 + colour * 0.6) * (a - lp)\n    set lp := lpA\n    push comb := clip(exc * envA * 0.3 + lpA * ${L(fb)}, -1.5, 1.5)\n`;
+  s+=`    let length := min(4093.0, sr / max(24.0, freq) - 0.5)\n    let a := taplin(comb, length)\n    let lpA := lp + (0.3 + colour * 0.6) * (a - lp)\n    set lp := lpA\n    push comb := clip(exc * envA * 0.3 + lpA * ${L(fb)} * select(gt(gate, 0.001), 1.0, 0.97), -1.5, 1.5)\n`;
   s+=dcFin('lpA',1);return s;});
 }
 

@@ -12,13 +12,13 @@ dsp GenSnare150CrispRim where
   state ne : F32 := 0.0
   state p1 : F32 := 0.0
   state p2 : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   state i1n : F32 := 0.0
   state i2n : F32 := 0.0
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let envA := select(trigger, gate, env * expneg(5.0 / (life * 0.6 * sr)))
     set env := envA
     let neA := select(trigger, gate, ne * expneg(5.0 / (life * sr)))
@@ -33,4 +33,4 @@ dsp GenSnare150CrispRim where
     set i1n := 2.0 * v1n - i1n
     set i2n := 2.0 * v2n - i2n
     set previous := gate
-    return softsign(((sinpi(p1 * 2.0) + sinpi(p2 * 2.0) * 0.5) * envA * 0.8 + (nz - 0.8 * v1n - v2n) * neA * 0.6) * 1.0) * 0.4886
+    return softsign(((sinpi(p1 * 2.0) + sinpi(p2 * 2.0) * 0.5) * envA * 0.8 + (nz - 0.8 * v1n - v2n) * neA * 0.6) * 1.0) * 0.5673

@@ -276,7 +276,7 @@ Events follow the same logic at the scale of a beat:
 
 ## More instruments
 
-Beyond the instruments above there are 1011 more LeanDSP instruments generated from synthesis archetypes (Mallets & bells, Plucked strings, Bowed strings, Winds, Reeds, FM tones, Synths, Organs, Wavefolders, Voices, Drums & percussion, Textures, Chip, Drones, Ring & metallic, Generative, Resonators). The full list, with how each sounds and the part it plays by default, is at https://danbri.github.io/diddums/skill/INSTRUMENTS.md. Use any of those ids as `sound`. Read that list when the request needs a specific timbre (a sitar, a clarinet, a gong, a chip-tune pulse) that the sounds above do not cover.
+Beyond the instruments above there are 1017 more LeanDSP instruments generated from synthesis archetypes (Mallets & bells, Plucked strings, Bowed strings, Winds, Reeds, FM tones, Synths, Organs, Wavefolders, Voices, Drums & percussion, Textures, Chip, Drones, Ring & metallic, Generative, Resonators). The full list, with how each sounds and the part it plays by default, is at https://danbri.github.io/diddums/skill/INSTRUMENTS.md. Use any of those ids as `sound`. Read that list when the request needs a specific timbre (a sitar, a clarinet, a gong, a chip-tune pulse) that the sounds above do not cover.
 
 ## Sources
 

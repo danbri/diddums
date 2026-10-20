@@ -12,19 +12,19 @@ dsp GenKsDrum0p9BrightTight where
   state lp : F32 := 0.0
   state dcx : F32 := 0.0
   state dcs : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   buffer loop : F32[4096]
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let burstA := select(trigger, gate, burst * 0.9)
     set burst := burstA
     let length := min(4093.0, sr / max(24.0, freq) - 0.5)
     let a := taplin(loop, length)
     let b := taplin(loop, length + 1.0)
     let avg := (a + b) * 0.5
-    let flip := select(lt(noise1(fract(seed * 3.7) * 8191.0), 0.9), 1.0, (0.0 - 1.0))
+    let flip := select(lt(nz, 0.9), 1.0, (0.0 - 1.0))
     let fb := min(0.9995, expneg(5.0 / (max(24.0, freq) * life)))
     push loop := clip(avg * flip * fb + nz * burstA, -1.5, 1.5)
     let lpA := lp + 0.8 * (avg - lp) * (0.6 + colour * 0.4)
@@ -34,4 +34,4 @@ dsp GenKsDrum0p9BrightTight where
     set dcx := pre
     set dcs := hp
     set previous := gate
-    return softsign(hp) * 1.5340
+    return softsign(hp) * 3.0000

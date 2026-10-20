@@ -13,12 +13,12 @@ dsp GenComb0p97RumbleStrike where
   state crack : F32 := 0.0
   state dcx : F32 := 0.0
   state dcs : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   buffer comb : F32[4096]
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let envA := select(trigger, gate, env * expneg(5.0 / (life * 1.0 * sr)))
     set env := envA
     let crackA := crack + 0.02 * (nz - crack)
@@ -28,10 +28,10 @@ dsp GenComb0p97RumbleStrike where
     let a := taplin(comb, length)
     let lpA := lp + (0.3 + colour * 0.6) * (a - lp)
     set lp := lpA
-    push comb := clip(exc * envA * 0.3 + lpA * 0.97, -1.5, 1.5)
+    push comb := clip(exc * envA * 0.3 + lpA * 0.97 * select(gt(gate, 0.001), 1.0, 0.97), -1.5, 1.5)
     let pre := (lpA) * 1.0
     let hp := pre - dcx + 0.995 * dcs
     set dcx := pre
     set dcs := hp
     set previous := gate
-    return softsign(hp) * 0.5766
+    return softsign(hp) * 1.4725

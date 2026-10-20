@@ -13,7 +13,7 @@ dsp GenChipNoiseLongNoteSlideUp where
   state vib : F32 := 0.0
   state sl : F32 := 0.0
   state held : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   sample x =>
     let trigger := gt(gate, previous + 0.001)
     let envC := select(gt(gate, env), 1.0 - expneg(1.0 / (0.002 * sr)), 1.0 - expneg(5.0 / (life * sr)))
@@ -24,9 +24,9 @@ dsp GenChipNoiseLongNoteSlideUp where
     set vib := fract(vib + 6.0 / sr)
     let bend := 1.0 - slA * 0.5 + sinpi(vib * 2.0) * 0.0
     set ph := fract(ph + min(0.45, max(24.0, freq) * bend / sr))
-    let heldA := select(lt(ph, 0.5), noise1(fract(seed + ph * 13.0) * 8191.0) * 2.0 - 1.0, held)
+    let heldA := select(lt(ph, 0.5), noise1(noise1(counter) * 437.5453 + counter * 0.6180339), held)
     set held := heldA
-    set seed := fract(seed + 0.61803)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let w := heldA
     set previous := gate
-    return softsign((w * envA * 0.5) * 1.0) * 0.4267
+    return softsign((w * envA * 0.5) * 1.0) * 0.7659

@@ -10,13 +10,13 @@ dsp GenHitWoodClickDry where
   state previous : F32 := 0.0
   state env : F32 := 0.0
   state tick : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   state i1h : F32 := 0.0
   state i2h : F32 := 0.0
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let envA := select(trigger, gate, env * expneg(5.0 / (life * 1.0 * sr)))
     set env := envA
     let tickA := select(trigger, 0.0, tick + 1.0 / sr)
@@ -30,4 +30,4 @@ dsp GenHitWoodClickDry where
     set i1h := 2.0 * v1h - i1h
     set i2h := 2.0 * v2h - i2h
     set previous := gate
-    return softsign((v1h * envA * pulses) * 1.6) * 0.5258
+    return softsign((v1h * envA * pulses) * 1.6) * 0.5527

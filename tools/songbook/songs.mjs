@@ -21,8 +21,8 @@ song({title:'Nursery Rhyme Medley',description:'Six traditional nursery rhymes i
   box:{sound:'musicBox',label:'Music box',level:.55,send:.35},
   marimba:{sound:'marimba',label:'Marimba',level:.6},
   glock:{sound:'modalGlassBarMediumShort',label:'Glockenspiel',level:.5,send:.3},
-  recorder:{sound:'blownRecorderPureHigh',label:'Recorder',level:1.1},
-  accordion:{sound:'reedAccordionSoftStill',label:'Accordion',level:1.1},
+  recorder:{sound:'blownRecorderPureHigh',label:'Recorder',level:.45},
+  accordion:{sound:'reedAccordionSoftStill',label:'Accordion',level:.5},
   bells:{sound:'celesta',label:'Celesta',level:.4},
   harp:{sound:'pluckHarpSoftDark',label:'Harp',pattern:'arp',lo:55,level:.32},
   bass:{sound:'bowedBassAiryWarm',label:'Bass',pattern:'rootfifth',level:.6}}}),
@@ -54,7 +54,7 @@ song({title:'Little Boat',description:'An original rocking lullaby in 6/8: hummi
  form:[{name:'Rocking',bars:'G C G D | G C D G',energy:.4,parts:{hum:'B4/2 D5/1 G5/3 | E5/2 D5/1 C5/3 | B4/2 A4/1 G4/2 B4/1 | A4/6 | B4/2 D5/1 G5/3 | G5/2 E5/1 C5/3 | B4/2 C5/1 A4/2 F#4/1 | G4/6',ocarina:'r/6'}},
   {name:'Ocarina',bars:'G C G D | G C D G',energy:.45,parts:{ocarina:'B5/2 D6/1 G6/3 | E6/2 D6/1 C6/3 | B5/2 A5/1 G5/2 B5/1 | A5/6 | B5/2 D6/1 G6/3 | G6/2 E6/1 C6/3 | B5/2 C6/1 A5/2 F#5/1 | G5/6',hum:'r/6'}},
   {name:'Asleep',bars:'C G',energy:.25,parts:{hum:'G4/12',ocarina:'r/6'}}],
- tracks:{hum:{sound:'voiceOAltoBreathy',label:'Humming',level:.4,send:.4},ocarina:{sound:'blownOcarinaPureLow',label:'Ocarina',level:1,send:.45},
+ tracks:{hum:{sound:'voiceOAltoBreathy',label:'Humming',level:.4,send:.4},ocarina:{sound:'blownOcarinaPureLow',label:'Ocarina',level:.4,send:.45},
   harp:{sound:'pluckHarpSoftDark',label:'Harp',pattern:'sixeightstrum',lo:55,level:.28},cello:{sound:'bowedCelloSmoothWarm',label:'Cello',pattern:'sixeight',level:.28}}}),
 
 song({title:'Moon over the Cot',description:'An original waltz lullaby in F: music box, then a child-like hum, over harp and a slow string pad.',
@@ -95,7 +95,7 @@ song({title:'Copper Leaves',description:'An autumn waltz in D minor: clarinet ov
  form:[{name:'Waltz',bars:'Dm Dm Bb Bb | Gm Gm A A',energy:.5,parts:{clarinet:'A5/4 G5/1 F5/1 | E5/2 F5/2 D5/2 | D5/4 C5/1 Bb4/1 | F5/6 | G5/4 F5/1 E5/1 | D5/2 G5/2 Bb5/2 | C#5/4 E5/2 | A5/6',glock:'r/6'}},
   {name:'Second half',bars:'Dm Dm Bb Bb | Gm A Dm Dm',energy:.6,parts:{clarinet:'A5/4 G5/1 F5/1 | E5/2 F5/2 D5/2 | D5/4 C5/1 Bb4/1 | F5/6 | G5/2 Bb5/2 D6/2 | C#6/3 E6/1 A5/2 | D6/6 | D5/6',glock:'r/6 | r/6 | r/6 | F6/2 A6/2 C7/2 | r/6 | r/6 | F6/2 A6/2 D7/2 | r/6'}},
   {name:'Waltz again',bars:'Dm Dm Bb Bb | Gm A Dm Dm',energy:.45,parts:{clarinet:'A5/4 G5/1 F5/1 | E5/2 F5/2 D5/2 | D5/4 C5/1 Bb4/1 | F5/6 | G5/2 Bb5/2 D6/2 | C#6/3 E6/1 A5/2 | D6/6 | D5/6',glock:'r/6'}}],
- tracks:{clarinet:{sound:'reedClarinetSoftVibrato',label:'Clarinet',level:1.3,send:.35},glock:{sound:'modalGlassBarMediumShort',label:'Glockenspiel',level:.55,send:.4},
+ tracks:{clarinet:{sound:'reedClarinetSoftVibrato',label:'Clarinet',level:.5,send:.35},glock:{sound:'modalGlassBarMediumShort',label:'Glockenspiel',level:.55,send:.4},
   harp:{sound:'pluckHarpSoftDark',label:'Harp',pattern:'waltz',lo:53,level:.5},bass:{sound:'bowedBassAiryWarm',label:'Bass',pattern:'waltzbass',level:.55}}})
 ];
 
@@ -109,7 +109,7 @@ song({title:'Ska · Rudie Walk',description:'Ska at 152 bpm: off-beat guitar and
  form:[{name:'Intro',bars:'C Am F G',energy:.6,parts:{sax:'r/8',brass:'r/8'}},
   {name:'Horns',bars:'C Am F G | C Am F G',x:2,energy:.85,parts:{sax:'E5/2 G5/2 r/1 G5/1 A5/2 | C6/3 A5/1 G5/4 | F5/2 A5/2 C6/2 A5/2 | G5/6 r/2 | E5/2 G5/2 r/1 G5/1 A5/2 | C6/3 E6/1 D6/4 | C6/2 A5/2 F5/2 A5/2 | G5/2 B5/2 D6/4'}},
   {name:'Out',bars:'C Am F G,C',energy:.7,parts:{sax:'E5/2 G5/2 r/1 G5/1 A5/2 | C6/3 A5/1 G5/4 | F5/2 A5/2 C6/2 A5/2 | G5/4 C6/4'}}],
- tracks:{sax:{sound:'reedSaxReedyStill',label:'Sax',level:1.5,pan:-.2,send:.25},brass:{sound:'subSawBrassBp',label:'Brass',level:.3,pan:.2,transpose:-12,double:'sax'},
+ tracks:{sax:{sound:'reedSaxReedyStill',label:'Sax',level:.45,pan:-.2,send:.25},brass:{sound:'subSawBrassBp',label:'Brass',level:.3,pan:.2,transpose:-12,double:'sax'},
   guitar:{sound:'pluckGuitarBrightDark',label:'Skank guitar',pattern:'offbeat',lo:60,level:.35,pan:.35},organ:{sound:'organJazzPercStill',label:'Organ bubble',pattern:'offbeat',lo:55,level:.22,pan:-.35},
   bass:{sound:'subSquareBassLp',label:'Walking bass',pattern:'ska',level:.5}},extra:{}}),
 
@@ -118,7 +118,7 @@ song({title:'Glam Rock · Silver Platform Boots',description:'A glam stomp in A:
  form:[{name:'Stomp',bars:'A A D D',energy:.6,parts:{voice:'r/8',sax:'r/8'}},
   {name:'Chant',bars:'A A D A | E D A A',x:2,energy:.85,parts:{voice:'A4/2 r/2 A4/2 C#5/2 | E5/4 r/2 C#5/2 | D5/2 r/2 D5/2 F#5/2 | A5/4 r/4 | E5/2 E5/2 F#5/2 E5/2 | D5/2 C#5/2 B4/4 | A4/2 C#5/2 E5/2 C#5/2 | A4/6 r/2'}},
   {name:'Sax break',bars:'A A D A | E D A A',energy:1,parts:{voice:'r/8',sax:'E5/2 r/2 E5/2 A5/2 | C#6/4 r/2 A5/2 | F#5/2 r/2 F#5/2 A5/2 | E6/4 r/4 | B5/2 B5/2 C#6/2 B5/2 | A5/2 F#5/2 D5/4 | C#5/2 E5/2 A5/2 E5/2 | A5/6 r/2'}}],
- tracks:{voice:{sound:'voiceAaTenorClean',label:'Chant',level:.5,send:.3},sax:{sound:'reedSaxReedyVibrato',label:'Sax',level:1.3,send:.3},
+ tracks:{voice:{sound:'voiceAaTenorClean',label:'Chant',level:.5,send:.3},sax:{sound:'reedSaxReedyVibrato',label:'Sax',level:.45,send:.3},
   fuzz:{sound:'subSyncBrassBp',label:'Fuzz chords',pattern:'power',lo:45,level:.3,life:.2},bass:{sound:'subSawBassLp',label:'Bass',pattern:'octave',level:.45}}}),
 
 song({title:'Heavy Metal · Iron Weather',description:'Galloping power chords in E with a Phrygian F, double kick at full energy, a 16th-note bass pedal and a sync lead solo.',
@@ -135,7 +135,7 @@ song({title:'Folk · Over the Hill',description:'An original jig in D (6/8): fid
  form:[{name:'A part',bars:'D G D A | D G A D',x:2,energy:.6,parts:{fiddle:'F#5/2 E5/1 D5/2 F#5/1 | G5/2 B5/1 B5/2 A5/1 | F#5/2 A5/1 D6/2 A5/1 | E5/2 F#5/1 E5/2 C#5/1 | F#5/2 E5/1 D5/2 F#5/1 | G5/2 B5/1 D6/2 B5/1 | A5/2 F#5/1 E5/2 C#5/1 | D5/3 D5/3',whistle:'r/6'}},
   {name:'B part',bars:'D Bm G A | D Bm Em,A D',x:2,energy:.85,parts:{fiddle:'A5/2 B5/1 A5/2 F#5/1 | B5/2 D6/1 F#6/2 D6/1 | B5/2 A5/1 G5/2 B5/1 | A5/2 C#6/1 E6/2 C#6/1 | A5/2 F#5/1 D5/2 F#5/1 | F#5/2 B5/1 D6/2 B5/1 | G5/2 E5/1 A5/2 C#5/1 | D5/6',whistle:'A6/2 B6/1 A6/2 F#6/1 | B6/2 D7/1 F#7/2 D7/1 | B6/2 A6/1 G6/2 B6/1 | A6/2 C#7/1 E7/2 C#7/1 | A6/2 F#6/1 D6/2 F#6/1 | F#6/2 B6/1 D7/2 B6/1 | G6/2 E6/1 A6/2 C#6/1 | D6/6'}},
   {name:'A again',bars:'D G D A | D G A D',energy:.9,parts:{fiddle:'F#5/2 E5/1 D5/2 F#5/1 | G5/2 B5/1 B5/2 A5/1 | F#5/2 A5/1 D6/2 A5/1 | E5/2 F#5/1 E5/2 C#5/1 | F#5/2 E5/1 D5/2 F#5/1 | G5/2 B5/1 D6/2 B5/1 | A5/2 F#5/1 E5/2 C#5/1 | D5/6',whistle:'F#6/2 E6/1 D6/2 F#6/1 | G6/2 B6/1 B6/2 A6/1 | F#6/2 A6/1 D7/2 A6/1 | E6/2 F#6/1 E6/2 C#6/1 | F#6/2 E6/1 D6/2 F#6/1 | G6/2 B6/1 D7/2 B6/1 | A6/2 F#6/1 E6/2 C#6/1 | D6/6'}}],
- tracks:{fiddle:{sound:'bowedFiddleSmoothWarm',label:'Fiddle',level:.5,pan:-.15,send:.3},whistle:{sound:'blownWhistlePureHigh',label:'Tin whistle',level:.9,pan:.2,send:.3},
+ tracks:{fiddle:{sound:'bowedFiddleSmoothWarm',label:'Fiddle',level:.5,pan:-.15,send:.3},whistle:{sound:'blownWhistlePureHigh',label:'Tin whistle',level:.45,pan:.2,send:.3},
   guitar:{sound:'pluckGuitarSoftDark',label:'Guitar',pattern:'sixeightstrum',lo:52,level:.32,pan:.3},bass:{sound:'bowedBassAiryWarm',label:'Bass',pattern:'sixeight',level:.7}}}),
 
 song({title:'Blues · Long Road Shuffle',description:'Two choruses of a 12-bar shuffle in A, swung in triplets: boogie bass, electric piano comping and a sax answering itself.',
@@ -143,7 +143,7 @@ song({title:'Blues · Long Road Shuffle',description:'Two choruses of a 12-bar s
  form:[{name:'First chorus',bars:'A7 D7 A7 A7 | D7 D7 A7 A7 | E7 D7 A7 E7',energy:.65,parts:{sax:BLUES,organ:'r/12'}},
   {name:'Second chorus',bars:'A7 D7 A7 A7 | D7 D7 A7 A7 | E7 D7 A7 E7',energy:.85,parts:{sax:BLUES}},
   {name:'Tag',bars:'A7',energy:.6,parts:{sax:'A4/12',keys:'block'}}],
- tracks:{sax:{sound:'reedSaxReedyVibrato',label:'Sax',level:1.4,send:.3},keys:{sound:'electricPiano',label:'Electric piano',pattern:'shuffle',lo:55,level:.25,life:.35},
+ tracks:{sax:{sound:'reedSaxReedyVibrato',label:'Sax',level:.45,send:.3},keys:{sound:'electricPiano',label:'Electric piano',pattern:'shuffle',lo:55,level:.25,life:.35},
   organ:{sound:'organJazzPlainTremolo',label:'Organ',pattern:'block',lo:55,level:.18},bass:{sound:'subSquareBassLp',label:'Boogie bass',pattern:'boogie',level:.5}}}),
 
 song({title:'Sea Shanty · Haul Away, Sally',description:'An original shanty in D minor: a solo voice calls and a low crew answers, over accordion, fiddle and a stamping beat.',
@@ -219,7 +219,7 @@ song({title:'Reggae · Sunday Yard',description:'Roots reggae in G at 76: one-dr
  key:'G major',bpm:76,rhythm:'reggae',room:.45,
  form:[{name:'Riddim',bars:'G C G D',energy:.6,parts:{melodica:'r/8'}},
   {name:'Melodica',bars:'G C G D | G C D G',x:2,energy:.75,parts:{melodica:'B4/3 D5/1 D5/4 | E5/2 G5/2 E5/4 | D5/3 B4/1 A4/2 G4/2 | A4/8 | B4/3 D5/1 G5/4 | E5/2 C5/2 E5/2 G5/2 | D5/2 B4/2 A4/2 F#4/2 | G4/8'}}],
- tracks:{melodica:{sound:'reedMelodicaSoftVibrato',label:'Melodica',level:1.3,send:.45},skank:{sound:'pluckGuitarBrightDark',label:'Skank',pattern:'backbeat',lo:60,level:.6,pan:.3},
+ tracks:{melodica:{sound:'reedMelodicaSoftVibrato',label:'Melodica',level:.45,send:.45},skank:{sound:'pluckGuitarBrightDark',label:'Skank',pattern:'backbeat',lo:60,level:.6,pan:.3},
   organ:{sound:'organJazzPercStill',label:'Organ bubble',pattern:'offbeat',lo:55,level:.2,pan:-.3},bass:{sound:'subBass',label:'Bass',pattern:'reggae',level:.6}}}),
 
 song({title:'Disco · Mirrorball Heart',description:'Disco in A minor: octave bass, clavinet 16ths, string swells and a soprano line over a hi-hat that opens on every off-beat.',
@@ -240,7 +240,7 @@ song({title:'Bossa Nova · Late Café',description:'Bossa nova in D: nylon guita
  key:'D major',bpm:132,rhythm:'bossa',room:.4,
  form:[{name:'Theme',bars:'Dmaj7 B7 Em7 A7 | F#m7 B7 Em7 A7',x:2,energy:.6,parts:{flute:'F#5/3 E5/1 F#5/2 A5/2 | D#5/4 F#5/4 | G5/3 F#5/1 E5/2 B4/2 | C#5/4 E5/4 | A5/3 G#5/1 F#5/2 C#5/2 | D#5/4 A5/4 | G5/2 E5/2 B4/2 D5/2 | C#5/4 r/4'}},
   {name:'Turnaround',bars:'Em7 A7 Dmaj7 Dmaj7',energy:.5,parts:{flute:'G5/2 B5/2 D6/2 B5/2 | A5/4 G5/4 | F#5/8 | r/8'}}],
- tracks:{flute:{sound:'blownFluteBreathyLow',label:'Flute',level:.75,send:.4},guitar:{sound:'pluckGuitarSoftDark',label:'Nylon guitar',pattern:'push',lo:55,level:.35},
+ tracks:{flute:{sound:'blownFluteBreathyLow',label:'Flute',level:.5,send:.4},guitar:{sound:'pluckGuitarSoftDark',label:'Nylon guitar',pattern:'push',lo:55,level:.35},
   bass:{sound:'bowedBassAiryWarm',label:'Bass',pattern:'rootfifth',level:.75},pad:{sound:'stringEnsemble',label:'Strings',pattern:'block',lo:60,level:.1}}}),
 
 song({title:'Drum and Bass · Night Bus 174',description:'Liquid drum and bass at 174: two-step breaks, a long sub bass, piano arpeggios and a breathy voice holding the top note of each chord.',
@@ -255,7 +255,7 @@ song({title:'Funk · Bubble Up',description:'Funk in E minor: clavinet 16ths, sy
  key:'E dorian',bpm:104,sub:4,rhythm:'funk',room:.3,
  form:[{name:'Groove',bars:'Em7 Em7 A7 A7',energy:.7,parts:{horns:'r/16'}},
   {name:'Horns',bars:'Em7 Em7 A7 A7',x:3,energy:.9,parts:{horns:'r/4 G5/2 A5/2 B5/2 r/2 D6/2 r/2 | E6/2 D6/2 B5/4 r/8 | r/4 C#6/2 E6/2 G6/2 r/2 E6/2 r/2 | A6/2 G6/2 E6/4 r/8'}}],
- tracks:{horns:{sound:'subSawBrassHp',label:'Horns',level:.35,send:.25},sax:{sound:'reedSaxReedyStill',label:'Sax',level:1,transpose:-12,double:'horns'},
+ tracks:{horns:{sound:'subSawBrassHp',label:'Horns',level:.35,send:.25},sax:{sound:'reedSaxReedyStill',label:'Sax',level:.35,transpose:-12,double:'horns'},
   clav:{sound:'pluckClavBrightMetal',label:'Clavinet',pattern:'arp16',lo:55,level:.28},bass:{sound:'subSquareBassBp',label:'Bass',pattern:'synco',level:.55}}}),
 
 song({title:'Bluegrass · Mountain Switchback',description:'Bluegrass in G with a train beat: banjo rolls, mandolin chop on the backbeat, guitar strum, bowed bass and a fiddle tune.',

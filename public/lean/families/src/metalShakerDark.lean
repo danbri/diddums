@@ -15,13 +15,13 @@ dsp GenMetalShakerDark where
   state q4 : F32 := 0.0
   state q5 : F32 := 0.0
   state env : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   state i1m : F32 := 0.0
   state i2m : F32 := 0.0
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let envA := select(trigger, gate, env * expneg(5.0 / (life * 1.0 * sr)))
     set env := envA
     set q0 := fract(q0 + 164.24 * (0.8 + colour * 0.4) / sr)
@@ -39,4 +39,4 @@ dsp GenMetalShakerDark where
     set i1m := 2.0 * v1m - i1m
     set i2m := 2.0 * v2m - i2m
     set previous := gate
-    return softsign(((src - v1m - v2m) * envA) * 0.8) * 0.5756
+    return softsign(((src - v1m - v2m) * envA) * 0.8) * 0.8133

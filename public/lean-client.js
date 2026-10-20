@@ -10,7 +10,7 @@ export function leanCatalog(){
  return catalogPromise;
 }
 // Generated families live in catalog shards listed by a pinned index; a shard is fetched on first use.
-const EXPECTED_FAMILY_INDEX='04af3df206b6562f13b285bd508ee097fdb6256f90c4e02424128364cdc5406a';
+const EXPECTED_FAMILY_INDEX='4c191a4535c9171875eb0e6f9bf94608c701323757130dcbb3e607eb485bdb40';
 let familyIndexPromise=null;const shardPromises=new Map();
 async function familyIndex(){
  if(!familyIndexPromise)familyIndexPromise=(async()=>{const r=await fetch(assetUrl('lean/families/index.json'));if(!r.ok)throw new Error('Family index unavailable: '+r.status);const bytes=await r.arrayBuffer();if(await sha(bytes)!==EXPECTED_FAMILY_INDEX)throw new Error('Family index integrity mismatch; reload after the release finishes.');return JSON.parse(new TextDecoder().decode(bytes));})().catch(e=>{familyIndexPromise=null;throw e;});

@@ -14,11 +14,11 @@ dsp GenHandCongaOpen where
   state p2 : F32 := 0.0
   state p3 : F32 := 0.0
   state ce : F32 := 0.0
-  state seed : F32 := 0.31
+  state counter : F32 := 1.0
   sample x =>
     let trigger := gt(gate, previous + 0.001)
-    let nz := noise1(seed * 8191.0) * 2.0 - 1.0
-    set seed := fract(seed + 0.75487767)
+    let nz := noise1(noise1(counter) * 437.5453 + counter * 0.6180339)
+    set counter := select(gt(counter, 1000000.0), 1.0, counter + 1.0)
     let envA := select(trigger, gate, env * expneg(5.0 / (life * 1.0 * sr)))
     set env := envA
     let beA := select(trigger, gate, be * expneg(1.0 / (0.08 * sr)))
@@ -30,4 +30,4 @@ dsp GenHandCongaOpen where
     set p2 := fract(p2 + min(0.45, f * 1.59 / sr))
     set p3 := fract(p3 + min(0.45, f * 2.14 / sr))
     set previous := gate
-    return softsign(((sinpi(p1 * 2.0) + sinpi(p2 * 2.0) * 0.45 * (0.5 + colour) + sinpi(p3 * 2.0) * 0.25) * envA + nz * ceA) * 0.7) * 0.6043
+    return softsign(((sinpi(p1 * 2.0) + sinpi(p2 * 2.0) * 0.45 * (0.5 + colour) + sinpi(p3 * 2.0) * 0.25) * envA + nz * ceA) * 0.7) * 0.6033
