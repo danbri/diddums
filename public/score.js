@@ -85,13 +85,24 @@ function processRole(t,bar,chord,root,steps,E,vel,colour,last,emit,c,rand,memory
    emit(t.id,bar,step,above,vel*.8,.5,colour,t.life);
   }else if(t.role==='cloud'){
    // Aleatoric cloud: chord tones scattered over three octaves, density set by energy.
-   if(!(t.dejaVu>0)){if(rand()>.08+.3*E)continue;emit(t.id,bar,step,root+12+tones[Math.floor(rand()*4)]+12*Math.floor(rand()*3),vel*(.5+.5*rand()),.15+rand()*.6,colour,t.life);continue;}
-   // Déjà vu (after the looping random generators of modular synths): each step of a loop of
-   // `loopSteps` remembers its last draw and replays it with probability `dejaVu`, so the randomness
-   // repeats as a motif and drifts slowly. A draw is a chord-tone index, not a pitch, so it follows the chords.
+   const marbles=['dejaVu','spread','bias','jitter','density','wander','pitches'].some(k=>t[k]!=null);
+   if(!marbles){if(rand()>.08+.3*E)continue;emit(t.id,bar,step,root+12+tones[Math.floor(rand()*4)]+12*Math.floor(rand()*3),vel*(.5+.5*rand()),.15+rand()*.6,colour,t.life);continue;}
+   // Controls after a modular random generator (Marbles):
+   //  dejaVu, loopSteps: each step of a loop remembers its last draw and replays it with probability dejaVu,
+   //    so randomness repeats as a motif and drifts; draws are positions in a pitch pool, so loops follow chords.
+   //  spread, bias: how widely pitches scatter (0 = one note, 1 = three octaves) and where (0 low … 1 high).
+   //  pitches: 'chord' (tones of the chord sounding, default) or 'scale' (notes of the key's scale).
+   //  density: how often a step fires (default from energy); jitter: random timing, up to half a step.
+   //  wander: a slow random walk on tone colour, one step per note.
    const len=t.loopSteps||16,slots=memory.get(t.id)||memory.set(t.id,[]).get(t.id),i=g%len;let d=slots[i];
-   if(!d||rand()>=t.dejaVu){d={hit:rand(),tone:Math.floor(rand()*4),oct:Math.floor(rand()*3),vel:.5+.5*rand(),len:.15+rand()*.6};slots[i]=d;}
-   if(d.hit>.08+.3*E)continue;emit(t.id,bar,step,root+12+tones[d.tone]+12*d.oct,vel*d.vel,d.len,colour,t.life);
+   if(!d||!(rand()<(t.dejaVu||0))){d={hit:rand(),u:rand(),vel:.5+.5*rand(),len:.15+rand()*.6,jit:rand()-.5,w:rand()-.5};slots[i]=d;}
+   const p=t.density!=null?t.density*(.6+.8*E):.08+.3*E;if(d.hit>p)continue;
+   const useScale=t.pitches==='scale'&&Array.isArray(c.scale)&&c.tonic!=null,base=useScale?36+c.tonic:root+12;
+   const steps1=useScale?c.scale:tones,pool=[0,1,2].flatMap(o=>steps1.map(v=>v+12*o));
+   const x=Math.max(0,Math.min(1,(t.bias??.5)+(d.u-.5)*(t.spread??1))),note=base+(useScale?12:0)+pool[Math.round(x*(pool.length-1))];
+   const wk=t.id+'#w';if(t.wander){memory.set(wk,Math.max(-1,Math.min(1,(memory.get(wk)||0)*.97+d.w*t.wander)));}
+   const col=t.wander?Math.max(0,Math.min(1,colour+.35*memory.get(wk))):colour;
+   emit(t.id,bar,step+(t.jitter?d.jit*t.jitter:0),note,vel*d.vel,d.len,col,t.life);
   }
  }
 }
@@ -163,7 +174,8 @@ export function makeSession(c,sr,overrides={}){
  if(events.length>MAX_EVENTS)throw new Error(`Score exceeds the ${MAX_EVENTS} event budget`);
  // Size each state-isolated voice pool from this score's actual gate+release lifetime.
  // End points sort before starts at the same frame, so a slot can be reused exactly on a boundary.
- for(const t of tracks){const points=[];for(const e of events)if(e.track===t.id){const end=e.frame+e.duration+Math.ceil(sr*Math.max(.08,e.life*1.7));points.push([e.frame,1],[end,-1]);}points.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);let active=0,peak=0;for(const [,d] of points){active+=d;peak=Math.max(peak,active);}t.poolRequired=Math.max(1,peak);if(t.poolRequired>MAX_TRACK_VOICES)throw new Error(`${t.label} needs ${t.poolRequired} voices; bounded pool limit is ${MAX_TRACK_VOICES}`);t.pool=t.poolRequired;}
+ for(const t of tracks){const points=[];for(const e of events)if(e.track===t.id){const end=e.frame+e.duration+Math.ceil(sr*Math.max(.08,e.life*1.7));points.push([e.frame,1],[end,-1]);}points.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);let active=0,peak=0;for(const [,d] of points){active+=d;peak=Math.max(peak,active);}t.poolRequired=Math.max(1,peak);if(t.role==='cloud')t.poolRequired=Math.min(t.poolRequired,MAX_TRACK_VOICES);// a dense cloud may overlap more: the worklet reuses the oldest released voice
+  if(t.poolRequired>MAX_TRACK_VOICES)throw new Error(`${t.label} needs ${t.poolRequired} voices; bounded pool limit is ${MAX_TRACK_VOICES}`);t.pool=t.poolRequired;}
  for(const t of tracks)t.automation=compileAutomation(t.automate,AUTOMATABLE,sr,secondsPerBar,t.pairSide==='L');
  const automation=compileAutomation(c.automate,GLOBAL_AUTOMATABLE,sr,secondsPerBar);
  const durationFrames=Math.round(c.bars*beats*beatFrames);

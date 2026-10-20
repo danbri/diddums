@@ -157,7 +157,7 @@ export function compositionFromSong(input){
   // Advanced role-playback fields, mainly carried over when a collection piece is remixed.
   const names=new Set(sections.map(s=>s.name)),nameList=v=>Array.isArray(v)?v.filter(x=>names.has(x)):undefined;
   if(t.onlySections)track.onlySections=nameList(t.onlySections);if(t.excludeSections)track.excludeSections=nameList(t.excludeSections);
-  if(role!=='timeline'){if(t.octave!=null)track.octave=num(t.octave,12,-36,48);if(t.gate!=null)track.gate=num(t.gate,.18,.05,2);if(typeof t.humanize==='boolean')track.humanize=t.humanize;if(t.speechOffsetSteps!=null)track.speechOffsetSteps=num(t.speechOffsetSteps,0,-16,16);for(const [k,lo,hi] of [['hits',1,32],['cycle',1,64],['delaySteps',1,64],['interval',-24,24],['loopSteps',1,64]])if(t[k]!=null)track[k]=num(t[k],lo,lo,hi)|0;if(t.dejaVu!=null)track.dejaVu=num(t.dejaVu,0,0,1);
+  if(role!=='timeline'){if(t.octave!=null)track.octave=num(t.octave,12,-36,48);if(t.gate!=null)track.gate=num(t.gate,.18,.05,2);if(typeof t.humanize==='boolean')track.humanize=t.humanize;if(t.speechOffsetSteps!=null)track.speechOffsetSteps=num(t.speechOffsetSteps,0,-16,16);for(const [k,lo,hi] of [['hits',1,32],['cycle',1,64],['delaySteps',1,64],['interval',-24,24],['loopSteps',1,64]])if(t[k]!=null)track[k]=num(t[k],lo,lo,hi)|0;for(const k of ['dejaVu','spread','bias','jitter','density','wander'])if(t[k]!=null)track[k]=num(t[k],0,0,1);if(t.pitches==='scale'||t.pitches==='chord')track.pitches=t.pitches;
    if(Array.isArray(t.sequence))track.sequence=t.sequence.slice(0,64).map(v=>v==null?null:typeof v==='object'?{note:num(v.note,0,-24,48),velocity:num(v.velocity,1,.2,1.4)}:num(v,0,-24,48));}
   // Transmissions come and go in generated forms: leave the opening and the quietest movement to the room.
   if((role==='speechVowel'||role==='speechConsonant')&&!song.sections&&sections.length>=4)track.excludeSections=[sections[0].name,sections[3].name];
@@ -175,7 +175,7 @@ export function compositionFromSong(input){
   id:'song-'+hash(JSON.stringify(song)).toString(36),title:String(song.title||'Untitled').slice(0,80),subtitle:song.prompt?'Composed from a prompt':'Shared song',tag:(song.prompt?'Prompt':'Song')+' / '+(ambient?'ambient':rhythm),
   bpm,meter,key:keyName(key.pc,key.mode),rhythm,...(song.arpStride!=null?{arpStride:num(song.arpStride,2,1,4)|0}:{}),swing:num(song.swing,rhythm==='brush'||rhythm==='shuffle'?.08:0,0,.3),seed,
   description:String(song.description||(song.prompt?`From the prompt “${song.prompt}”.`:'Made in the Diddums Make tab.')).slice(0,600),
-  harmony,melody,bass,tracks,
+  harmony,melody,bass,tracks,tonic:key.pc,scale,
   ...(speechNeeded&&syllables.length?{speech:given?{text:String(given.text??song.say??''),syllables,...(given.everyBars!=null?{everyBars:num(given.everyBars,4,1,16)}:{}),...(given.leadMs!=null?{leadMs:num(given.leadMs,50,0,160)}:{})}:{text:song.say||'',everyBars:Math.max(2,Math.ceil(phraseSteps/stepsPerBar)+1),leadMs:45,syllables}}:{}),
   space,...(drumKit?{drumKit}:{}),
   ...(automate&&Object.keys(automate).length?{automate}:{}),
@@ -203,7 +203,7 @@ export function songFromComposition(c){
   // never set (a preset's transposition, say), so the Song rebuilds exactly this track.
   const supplied=resolveSound(out.sound)?.preset||{},neutral={level:.4,colour:.4,life:1.2,pan:0,send:.3,transpose:0,octave:12,gate:.18,sequence:[0,null,7,null],humanize:true,speechOffsetSteps:0};
   for(const k of ['level','pan','send','colour','life','transpose','octave','gate','sequence','humanize','speechOffsetSteps']){const have=t[k]??(k in supplied?neutral[k]:undefined);if(have!==undefined&&JSON.stringify(have)!==JSON.stringify(supplied[k]??neutral[k]))out[k]=structuredClone(have);}
-  for(const k of ['seq','note','step','from','to','pair','automate','onlySections','excludeSections','hits','cycle','delaySteps','interval','dejaVu','loopSteps'])if(t[k]!=null)out[k]=structuredClone(t[k]);
+  for(const k of ['seq','note','step','from','to','pair','automate','onlySections','excludeSections','hits','cycle','delaySteps','interval','dejaVu','loopSteps','spread','bias','jitter','density','wander','pitches'])if(t[k]!=null)out[k]=structuredClone(t[k]);
   if(t.loop===false)out.loop=false;
   return out;
  });
