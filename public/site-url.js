@@ -1,4 +1,6 @@
-const here=globalThis.document?.baseURI||globalThis.location?.href||'http://localhost/';
+// The site root is this module's own folder, so a page elsewhere (another path or site) that imports
+// the library from its public URL still fetches the worklet, catalogs and kernels from here.
+const here=import.meta.url||globalThis.document?.baseURI||globalThis.location?.href||'http://localhost/';
 const SITE_ROOT=new URL('./',here);
 export function siteUrl(path=''){
   return new URL(String(path||'').replace(/^\/+/,''),SITE_ROOT).href;
